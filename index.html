@@ -21,12 +21,12 @@
             --green: #00a650; --darkblue: #0054a6;
             --prob-color: #e6ebc8; --impr-color: #f79759;
             
-            /* Colori Banconote Originali */
-            --note-100: #82b9db; --note-1000: #82c488;
-            --note-10000: #d1c3a1; --note-50000: #e89da3;
+            /* Colori Banconote Originali perfezionati */
+            --note-100: #7ebae3; --note-1000: #88ce92;
+            --note-10000: #d6caaa; --note-50000: #eb9a9f;
 
-            /* Texture Carta leggerissima */
-            --paper-tex: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            /* Texture Carta leggerissima in Data URI */
+            --paper-tex: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
             --table-tex: radial-gradient(circle at center, #2e4732 0%, #0a120c 100%);
         }
 
@@ -112,52 +112,103 @@
 
         .logo-container {
             position: absolute; background: #ed1b24; color: white;
-            top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
             padding: clamp(4px, 1vmin, 12px) clamp(10px, 3vmin, 35px); 
             border: clamp(2px, 0.5vmin, 6px) solid white;
-            font-size: clamp(16px, 4.5vmin, 55px); font-family: 'Montserrat', sans-serif;
+            font-size: clamp(16px, 4vmin, 55px); font-family: 'Montserrat', sans-serif;
             font-weight: 900; letter-spacing: 0.15em;
             box-shadow: 0 0 0 clamp(1px, 0.3vmin, 4px) #111, clamp(2px, 0.5vmin, 8px) clamp(2px, 0.5vmin, 8px) clamp(4px, 1vmin, 12px) rgba(0,0,0,0.4);
-            z-index: 5; text-shadow: 2px 2px 0 #900;
+            transform: rotate(-45deg); z-index: 5; text-shadow: 2px 2px 0 #900;
         }
 
-        /* CARTE IMPREVISTI E PROBABILITA' AL CENTRO */
         .deck {
-            position: absolute; width: 22%; height: 14%;
-            border-radius: 4px; border: clamp(1px, 0.2vmin, 2px) solid rgba(0,0,0,0.8); 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            background-image: var(--paper-tex);
-            /* Effetto mazzo di carte */
-            box-shadow: -1px 1px 0 #fff, -2px 2px 0 #ccc, -3px 3px 0 #fff, -4px 4px 0 #999, -6px 6px 15px rgba(0,0,0,0.5);
+            position: absolute; width: 17vmin; height: 10vmin;
+            min-width: 50px; min-height: 30px; border-radius: 4px;
+            border: clamp(1px, 0.2vmin, 3px) dashed rgba(0,0,0,0.5); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; background-image: var(--paper-tex);
         }
-        .deck-imprevisti { top: 22%; left: 22%; transform: translate(-50%, -50%) rotate(135deg); background-color: var(--impr-color); }
-        .deck-probabilita { top: 78%; left: 78%; transform: translate(-50%, -50%) rotate(-45deg); background-color: var(--prob-color); }
-        .deck-title { font-size: clamp(6px, 1.8vmin, 20px); font-weight: 900; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; color:#111; }
-        .deck-q { font-size: clamp(14px, 4vmin, 40px); font-family: 'Playfair Display', serif; font-weight: bold; opacity: 0.6; color:#111; line-height: 1;}
+        .deck-imprevisti { top: 12%; left: 12%; transform: rotate(135deg); background-color: var(--impr-color); box-shadow: 0.3vmin 0.3vmin 1.5vmin rgba(0,0,0,0.4); }
+        .deck-probabilita { bottom: 12%; right: 12%; transform: rotate(-45deg); background-color: var(--prob-color); box-shadow: 0.3vmin 0.3vmin 1.5vmin rgba(0,0,0,0.4); }
+        .deck-title { font-size: clamp(6px, 1.5vmin, 14px); font-weight: 800; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; color:#111; text-transform: uppercase;}
+        .deck-q { font-size: clamp(14px, 3.5vmin, 35px); font-family: 'Playfair Display', serif; font-weight: bold; opacity: 0.5; color:#111; }
 
-        /* EFFETTO POLVERE DI STELLE */
-        .stardust {
-            position: fixed; border-radius: 50%; pointer-events: none; z-index: 999;
-            box-shadow: 0 0 1vmin currentColor;
-            animation: stardust-burst 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        /* AREE GIOCATORI SUI BORDI DELLO SCHERMO */
+        .player-zone {
+            position: absolute; z-index: 5;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.2); padding: 1vmin; border-radius: 12px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
         }
-        @keyframes stardust-burst {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; }
+        .player-zone.active {
+            background: rgba(237, 27, 36, 0.2); border: 2px solid #ed1b24;
+            box-shadow: 0 0 20px rgba(237, 27, 36, 0.4), inset 0 0 15px rgba(0,0,0,0.5);
         }
+        
+        .pz-bottom { bottom: 1vmin; left: 50%; transform: translateX(-50%); width: 60vw; }
+        .pz-left   { left: 1vmin; top: 50%; transform: translateY(-50%) rotate(90deg); width: 60vh; }
+        .pz-top    { top: 1vmin; left: 50%; transform: translateX(-50%) rotate(180deg); width: 60vw; }
+        .pz-right  { right: 1vmin; top: 50%; transform: translateY(-50%) rotate(-90deg); width: 60vh; }
 
-        /* DADI 3D EFFETTO LEGNO NERO E ORO */
-        .dice-area { 
-            position: absolute; bottom: 15%; left: 25%; transform: translate(-50%, 50%);
-            display: flex; gap: clamp(10px, 2vmin, 25px); z-index: 25; perspective: 1000px; 
+        .pz-info { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; color: #fff; font-family: 'Montserrat', sans-serif; }
+        .pz-name { font-weight: 800; font-size: clamp(12px, 2vmin, 20px); text-shadow: 1px 1px 2px #000; }
+        .pz-token { width: clamp(20px, 3.5vmin, 35px); height: clamp(20px, 3.5vmin, 35px); filter: drop-shadow(1px 2px 2px #000); }
+        .pz-balance { font-family: 'Oswald', sans-serif; font-size: clamp(14px, 2.2vmin, 24px); color: #00e676; text-shadow: 1px 1px 2px #000; }
+
+        /* BANCONOTE FOTOCOPIA ORIGINALI EDITRICE GIOCHI */
+        .real-note {
+            width: clamp(55px, 9vmin, 90px); height: clamp(30px, 5vmin, 50px);
+            border-radius: 1px; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 1px 2px 4px rgba(0,0,0,0.5); user-select: none; flex-shrink: 0; box-sizing: border-box;
+            background-image: var(--paper-tex); display: flex; align-items: center; justify-content: center;
+            border: 2px solid rgba(0,0,0,0.85); padding: 2px;
         }
+        
+        .note-inner {
+            width: 100%; height: 100%; border: 1px solid rgba(0,0,0,0.6); position: relative;
+            display: flex; align-items: center; justify-content: center; border-radius: 1px;
+            background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px),
+                        repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+        }
+        
+        .note-corner {
+            position: absolute; font-family: 'Oswald', sans-serif; font-weight: 700;
+            font-size: clamp(5px, 0.9vmin, 8px); color: rgba(0,0,0,0.9);
+            background: rgba(255,255,255,0.7); padding: 0 3px; border: 1px solid rgba(0,0,0,0.5);
+            border-radius: 2px; z-index: 2;
+        }
+        .note-corner.tl { top: -2px; left: -2px; } .note-corner.tr { top: -2px; right: -2px; }
+        .note-corner.bl { bottom: -2px; left: -2px; } .note-corner.br { bottom: -2px; right: -2px; }
+        
+        .note-center {
+            background: rgba(255,255,255,0.95); border: 2px solid rgba(0,0,0,0.7); border-radius: 50%;
+            width: 70%; height: 85%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.3); z-index: 1;
+        }
+        
+        .note-brand { font-family: 'Montserrat', sans-serif; font-size: clamp(3px, 0.6vmin, 6px); font-weight: 800; color: #222; letter-spacing: 0.5px; opacity: 0.8; }
+        .note-val { font-family: 'Montserrat', sans-serif; font-size: clamp(10px, 1.8vmin, 16px); font-weight: 900; color: #111; line-height: 1.1; }
+        
+        .real-note:hover { transform: translateY(-5px) scale(1.1); box-shadow: 3px 5px 10px rgba(0,0,0,0.6); z-index: 10; }
+        
+        .note-100 { background-color: var(--note-100); }
+        .note-1000 { background-color: var(--note-1000); }
+        .note-10000 { background-color: var(--note-10000); }
+        .note-50000 { background-color: var(--note-50000); }
+
+        .note-stack { display: flex; flex-wrap: wrap; justify-content: center; min-height: 35px; width: 100%; }
+        .note-stack .real-note { margin-right: clamp(-35px, -5vmin, -20px); transform-origin: center; }
+        .note-stack .real-note:last-child { margin-right: 0; }
+        .note-stack .real-note:hover { margin-right: 5px; }
+
+        /* DADI E ANIMAZIONI 3D */
+        .dice-area { position: absolute; display: flex; gap: clamp(10px, 2vmin, 25px); z-index: 25; perspective: 1000px; }
         @keyframes dice-pulse {
             0% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 0 rgba(255,215,0,0)); }
             100% { transform: scale(1.15) translateY(-1.5vmin); filter: drop-shadow(0 1vmin 2vmin rgba(255,215,0,0.9)); }
         }
         .dice-ready { animation: dice-pulse 1s infinite alternate ease-in-out; cursor: pointer; }
         .die-3d {
-            width: clamp(22px, 5.5vmin, 55px); height: clamp(22px, 5.5vmin, 55px); position: relative; transform-style: preserve-3d;
+            width: clamp(22px, 5.5vmin, 50px); height: clamp(22px, 5.5vmin, 50px); position: relative; transform-style: preserve-3d;
             transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 1vmin 2vmin rgba(0,0,0,0.8); will-change: transform;
         }
@@ -172,91 +223,33 @@
         .dot-1 { grid-area: 1 / 1; } .dot-3 { grid-area: 1 / 3; } .dot-4 { grid-area: 2 / 1; } .dot-5 { grid-area: 2 / 2; }
         .dot-6 { grid-area: 2 / 3; } .dot-7 { grid-area: 3 / 1; } .dot-9 { grid-area: 3 / 3; }
         
-        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(22px, 5.5vmin, 55px) / 2)); } .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(22px, 5.5vmin, 55px) / 2)); }
-        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(22px, 5.5vmin, 55px) / 2)); } .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(22px, 5.5vmin, 55px) / 2)); }
-        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(22px, 5.5vmin, 55px) / 2)); } .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(22px, 5.5vmin, 55px) / 2)); }
+        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(22px, 5.5vmin, 50px) / 2)); } .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(22px, 5.5vmin, 50px) / 2)); }
+        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(22px, 5.5vmin, 50px) / 2)); } .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(22px, 5.5vmin, 50px) / 2)); }
+        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(22px, 5.5vmin, 50px) / 2)); } .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(22px, 5.5vmin, 50px) / 2)); }
         .anim-jump { animation: jump 1.2s ease-out forwards; }
         @keyframes jump { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-15vmin) scale(1.3) rotateX(360deg) rotateZ(180deg); } 70% { transform: translateY(-3vmin) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
 
-        /* AREE GIOCATORI SUI BORDI DELLO SCHERMO */
-        #player-zones {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 5;
-        }
-        .player-zone {
-            position: absolute; pointer-events: auto;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.3); padding: 1vmin; border-radius: 12px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease; backdrop-filter: blur(4px);
-        }
-        .player-zone.active {
-            background: rgba(237, 27, 36, 0.25); border: 2px solid #ed1b24;
-            box-shadow: 0 0 20px rgba(237, 27, 36, 0.4), inset 0 0 15px rgba(0,0,0,0.6);
-        }
-        
-        .pz-bottom { bottom: 1vh; left: 50%; transform: translateX(-50%); width: 60vw; max-height: 12vh; }
-        .pz-left   { left: 1vw; top: 50%; transform: translateY(-50%) rotate(90deg); width: 60vh; max-height: 12vw; }
-        .pz-top    { top: 1vh; left: 50%; transform: translateX(-50%) rotate(180deg); width: 60vw; max-height: 12vh; }
-        .pz-right  { right: 1vw; top: 50%; transform: translateY(-50%) rotate(-90deg); width: 60vh; max-height: 12vw; }
-
-        .pz-info { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; color: #fff; font-family: 'Montserrat', sans-serif; }
-        .pz-name { font-weight: 800; font-size: clamp(12px, 2vmin, 20px); text-shadow: 1px 1px 2px #000; }
-        .pz-token { width: clamp(20px, 3.5vmin, 35px); height: clamp(20px, 3.5vmin, 35px); filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.8)); }
-        .pz-balance { font-family: 'Oswald', sans-serif; font-size: clamp(14px, 2.2vmin, 24px); color: #00e676; text-shadow: 1px 1px 2px #000; }
-
-        /* BANCONOTE FOTOCOPIA ORIGINALI EDITRICE GIOCHI */
-        .real-note {
-            width: clamp(55px, 9vmin, 90px); height: clamp(30px, 5vmin, 50px);
-            border-radius: 2px; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 1px 2px 4px rgba(0,0,0,0.5); user-select: none; flex-shrink: 0; box-sizing: border-box;
-            background-image: var(--paper-tex); display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(0,0,0,0.7);
-        }
-        
-        .note-inner {
-            width: 92%; height: 86%; border: 1px solid rgba(0,0,0,0.6); position: relative;
-            display: flex; align-items: center; justify-content: center;
-            background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
-        }
-        
-        .note-corner {
-            position: absolute; font-family: 'Oswald', sans-serif; font-weight: 700;
-            font-size: clamp(5px, 0.9vmin, 8px); color: rgba(0,0,0,0.8);
-            background: rgba(255,255,255,0.6); padding: 0 2px; border: 1px solid rgba(0,0,0,0.3);
-        }
-        .note-corner.tl { top: -1px; left: -1px; } .note-corner.tr { top: -1px; right: -1px; }
-        .note-corner.bl { bottom: -1px; left: -1px; } .note-corner.br { bottom: -1px; right: -1px; }
-        
-        .note-center {
-            background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.5); border-radius: 50%;
-            width: 65%; height: 85%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
-        }
-        
-        .note-brand { font-family: 'Montserrat', sans-serif; font-size: clamp(4px, 0.7vmin, 6px); font-weight: 800; color: #333; letter-spacing: 0.5px; }
-        .note-val { font-family: 'Montserrat', sans-serif; font-size: clamp(10px, 1.8vmin, 16px); font-weight: 900; color: #111; line-height: 1; }
-        
-        .real-note:hover { transform: translateY(-5px) scale(1.1); box-shadow: 3px 5px 10px rgba(0,0,0,0.6); z-index: 10; }
-        
-        .note-100 { background-color: var(--note-100); }
-        .note-1000 { background-color: var(--note-1000); }
-        .note-10000 { background-color: var(--note-10000); }
-        .note-50000 { background-color: var(--note-50000); }
-
-        .note-stack { display: flex; flex-wrap: wrap; justify-content: center; min-height: 35px; width: 100%; }
-        .note-stack .real-note { margin-right: clamp(-35px, -5vmin, -20px); transform-origin: center; }
-        .note-stack .real-note:last-child { margin-right: 0; }
-        .note-stack .real-note:hover { margin-right: 5px; }
+        .stardust { position: fixed; border-radius: 50%; pointer-events: none; z-index: 999; box-shadow: 0 0 1vmin currentColor; animation: stardust-burst 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
+        @keyframes stardust-burst { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; } }
 
         /* PEDINE VETTORIALI IN LEGNO 3D */
         .token {
             position: absolute; z-index: 30; width: clamp(24px, 5vmin, 45px); height: clamp(24px, 5vmin, 45px);
             transition: all 0.4s linear; transform: translate(-50%, -50%); will-change: left, top;
         }
-        .token-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+        .token-svg { width: 100%; height: 100%; display: block; overflow: visible; filter: drop-shadow(2px 4px 3px rgba(0,0,0,0.6)); }
         
-        .house { width: clamp(5px, 1.2vmin, 14px); height: clamp(5px, 1.2vmin, 14px); background-color: #00a650; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-        .hotel { width: clamp(7px, 1.8vmin, 20px); height: clamp(7px, 1.8vmin, 20px); background-color: #ed1b24; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        /* CASETTE E ALBERGHI IN STILE BLOCCHETTI DI LEGNO 3D */
+        .house { 
+            width: clamp(8px, 1.6vmin, 16px); height: clamp(8px, 1.6vmin, 16px); 
+            background-color: #00a650; border-radius: 1px;
+            box-shadow: inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); 
+        }
+        .hotel { 
+            width: clamp(10px, 2.2vmin, 22px); height: clamp(10px, 2.2vmin, 22px); 
+            background-color: #ed1b24; border-radius: 2px;
+            box-shadow: inset -3px -3px 0px rgba(0,0,0,0.3), inset 3px 3px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); 
+        }
 
         /* MODALI E UI */
         .modal-overlay {
@@ -345,7 +338,7 @@
             .player-zone { transform: none !important; position: static !important; width: auto; max-width: 48%; padding: 4px; border-radius: 6px; }
             #player-zones { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; padding: 5px; height: 100%; box-sizing: border-box; }
             .pz-info { gap: 5px; } .pz-name { font-size: 10px; } .pz-balance { font-size: 12px; }
-            .note-stack { display: none; } /* Nasconde le banconote sulla dashboard mobile per salvare spazio */
+            .note-stack { display: none; } /* Nascondi stack dettagliati su dashboard mobile */
         }
     </style>
 </head>
@@ -364,15 +357,13 @@
             <stop offset="0%" stop-color="#ffff99"/><stop offset="50%" stop-color="#e6b800"/><stop offset="100%" stop-color="#806600"/>
         </radialGradient>
         
-        <!-- Filtro Avanzato 3D per simulare vernice lucida su legno e ombre dinamiche -->
-        <filter id="wood3D" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="2" dy="5" stdDeviation="3" flood-opacity="0.7" />
-          <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="blur"/>
-          <feSpecularLighting in="blur" surfaceScale="5" specularConstant="1" specularExponent="25" lighting-color="#ffffff" result="specOut">
-            <fePointLight x="-20" y="-20" z="150"/>
+        <!-- Filtro Effetto 3D Telegram per Emojis -->
+        <filter id="emoji3D" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="2" dy="5" stdDeviation="3" flood-opacity="0.6" />
+          <feSpecularLighting in="SourceAlpha" surfaceScale="4" specularConstant="1" specularExponent="20" lighting-color="#ffffff" result="specOut">
+            <fePointLight x="-20" y="-20" z="100"/>
           </feSpecularLighting>
-          <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut"/>
-          <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>
+          <feBlend in="specOut" in2="SourceGraphic" mode="screen"/>
         </filter>
       </defs>
     </svg>
@@ -558,7 +549,7 @@
             });
             updateUIStrings();
             
-            // Rigenera solo le celle e non l'intero board per evitare di rompere dadi/carte
+            // Rigenera solo le celle in modo sicuro
             if(gameState.players.length === 0) {
                 const board = document.getElementById('board');
                 if (board) { 
@@ -655,13 +646,13 @@
         }
 
         const tokenSVGs = {
-            'candelabro': `<svg viewBox="0 0 100 100" class="token-svg"><path d="M 25 85 L 75 85 Q 75 70 60 70 L 40 70 Q 25 70 25 85 Z" fill="url(#gradYellow)" filter="url(#wood3D)"/><rect x="42" y="40" width="16" height="30" fill="url(#gradYellow)" filter="url(#wood3D)"/><circle cx="50" cy="40" r="14" fill="url(#gradYellow)" filter="url(#wood3D)"/><path d="M 35 30 Q 50 5 65 30 Z" fill="url(#gradRed)" filter="url(#wood3D)"/></svg>`,
-            'fiasco': `<svg viewBox="0 0 100 100" class="token-svg"><circle cx="50" cy="65" r="30" fill="url(#gradGreen)" filter="url(#wood3D)"/><path d="M 40 40 L 60 40 L 55 15 L 45 15 Z" fill="url(#gradYellow)" filter="url(#wood3D)"/><rect x="42" y="5" width="16" height="10" rx="3" fill="url(#gradRed)" filter="url(#wood3D)"/></svg>`,
-            'pera': `<svg viewBox="0 0 100 100" class="token-svg"><path d="M 50 20 C 30 40 15 65 30 85 C 45 100 55 100 70 85 C 85 65 70 40 50 20 Z" fill="url(#gradGreen)" filter="url(#wood3D)"/><path d="M 50 20 Q 55 5 60 5" fill="none" stroke="#5c4033" stroke-width="4" stroke-linecap="round" filter="url(#wood3D)"/></svg>`,
-            'piantagrassa': `<svg viewBox="0 0 100 100" class="token-svg"><circle cx="50" cy="70" r="24" fill="url(#gradGreen)" filter="url(#wood3D)"/><circle cx="35" cy="45" r="16" fill="url(#gradGreen)" filter="url(#wood3D)"/><circle cx="65" cy="45" r="16" fill="url(#gradGreen)" filter="url(#wood3D)"/><circle cx="50" cy="20" r="12" fill="url(#gradRed)" filter="url(#wood3D)"/></svg>`,
-            'mela': `<svg viewBox="0 0 100 100" class="token-svg"><circle cx="50" cy="55" r="35" fill="url(#gradRed)" filter="url(#wood3D)"/><path d="M 50 20 Q 55 5 60 5" fill="none" stroke="#5c4033" stroke-width="4" stroke-linecap="round" filter="url(#wood3D)"/></svg>`
+            'candelabro': `<svg viewBox="0 0 100 100" class="token-svg"><text x="50" y="80" font-size="75" text-anchor="middle" filter="url(#emoji3D)">🕯️</text></svg>`,
+            'fungo': `<svg viewBox="0 0 100 100" class="token-svg"><text x="50" y="80" font-size="75" text-anchor="middle" filter="url(#emoji3D)">🍄</text></svg>`,
+            'pera': `<svg viewBox="0 0 100 100" class="token-svg"><text x="50" y="80" font-size="75" text-anchor="middle" filter="url(#emoji3D)">🍐</text></svg>`,
+            'piantagrassa': `<svg viewBox="0 0 100 100" class="token-svg"><text x="50" y="80" font-size="75" text-anchor="middle" filter="url(#emoji3D)">🌵</text></svg>`,
+            'mela': `<svg viewBox="0 0 100 100" class="token-svg"><text x="50" y="80" font-size="75" text-anchor="middle" filter="url(#emoji3D)">🍎</text></svg>`
         };
-        const tokensLib = [{id: 'candelabro', name: 'Candelabro'}, {id: 'fiasco', name: 'Fiasco'}, {id: 'pera', name: 'Pera'}, {id: 'piantagrassa', name: 'Pianta Grassa'}, {id: 'mela', name: 'Mela'}];
+        const tokensLib = [{id: 'candelabro', name: 'Candelabro'}, {id: 'fungo', name: 'Fungo'}, {id: 'pera', name: 'Pera'}, {id: 'piantagrassa', name: 'Pianta Grassa'}, {id: 'mela', name: 'Mela'}];
 
         let gameState = { players: [], currentPlayerIdx: 0, properties: {}, isMoving: false, lastRoll: 0 };
 
@@ -681,11 +672,23 @@
 
         function getNotesArray(amount) {
             let notes = []; let rem = amount;
+            let c100 = 0, c1000 = 0, c10000 = 0, c50000 = 0;
+            
+            // Garantisce sempre banconote piccole se la disponibilità lo permette
+            if (rem >= 500) { c100 = 5; rem -= 500; }
+            if (rem >= 5000) { c1000 = 5; rem -= 5000; }
+            if (rem >= 40000) { c10000 = 4; rem -= 40000; }
+            
+            c50000 += Math.floor(rem / 50000); rem %= 50000;
+            c10000 += Math.floor(rem / 10000); rem %= 10000;
+            c1000 += Math.floor(rem / 1000); rem %= 1000;
+            c100 += Math.floor(rem / 100); rem %= 100;
+            
             const addN = (val, count) => { for(let i=0; i<count; i++) notes.push(val); };
-            addN(50000, Math.floor(rem / 50000)); rem %= 50000;
-            addN(10000, Math.floor(rem / 10000)); rem %= 10000;
-            addN(1000,  Math.floor(rem / 1000));  rem %= 1000;
-            addN(100,   Math.floor(rem / 100));   rem %= 100;
+            addN(50000, c50000);
+            addN(10000, c10000);
+            addN(1000, c1000);
+            addN(100, c100);
             return notes;
         }
 
@@ -721,7 +724,8 @@
             if (p.balance < amount) { showToast(`⚠️ ${t('bankrupt_msg')} ${p.name}!`); p.balance = -1; endTurn(); return; }
 
             document.getElementById('modal-action').style.display = 'none';
-            document.getElementById('payment-wrapper').style.transform = `scale(1) rotate(${[0, 90, 180, -90][gameState.currentPlayerIdx] || 0}deg)`;
+            const pw = document.getElementById('payment-wrapper');
+            if(pw) pw.style.transform = `scale(1) rotate(${[0, 90, 180, -90][gameState.currentPlayerIdx] || 0}deg)`;
 
             currentPayment = { amount: amount, callback: callback, traySum: 0, wallet: getNotesArray(p.balance), tray: [] };
             document.getElementById('pay-title').innerText = reason; renderPaymentUI();
@@ -834,8 +838,11 @@
 
         function orientBoard() {
             const rot = [0, 90, 180, -90][gameState.currentPlayerIdx] || 0;
-            document.getElementById('center-board').style.transform = `rotate(${rot}deg)`;
-            document.getElementById('action-wrapper').style.transform = `scale(1) rotate(${rot}deg)`;
+            const cb = document.getElementById('center-board');
+            if (cb) cb.style.transform = `rotate(${rot}deg)`;
+            
+            const aw = document.getElementById('action-wrapper');
+            if (aw) aw.style.transform = `scale(1) rotate(${rot}deg)`;
             
             document.querySelectorAll('.player-zone').forEach((z, i) => {
                 if(i === gameState.currentPlayerIdx) z.classList.add('active');
