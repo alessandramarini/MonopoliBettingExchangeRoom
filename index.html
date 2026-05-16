@@ -3,37 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Monopoli - Edizione Classica Tabletop">
+    <meta name="description" content="Monopoli - Edizione Classica Tabletop Multi-language">
     <title>Monopoli - Edizione Classica Tabletop</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
-    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Rye&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Oswald:wght@600&display=swap" rel="stylesheet">
     
     <style>
         :root {
             /* Colori Originali Editrice Giochi */
-            --bg-board: #c1d6c8; 
-            --border-color: #111;
+            --bg-board: #c1d6c8; --border-color: #111;
             --brown: #8e4a23; --lightblue: #9bd2f0; --pink: #d93c96;
             --orange: #f7941d; --red: #ed1b24; --yellow: #fff200;
             --green: #00a650; --darkblue: #0054a6;
             --prob-color: #e6ebc8; --impr-color: #f79759;
             
-            /* Texture Carta leggerissima generata via Data URI per performance istantanee */
-            --paper-tex: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E");
+            /* Colori Banconote Originali */
+            --note-100: #82b9db; --note-1000: #82c488;
+            --note-10000: #d1c3a1; --note-50000: #e89da3;
+
+            /* Pattern Sfondo e Texture Carta */
+            --paper-tex: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            --table-tex: radial-gradient(circle at center, #2e4732 0%, #0a120c 100%);
         }
 
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background: radial-gradient(circle at center, #2e4732 0%, #0a120c 100%);
-            color: #111; margin: 0; padding: 0;
+            background: var(--table-tex); color: #111; margin: 0; padding: 0;
             overflow: hidden; touch-action: none; user-select: none;
-            -webkit-user-select: none; -moz-user-select: none;
-            -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+            -webkit-user-select: none; -webkit-font-smoothing: antialiased;
         }
 
         #app-container {
@@ -41,23 +42,22 @@
             width: 100vw; height: 100vh; position: relative;
         }
 
-        /* TABELLONE SCALABILE (Quadrato perfetto, mai tagliato) */
+        /* TABELLONE CENTRALE RIDIMENSIONATO PER FAR SPAZIO AI GIOCATORI */
         #board-area {
-            position: relative; display: flex; align-items: center; justify-content: center;
-            width: min(96vw, 96vh); height: min(96vw, 96vh);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 0 clamp(2px, 1vmin, 8px) #eaddcd;
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            display: flex; align-items: center; justify-content: center;
+            width: min(75vw, 75vh); height: min(75vw, 75vh);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 0 clamp(2px, 0.8vmin, 6px) #eaddcd;
             background-color: var(--border-color); border-radius: 4px;
-            contain: layout style paint;
+            z-index: 10; contain: layout style paint;
         }
 
         #board {
             width: 100%; height: 100%; display: grid;
-            /* Angoli leggermente più larghi come nel gioco fisico (14%) */
             grid-template-columns: 14% repeat(9, 1fr) 14%;
             grid-template-rows: 14% repeat(9, 1fr) 14%;
             gap: clamp(1px, 0.2vmin, 2px);
             background-color: var(--border-color); padding: clamp(1px, 0.2vmin, 2px);
-            border-radius: 2px;
         }
 
         .cell {
@@ -65,7 +65,6 @@
             position: relative; display: flex; overflow: hidden; box-sizing: border-box;
         }
 
-        /* Gestione rigorosa dei contenuti interni per prevenire sbavature */
         .cell-content {
             width: 100%; height: 100%; display: flex; flex-direction: column;
             align-items: center; justify-content: space-between; text-align: center;
@@ -90,9 +89,8 @@
             flex-shrink: 0; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.15);
         }
 
-        /* Testi adattivi compressi fluidamente */
         .property-name {
-            font-weight: 700; font-size: clamp(6px, 1.1vmin, 14px); line-height: 1.05;
+            font-weight: 700; font-size: clamp(5px, 0.95vmin, 12px); line-height: 1.05;
             text-transform: uppercase; padding: 2px 2%; margin: auto 0;
             font-family: 'Montserrat', sans-serif; letter-spacing: -0.03em;
             word-wrap: break-word; overflow-wrap: break-word; text-align: center;
@@ -100,136 +98,150 @@
             max-height: 50%; overflow: hidden;
         }
 
-        .property-price {
-            font-size: clamp(5px, 0.9vmin, 12px); font-weight: bold; 
-            margin-bottom: 2%; flex-shrink: 0; letter-spacing: -0.02em;
-        }
-
-        .icon-large { font-size: clamp(12px, 3vmin, 35px); margin: auto; flex-shrink: 0; }
-        .svg-board-icon { 
-            width: clamp(14px, 3.5vmin, 40px); height: clamp(14px, 3.5vmin, 40px); 
-            margin: auto; display: block; filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3)); 
-            flex-shrink: 0;
-        }
+        .property-price { font-size: clamp(4px, 0.8vmin, 10px); font-weight: bold; margin-bottom: 2%; flex-shrink: 0; letter-spacing: -0.02em; }
+        .icon-large { font-size: clamp(10px, 2.5vmin, 30px); margin: auto; flex-shrink: 0; }
+        .svg-board-icon { width: clamp(12px, 3vmin, 35px); height: clamp(12px, 3vmin, 35px); margin: auto; display: block; filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3)); flex-shrink: 0; }
         
         #center-board {
             grid-column: 2 / span 9; grid-row: 2 / span 9;
             background-color: var(--bg-board); background-image: var(--paper-tex);
             position: relative; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-origin: center center; display: flex;
-            align-items: center; justify-content: center; overflow: hidden;
-            will-change: transform; border-radius: 2px;
-            box-shadow: inset 0 0 5vmin rgba(0,0,0,0.1);
+            transform-origin: center center; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; will-change: transform; box-shadow: inset 0 0 5vmin rgba(0,0,0,0.1);
         }
 
         .logo-container {
             position: absolute; background: #ed1b24; color: white;
-            padding: clamp(6px, 1.2vmin, 15px) clamp(15px, 3.5vmin, 40px); 
+            padding: clamp(4px, 1vmin, 12px) clamp(10px, 3vmin, 35px); 
             border: clamp(2px, 0.5vmin, 6px) solid white;
-            font-size: clamp(18px, 4.8vmin, 60px); font-family: 'Montserrat', sans-serif;
-            font-weight: 800; letter-spacing: 0.15em;
+            font-size: clamp(16px, 4vmin, 55px); font-family: 'Montserrat', sans-serif;
+            font-weight: 900; letter-spacing: 0.15em;
             box-shadow: 0 0 0 clamp(1px, 0.3vmin, 4px) #111, clamp(2px, 0.5vmin, 8px) clamp(2px, 0.5vmin, 8px) clamp(4px, 1vmin, 12px) rgba(0,0,0,0.4);
             transform: rotate(-45deg); z-index: 5; text-shadow: 2px 2px 0 #900;
         }
 
         .deck {
-            position: absolute; width: 19vmin; height: 11.5vmin;
-            min-width: 60px; min-height: 40px; border-radius: 4px;
+            position: absolute; width: 17vmin; height: 10vmin;
+            min-width: 50px; min-height: 30px; border-radius: 4px;
             border: clamp(1px, 0.2vmin, 3px) dashed rgba(0,0,0,0.5); display: flex; flex-direction: column;
             justify-content: center; align-items: center; background-image: var(--paper-tex);
         }
         .deck-imprevisti { top: 12%; left: 12%; transform: rotate(135deg); background-color: var(--impr-color); box-shadow: 0.3vmin 0.3vmin 1.5vmin rgba(0,0,0,0.4); }
         .deck-probabilita { bottom: 12%; right: 12%; transform: rotate(-45deg); background-color: var(--prob-color); box-shadow: 0.3vmin 0.3vmin 1.5vmin rgba(0,0,0,0.4); }
-        .deck-title { font-size: clamp(8px, 1.8vmin, 18px); font-weight: 800; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; color:#111; }
-        .deck-q { font-size: clamp(16px, 4vmin, 40px); font-family: 'Playfair Display', serif; font-weight: bold; opacity: 0.5; color:#111; }
+        .deck-title { font-size: clamp(6px, 1.5vmin, 14px); font-weight: 800; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; color:#111; }
+        .deck-q { font-size: clamp(14px, 3.5vmin, 35px); font-family: 'Playfair Display', serif; font-weight: bold; opacity: 0.5; color:#111; }
 
-        /* EFFETTO POLVERE DI STELLE */
-        .stardust {
-            position: fixed; border-radius: 50%; pointer-events: none; z-index: 999;
-            box-shadow: 0 0 1vmin currentColor;
-            animation: stardust-burst 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        /* AREE GIOCATORI SUI BORDI DELLO SCHERMO */
+        .player-zone {
+            position: absolute; z-index: 5;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.2); padding: 1vmin; border-radius: 12px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
         }
-        @keyframes stardust-burst {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; }
+        .player-zone.active {
+            background: rgba(237, 27, 36, 0.2); border: 2px solid #ed1b24;
+            box-shadow: 0 0 20px rgba(237, 27, 36, 0.4), inset 0 0 15px rgba(0,0,0,0.5);
         }
+        
+        /* Posizionamenti per i 4 lati */
+        .pz-bottom { bottom: 1vmin; left: 50%; transform: translateX(-50%); width: 60vw; }
+        .pz-left   { left: 1vmin; top: 50%; transform: translateY(-50%) rotate(90deg); width: 60vh; }
+        .pz-top    { top: 1vmin; left: 50%; transform: translateX(-50%) rotate(180deg); width: 60vw; }
+        .pz-right  { right: 1vmin; top: 50%; transform: translateY(-50%) rotate(-90deg); width: 60vh; }
 
-        /* DADI 3D EFFETTO LEGNO NERO E ORO */
-        .dice-area { position: absolute; display: flex; gap: clamp(10px, 2.5vmin, 30px); z-index: 20; perspective: 1000px; }
+        .pz-info { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; color: #fff; font-family: 'Montserrat', sans-serif; }
+        .pz-name { font-weight: 800; font-size: clamp(12px, 2vmin, 20px); text-shadow: 1px 1px 2px #000; }
+        .pz-token { width: clamp(20px, 3vmin, 35px); height: clamp(20px, 3vmin, 35px); filter: drop-shadow(1px 2px 2px #000); }
+        .pz-balance { font-family: 'Oswald', sans-serif; font-size: clamp(14px, 2.2vmin, 24px); color: #00e676; text-shadow: 1px 1px 2px #000; }
+
+        /* BANCONOTE FOTOCOPIA ORIGINALI EDITRICE GIOCHI */
+        .real-note {
+            width: clamp(55px, 9vmin, 90px); height: clamp(30px, 5vmin, 50px);
+            border-radius: 2px; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 1px 2px 4px rgba(0,0,0,0.5); user-select: none; flex-shrink: 0; box-sizing: border-box;
+            background-image: var(--paper-tex); display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(0,0,0,0.7);
+        }
+        
+        .note-inner {
+            width: 92%; height: 86%; border: 1px solid rgba(0,0,0,0.6); position: relative;
+            display: flex; align-items: center; justify-content: center;
+            background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+        }
+        
+        .note-corner {
+            position: absolute; font-family: 'Oswald', sans-serif; font-weight: 700;
+            font-size: clamp(5px, 0.9vmin, 8px); color: rgba(0,0,0,0.8);
+            background: rgba(255,255,255,0.6); padding: 0 2px; border: 1px solid rgba(0,0,0,0.3);
+        }
+        .note-corner.tl { top: -1px; left: -1px; } .note-corner.tr { top: -1px; right: -1px; }
+        .note-corner.bl { bottom: -1px; left: -1px; } .note-corner.br { bottom: -1px; right: -1px; }
+        
+        .note-center {
+            background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.5); border-radius: 50%;
+            width: 65%; height: 85%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.1);
+        }
+        
+        .note-brand { font-family: 'Montserrat', sans-serif; font-size: clamp(4px, 0.7vmin, 6px); font-weight: 800; color: #333; letter-spacing: 0.5px; }
+        .note-val { font-family: 'Montserrat', sans-serif; font-size: clamp(10px, 1.8vmin, 16px); font-weight: 900; color: #111; line-height: 1; }
+        
+        .real-note:hover { transform: translateY(-5px) scale(1.1); box-shadow: 3px 5px 10px rgba(0,0,0,0.6); z-index: 10; }
+        
+        .note-100 { background-color: var(--note-100); }
+        .note-1000 { background-color: var(--note-1000); }
+        .note-10000 { background-color: var(--note-10000); }
+        .note-50000 { background-color: var(--note-50000); }
+
+        .note-stack { display: flex; flex-wrap: wrap; justify-content: center; min-height: 35px; width: 100%; }
+        .note-stack .real-note { margin-right: clamp(-35px, -5vmin, -20px); transform-origin: center; }
+        .note-stack .real-note:last-child { margin-right: 0; }
+        .note-stack .real-note:hover { margin-right: 5px; }
+
+        /* DADI, PEDINE E ANIMAZIONI */
+        .dice-area { position: absolute; display: flex; gap: clamp(10px, 2vmin, 25px); z-index: 25; perspective: 1000px; }
         @keyframes dice-pulse {
             0% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 0 rgba(255,215,0,0)); }
-            100% { transform: scale(1.1) translateY(-1vmin); filter: drop-shadow(0 1vmin 2vmin rgba(255,215,0,0.8)); }
+            100% { transform: scale(1.15) translateY(-1.5vmin); filter: drop-shadow(0 1vmin 2vmin rgba(255,215,0,0.9)); }
         }
         .dice-ready { animation: dice-pulse 1s infinite alternate ease-in-out; cursor: pointer; }
         .die-3d {
-            width: clamp(25px, 5.5vmin, 60px); height: clamp(25px, 5.5vmin, 60px); position: relative; transform-style: preserve-3d;
+            width: clamp(22px, 5vmin, 50px); height: clamp(22px, 5vmin, 50px); position: relative; transform-style: preserve-3d;
             transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 1vmin 2vmin rgba(0,0,0,0.8); will-change: transform;
         }
         .die-face {
             position: absolute; width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.9) 100%),
-                        repeating-linear-gradient(45deg, #111 0%, #1a1a1a 10%, #111 20%);
-            border: clamp(1px, 0.2vmin, 3px) solid #000; border-radius: clamp(3px, 1vmin, 10px); display: grid; padding: clamp(2px, 0.5vmin, 6px);
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.9) 100%), repeating-linear-gradient(45deg, #111 0%, #1a1a1a 10%, #111 20%);
+            border: clamp(1px, 0.2vmin, 3px) solid #000; border-radius: clamp(3px, 0.8vmin, 8px); display: grid; padding: clamp(2px, 0.5vmin, 5px);
             grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 1px;
-            box-shadow: inset 0.2vmin 0.2vmin 0.5vmin rgba(255,255,255,0.2), inset -0.2vmin -0.2vmin 1vmin rgba(0,0,0,0.9);
-            box-sizing: border-box;
+            box-shadow: inset 0.2vmin 0.2vmin 0.5vmin rgba(255,255,255,0.2), inset -0.2vmin -0.2vmin 1vmin rgba(0,0,0,0.9); box-sizing: border-box;
         }
-        .die-dot { 
-            background: radial-gradient(circle at 30% 30%, #fffacd, #d4af37, #8b6508);
-            border-radius: 50%; width: 100%; height: 100%; 
-            box-shadow: inset 0.1vmin 0.1vmin 0.4vmin rgba(0,0,0,0.9), 0 0.1vmin 0.1vmin rgba(255,255,255,0.2); 
-        }
+        .die-dot { background: radial-gradient(circle at 30% 30%, #fffacd, #d4af37, #8b6508); border-radius: 50%; width: 100%; height: 100%; box-shadow: inset 0.1vmin 0.1vmin 0.4vmin rgba(0,0,0,0.9), 0 0.1vmin 0.1vmin rgba(255,255,255,0.2); }
         .dot-1 { grid-area: 1 / 1; } .dot-3 { grid-area: 1 / 3; } .dot-4 { grid-area: 2 / 1; } .dot-5 { grid-area: 2 / 2; }
         .dot-6 { grid-area: 2 / 3; } .dot-7 { grid-area: 3 / 1; } .dot-9 { grid-area: 3 / 3; }
         
-        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); } 
-        .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); }
-        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); } 
-        .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); }
-        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); } 
-        .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); }
+        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(22px, 5vmin, 50px) / 2)); } .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(22px, 5vmin, 50px) / 2)); }
+        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(22px, 5vmin, 50px) / 2)); } .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(22px, 5vmin, 50px) / 2)); }
+        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(22px, 5vmin, 50px) / 2)); } .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(22px, 5vmin, 50px) / 2)); }
         .anim-jump { animation: jump 1.2s ease-out forwards; }
-        @keyframes jump {
-            0% { transform: translateY(0) scale(1); }
-            40% { transform: translateY(-15vmin) scale(1.3) rotateX(360deg) rotateZ(180deg); }
-            70% { transform: translateY(-3vmin) scale(1.05); }
-            100% { transform: translateY(0) scale(1); }
-        }
+        @keyframes jump { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-15vmin) scale(1.3) rotateX(360deg) rotateZ(180deg); } 70% { transform: translateY(-3vmin) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
 
-        /* PEDINE & EDIFICI */
+        .stardust { position: fixed; border-radius: 50%; pointer-events: none; z-index: 999; box-shadow: 0 0 1vmin currentColor; animation: stardust-burst 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
+        @keyframes stardust-burst { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; } }
+
         .token {
-            position: absolute; z-index: 30;
-            width: clamp(20px, 4.5vmin, 45px); height: clamp(20px, 4.5vmin, 45px);
+            position: absolute; z-index: 30; width: clamp(18px, 4vmin, 40px); height: clamp(18px, 4vmin, 40px);
             filter: drop-shadow(0 0.5vmin 0.5vmin rgba(0,0,0,0.6)) drop-shadow(0 0.2vmin 0.1vmin rgba(0,0,0,0.8));
             transition: all 0.4s linear; transform: translate(-50%, -50%); will-change: left, top;
         }
         .token-svg { width: 100%; height: 100%; display: block; }
         
-        .house { width: clamp(6px, 1.4vmin, 16px); height: clamp(6px, 1.4vmin, 16px); background-color: #00a650; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-        .hotel { width: clamp(8px, 2vmin, 22px); height: clamp(8px, 2vmin, 22px); background-color: #ed1b24; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .house { width: clamp(5px, 1.2vmin, 14px); height: clamp(5px, 1.2vmin, 14px); background-color: #00a650; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .hotel { width: clamp(7px, 1.8vmin, 20px); height: clamp(7px, 1.8vmin, 20px); background-color: #ed1b24; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 
-        /* CASSA BANCO */
-        #bank-tray {
-            position: fixed; top: 10px; right: 10px; z-index: 90;
-            background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%);
-            border: 2px solid #900; border-radius: 12px;
-            padding: 10px; display: flex; gap: 6px;
-            box-shadow: inset 4px 4px 10px rgba(255,255,255,0.2), inset -4px -4px 10px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.6);
-            pointer-events: none; max-width: 40vw; flex-wrap: wrap; justify-content: flex-end;
-        }
-        .bank-slot {
-            background: #8e0000; border-radius: 6px;
-            width: clamp(50px, 8vmin, 80px); height: clamp(35px, 5.5vmin, 55px);
-            position: relative;
-            box-shadow: inset 3px 3px 8px rgba(0,0,0,0.8), inset -2px -2px 5px rgba(255,255,255,0.1);
-        }
-        .bank-slot .real-note {
-            width: 90%; height: 90%; position: absolute; bottom: 5%; left: 5%;
-            font-size: clamp(8px, 1.5vmin, 14px); box-shadow: -1px -1px 3px rgba(0,0,0,0.5);
-        }
-
-        /* MODALI OTTIMIZZATI */
+        /* MODALI E UI */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -245,7 +257,10 @@
             box-sizing: border-box;
         }
 
-        /* SCELTA PEDINE SETUP */
+        .lang-selector { position: absolute; top: 15px; right: 15px; display: flex; gap: 5px; }
+        .lang-btn { background: #111; color: #fff; border: 1px solid #555; padding: 5px 10px; font-size: 12px; cursor: pointer; border-radius: 4px; font-weight: bold;}
+        .lang-btn:hover, .lang-btn.active { background: #ed1b24; border-color: #fff; }
+
         .token-option {
             width: clamp(40px, 8vw, 60px); height: clamp(40px, 8vw, 60px);
             display: flex; align-items: center; justify-content: center;
@@ -256,7 +271,6 @@
         .token-option.selected { border-color: #ed1b24; background: #ffebee; transform: scale(1.1); box-shadow: 0 4px 10px rgba(237,27,36,0.3); }
         .token-svg-setup { width: 85%; height: 85%; filter: drop-shadow(2px 3px 2px rgba(0,0,0,0.4)); display: block; pointer-events: none;}
 
-        /* CARTE ED EVENTI */
         .card-event {
             padding: clamp(15px, 4vw, 30px) clamp(10px, 3vw, 20px); border: 1px solid rgba(0,0,0,0.2); 
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05), 0 4px 10px rgba(0,0,0,0.2);
@@ -282,30 +296,6 @@
         .cpo-divider { border-top: 1px solid #ccc; margin: 8px 0; }
         .cpo-footer { font-size: clamp(9px, 2.5vw, 0.75rem); text-align: center; color: #555; }
 
-        /* BANCONOTE 3D */
-        .real-note {
-            width: clamp(60px, 12vw, 100px); height: clamp(30px, 6vw, 50px);
-            border-radius: 4px; border: 1px solid rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Rye', cursive; font-weight: bold; font-size: clamp(10px, 2vw, 16px); color: #111;
-            position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 2px 3px 5px rgba(0,0,0,0.4); user-select: none; flex-shrink: 0; box-sizing: border-box;
-            background-image: var(--paper-tex);
-        }
-        .real-note::before { content: ''; position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px; border: 1px dashed rgba(0,0,0,0.4); border-radius: 2px; pointer-events: none; }
-        .real-note:hover { transform: translateY(-4px) scale(1.05); box-shadow: 4px 6px 10px rgba(0,0,0,0.5); z-index: 10; }
-        
-        .note-bg-100 { background-color: #aadbed; background: radial-gradient(ellipse at center, #fff 10%, #aadbed 90%); }
-        .note-bg-1000 { background-color: #aee0b6; background: radial-gradient(ellipse at center, #fff 10%, #aee0b6 90%); }
-        .note-bg-10000 { background-color: #d7cdb9; background: radial-gradient(ellipse at center, #fff 10%, #d7cdb9 90%); }
-        .note-bg-50000 { background-color: #f6c0c4; background: radial-gradient(ellipse at center, #fff 10%, #f6c0c4 90%); }
-
-        .note-val-badge { background: rgba(255,255,255,0.85); padding: 1px 6px; border-radius: 50px; border: 1px solid #555; font-family: 'Montserrat', sans-serif; font-size: 0.85em; }
-
-        .note-stack { display: flex; flex-wrap: wrap; margin-top: 5px; min-height: 35px; }
-        .note-stack .real-note { margin-right: clamp(-30px, -6vw, -20px); margin-bottom: -15px; transform-origin: center; }
-        .note-stack .real-note:hover { margin-right: 5px; transform: scale(1.2) translateY(-10px); }
-
         .payment-zone {
             background: rgba(0,0,0,0.05); border: 2px dashed #999; border-radius: 8px;
             min-height: 60px; display: flex; flex-wrap: wrap; gap: 8px; padding: 10px;
@@ -313,8 +303,6 @@
         }
         .payment-zone .real-note { margin: 0; }
 
-        /* PULSANTI RESPONSIVI */
-        .modal-box .flex.gap-2 { flex-wrap: wrap; justify-content: center; width: 100%; }
         .btn {
             padding: clamp(10px, 2vw, 12px) clamp(12px, 3vw, 18px); 
             border: 2px solid #111; border-radius: 6px; font-weight: 800;
@@ -331,23 +319,6 @@
         .btn-pay:active { box-shadow: 0 0 0 #b00f17; }
         .btn-inline { width: auto; flex: 1 1 auto; min-width: 120px; }
 
-        /* DASHBOARD GIOCATORI */
-        #dashboard {
-            position: fixed; top: 10px; left: 10px; z-index: 100;
-            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
-            max-width: 100vw; box-sizing: border-box;
-        }
-        .player-card {
-            background: rgba(255,255,255,0.95); border: 2px solid #333; border-radius: 8px;
-            padding: clamp(6px, 1.5vw, 12px); min-width: clamp(120px, 25vw, 220px); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-            transition: transform 0.3s, border-color 0.3s; pointer-events: auto; box-sizing: border-box;
-        }
-        .player-card.active { transform: scale(1.05); border-color: #ed1b24; border-width: 3px; }
-        .player-name { display:flex; align-items:center; gap:6px; font-size: clamp(12px, 3vw, 16px); font-weight: bold; font-family: 'Montserrat', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .dash-token { width: clamp(16px, 4vw, 24px); height: clamp(16px, 4vw, 24px); display: inline-block; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.4)); flex-shrink: 0;}
-        .player-balance { font-size: clamp(14px, 3.5vw, 18px); font-weight: bold; color: #00a650; margin-bottom: 4px; }
-
-        /* NOTIFICHE CUSTOM (Sostituiscono alert) */
         #toast-container {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;
@@ -361,22 +332,14 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-        /* ADATTABILITA' ESTREMA PER SMARTPHONE */
         @media (max-width: 768px) {
-            #dashboard { 
-                top: auto; bottom: 10px; left: 0; width: 100vw; 
-                flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 0 5px;
-            }
-            .player-card { min-width: auto; padding: 6px; flex: 1 1 auto; max-width: 48%; }
-            .note-stack { display: none; } 
-            
-            #bank-tray { top: 5px; right: 5px; padding: 6px; gap: 4px; border-radius: 8px; max-width: 50vw; }
-            .bank-slot { width: 40px; height: 25px; border-radius: 4px; }
-            .bank-slot .real-note { font-size: 8px; border-width: 1px; }
-
-            .modal-box { padding: 15px 10px; }
-            .payment-zone { padding: 8px; gap: 5px; }
-            .real-note { width: 60px; height: 30px; font-size: 10px; }
+            #board-area { width: 96vw; height: 96vw; } /* Usa tutto lo spazio su mobile */
+            /* Riposiziona le aree giocatori fuori dal tabellone o piccole ai bordi */
+            .pz-bottom { bottom: 2px; width: 90vw; }
+            .pz-left   { left: 2px; width: 90vw; }
+            .pz-top    { top: 2px; width: 90vw; }
+            .pz-right  { right: 2px; width: 90vw; }
+            .note-stack .real-note { margin-right: -40px; } /* Più compatte su mobile */
         }
     </style>
 </head>
@@ -393,17 +356,23 @@
     </svg>
 
     <div id="toast-container"></div>
-    <div id="dashboard"></div>
-    <div id="bank-tray"></div>
+    
+    <!-- Contenitori per le Casse Giocatori distribuite ai 4 lati del tavolo -->
+    <div id="player-zones">
+        <div id="pz-0" class="player-zone pz-bottom" style="display:none;"></div>
+        <div id="pz-1" class="player-zone pz-left" style="display:none;"></div>
+        <div id="pz-2" class="player-zone pz-top" style="display:none;"></div>
+        <div id="pz-3" class="player-zone pz-right" style="display:none;"></div>
+    </div>
 
     <div id="app-container">
         <div id="board-area">
             <div id="board">
-                <!-- Generato tramite JS DocumentFragment per zero lag -->
+                <!-- Generato dinamicamente -->
                 <div id="center-board">
-                    <div class="deck deck-imprevisti"><span class="deck-q">?</span><span class="deck-title">IMPREVISTI</span></div>
-                    <div class="logo-container">MONOPOLI</div>
-                    <div class="deck deck-probabilita"><span class="deck-q">?</span><span class="deck-title">PROBABILITÀ</span></div>
+                    <div class="deck deck-imprevisti"><span class="deck-q">?</span><span class="deck-title" data-i18n="chest_title">IMPREVISTI</span></div>
+                    <div class="logo-container" data-i18n="monopoly">MONOPOLI</div>
+                    <div class="deck deck-probabilita"><span class="deck-q">?</span><span class="deck-title" data-i18n="chance_title">PROBABILITÀ</span></div>
                     
                     <div class="dice-area" id="dice-area" onclick="rollDice()">
                         <div class="die-wrapper" id="bounce1">
@@ -435,19 +404,25 @@
     <!-- Modale Setup -->
     <div id="modal-setup" class="modal-overlay" style="display: flex;">
         <div class="modal-box-wrapper" style="transform: scale(1) rotate(0deg)">
-            <div class="modal-box" style="max-width: 550px;">
-                <h1 class="text-4xl font-bold mb-2 text-red-600" style="font-family: 'Montserrat', sans-serif;">MONOPOLI</h1>
-                <p class="mb-6 text-sm text-gray-600">Inserisci i nomi e scegli la tua pedina in legno intagliata</p>
+            <div class="modal-box" style="max-width: 550px; position:relative;">
+                <div class="lang-selector">
+                    <button class="lang-btn active" onclick="setLang('it')">IT</button>
+                    <button class="lang-btn" onclick="setLang('en')">EN</button>
+                    <button class="lang-btn" onclick="setLang('es')">ES</button>
+                    <button class="lang-btn" onclick="setLang('fr')">FR</button>
+                </div>
+                <h1 class="text-4xl font-bold mt-4 mb-2 text-red-600" style="font-family: 'Montserrat', sans-serif;" data-i18n="setup_title">MONOPOLI</h1>
+                <p class="mb-6 text-sm text-gray-600" data-i18n="setup_desc">Inserisci i nomi e scegli la tua pedina in legno</p>
                 <div id="setup-players" class="flex flex-col gap-4 mb-6"></div>
                 <div class="flex gap-2">
-                    <button class="btn btn-inline" onclick="addSetupPlayer()">+ Giocatore</button>
-                    <button class="btn btn-buy btn-inline" onclick="startGame()">INIZIA PARTITA</button>
+                    <button class="btn btn-inline" onclick="addSetupPlayer()" id="btn-add-p" data-i18n="btn_add_player">+ Giocatore</button>
+                    <button class="btn btn-buy btn-inline" onclick="startGame()" data-i18n="btn_start">INIZIA PARTITA</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modale Azione Standard -->
+    <!-- Modale Azione -->
     <div id="modal-action" class="modal-overlay">
         <div class="modal-box-wrapper" id="action-wrapper" style="transform: scale(1) rotate(0deg)">
             <div class="modal-box" id="action-content"></div>
@@ -461,24 +436,122 @@
                 <h2 id="pay-title" class="text-2xl font-bold mb-2 font-['Montserrat'] uppercase text-red-600">PAGAMENTO</h2>
                 <p id="pay-desc" class="mb-4 text-gray-700"></p>
                 
-                <div class="text-left font-bold text-sm text-gray-500 mb-1">IL TUO VASSOIO: <span id="tray-sum" class="float-right text-red-600">L. 0</span></div>
+                <div class="text-left font-bold text-sm text-gray-500 mb-1"><span data-i18n="tray">IL TUO VASSOIO:</span> <span id="tray-sum" class="float-right text-red-600">0</span></div>
                 <div id="pay-tray" class="payment-zone"></div>
 
-                <div class="text-left font-bold text-sm text-gray-500 mb-1">IL TUO PORTAFOGLIO:</div>
+                <div class="text-left font-bold text-sm text-gray-500 mb-1" data-i18n="wallet">IL TUO PORTAFOGLIO:</div>
                 <div id="pay-wallet" class="payment-zone" style="background: rgba(0,166,80,0.05); border-color: #00a650;"></div>
 
-                <button id="btn-confirm-pay" class="btn btn-buy" disabled onclick="confirmPayment()">CONFERMA PAGAMENTO</button>
-                <button id="btn-cancel-pay" class="btn mt-2" onclick="cancelPayment()">ANNULLA / BANCAROTTA</button>
+                <button id="btn-confirm-pay" class="btn btn-buy" disabled onclick="confirmPayment()" data-i18n="confirm_pay">CONFERMA</button>
+                <button id="btn-cancel-pay" class="btn mt-2" onclick="cancelPayment()" data-i18n="cancel">ANNULLA</button>
             </div>
         </div>
     </div>
 
     <script>
-        const C = {
-            BROWN: '#8e4a23', LIGHTBLUE: '#9bd2f0', PINK: '#d93c96',
-            ORANGE: '#f7941d', RED: '#ed1b24', YELLOW: '#fff200',
-            GREEN: '#00a650', DARKBLUE: '#0054a6'
+        // --- MOTORE TRADUZIONI (i18n) ---
+        let currentLang = 'it';
+        const i18n = {
+            'it': {
+                monopoly: "MONOPOLI", setup_title: "MONOPOLI", setup_desc: "Inserisci i nomi e scegli la pedina", btn_add_player: "+ Giocatore", btn_start: "INIZIA PARTITA",
+                chance_title: "PROBABILITÀ", chest_title: "IMPREVISTI", player: "Gioc.", go: "VIA!", go_desc: "Ritirate 20.000 passando",
+                jail: "Prigione", jail_desc: "Transito", parking: "Parcheggio", park_desc: "Gratuito", go_jail: "In Prigione!", go_jail_desc: "Andate in prigione",
+                tax1: "Tassa Patrimoniale", tax1_desc: "Pagate 20.000", tax2: "Tassa di Lusso", tax2_desc: "Pagate 10.000",
+                station: "Stazione", utility: "Società", prop_title: "Titolo di Proprietà", rent_base: "Rendita - Solo terreno",
+                with_house: "Con", houses: "Case", hotel: "ALBERGO", mortgage: "Valore ipotecario", house_cost: "Costo Casa/Alb",
+                buy_q: "Acquistare per", buy_btn: "COMPRA", pass_btn: "PASSA", rent_pay: "Devi pagare", pay_btn: "PAGA AFFITTO",
+                your_prop: "Tua Proprietà", build_btn: "COSTRUISCI", end_turn: "FINE TURNO", ok_btn: "OK",
+                tray: "IL TUO VASSOIO:", wallet: "IL TUO PORTAFOGLIO:", confirm_pay: "CONFERMA PAGAMENTO", cancel: "ANNULLA / BANCAROTTA",
+                pay_recv: "PAGA E RICEVI RESTO", bankrupt_msg: "BANCAROTTA PER", val_msg: "Valore", var_rent: "Rendita variabile in base ai possedimenti.",
+                prop_of: "Proprietà di", tap_notes: "Tocca le banconote", empty: "Vuoto", pay_req: "Devi versare:",
+                buy_title: "Acquisto", rent_title: "Pagamento Affitto", build_title: "Costruzione Edificio", tax_title: "Pagamento Tassa",
+                go_msg: "Passaggio dal VIA! Ritirate 20.000",
+                c_go_jail: "Andate in prigione direttamente e senza passare dal VIA!", c_go_vicolo: "Ritornate al Vicolo Corto", c_inherit: "Ereditate da un lontano parente 10.000",
+                c_ins: "Scade il Vostro premio di assicurazione: pagate 5.000", c_stock_s: "Avete venduto delle azioni: ricavate 5.000", c_stock_d: "Maturano la cedola delle azioni: ritirate 2.500", c_beauty: "Avete vinto il secondo premio in un concorso di bellezza: ritirate 1.000",
+                i_go_acc: "Andate sino a Via Accademia: se passate dal VIA ritirate 20.000", i_go_parco: "Andate sino al Parco della Vittoria", i_go_start: "Andate avanti sino al VIA!",
+                i_back_3: "Fate tre passi indietro", i_lotto: "Avete vinto un terno al lotto: ritirate 10.000", i_rend: "Maturano le cedole di rendita, ritirate 15.000", i_multa: "Multa di 1.500 per aver guidato senza patente", i_ben: "Versate 2.000 per beneficenza"
+            },
+            'en': {
+                monopoly: "MONOPOLY", setup_title: "MONOPOLY", setup_desc: "Enter names and choose your token", btn_add_player: "+ Player", btn_start: "START GAME",
+                chance_title: "CHANCE", chest_title: "COMMUNITY CHEST", player: "Player", go: "GO", go_desc: "Collect 20,000 as you pass",
+                jail: "Jail", jail_desc: "Just Visiting", parking: "Free Parking", park_desc: "Free", go_jail: "Go To Jail!", go_jail_desc: "Go directly to jail",
+                tax1: "Income Tax", tax1_desc: "Pay 20,000", tax2: "Luxury Tax", tax2_desc: "Pay 10,000",
+                station: "Station", utility: "Utility", prop_title: "Title Deed", rent_base: "Rent - Site only",
+                with_house: "With", houses: "Houses", hotel: "HOTEL", mortgage: "Mortgage Value", house_cost: "House/Hotel Cost",
+                buy_q: "Buy for", buy_btn: "BUY", pass_btn: "PASS", rent_pay: "You must pay", pay_btn: "PAY RENT",
+                your_prop: "Your Property", build_btn: "BUILD", end_turn: "END TURN", ok_btn: "OK",
+                tray: "YOUR TRAY:", wallet: "YOUR WALLET:", confirm_pay: "CONFIRM PAYMENT", cancel: "CANCEL / BANKRUPT",
+                pay_recv: "PAY & GET CHANGE", bankrupt_msg: "BANKRUPTCY FOR", val_msg: "Value", var_rent: "Rent varies based on ownership.",
+                prop_of: "Property of", tap_notes: "Tap the notes", empty: "Empty", pay_req: "You must pay:",
+                buy_title: "Purchase", rent_title: "Rent Payment", build_title: "Building Construction", tax_title: "Tax Payment",
+                go_msg: "Passed GO! Collected 20,000",
+                c_go_jail: "Go directly to jail, do not pass GO", c_go_vicolo: "Advance to Vicolo Corto", c_inherit: "You inherit 10,000",
+                c_ins: "Insurance matures: pay 5,000", c_stock_s: "From sale of stock you get 5,000", c_stock_d: "Bank pays you dividend of 2,500", c_beauty: "You have won second prize in a beauty contest: collect 1,000",
+                i_go_acc: "Advance to Via Accademia: if you pass GO collect 20,000", i_go_parco: "Advance to Parco della Vittoria", i_go_start: "Advance to GO",
+                i_back_3: "Go back 3 spaces", i_lotto: "You won the lottery: collect 10,000", i_rend: "Income from shares, collect 15,000", i_multa: "Speeding fine: pay 1,500", i_ben: "Pay 2,000 to charity"
+            },
+            'es': {
+                monopoly: "MONOPOLY", setup_title: "MONOPOLY", setup_desc: "Ingresa los nombres y elige tu ficha", btn_add_player: "+ Jugador", btn_start: "EMPEZAR JUEGO",
+                chance_title: "SUERTE", chest_title: "CAJA DE COMUNIDAD", player: "Jug.", go: "SALIDA", go_desc: "Cobra 20.000 al pasar",
+                jail: "Cárcel", jail_desc: "Solo Visita", parking: "Parking Gratuito", park_desc: "Gratis", go_jail: "¡A la Cárcel!", go_jail_desc: "Ve a la cárcel",
+                tax1: "Impuesto sobre la Renta", tax1_desc: "Paga 20.000", tax2: "Impuesto de Lujo", tax2_desc: "Paga 10.000",
+                station: "Estación", utility: "Servicio", prop_title: "Título de Propiedad", rent_base: "Alquiler - Solo solar",
+                with_house: "Con", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecario", house_cost: "Coste Casa/Hotel",
+                buy_q: "Comprar por", buy_btn: "COMPRAR", pass_btn: "PASAR", rent_pay: "Debes pagar", pay_btn: "PAGAR ALQUILER",
+                your_prop: "Tu Propiedad", build_btn: "CONSTRUIR", end_turn: "FIN DE TURNO", ok_btn: "OK",
+                tray: "TU BANDEJA:", wallet: "TU CARTERA:", confirm_pay: "CONFIRMAR PAGO", cancel: "CANCELAR / BANCARROTA",
+                pay_recv: "PAGAR Y RECIBIR CAMBIO", bankrupt_msg: "¡BANCARROTA PARA", val_msg: "Valor", var_rent: "El alquiler varía según la propiedad.",
+                prop_of: "Propiedad de", tap_notes: "Toca los billetes", empty: "Vacío", pay_req: "Debes pagar:",
+                buy_title: "Compra", rent_title: "Pago de Alquiler", build_title: "Construcción", tax_title: "Pago de Impuestos",
+                go_msg: "¡Pasaste por SALIDA! Cobras 20.000",
+                c_go_jail: "Ve directamente a la cárcel, sin pasar por SALIDA", c_go_vicolo: "Avanza a Vicolo Corto", c_inherit: "Heredas 10.000",
+                c_ins: "El seguro vence: paga 5.000", c_stock_s: "Por venta de acciones recibes 5.000", c_stock_d: "El banco te paga dividendos de 2.500", c_beauty: "Ganaste el 2º premio de belleza: cobra 1.000",
+                i_go_acc: "Avanza a Via Accademia: si pasas por SALIDA cobra 20.000", i_go_parco: "Avanza a Parco della Vittoria", i_go_start: "Avanza a la SALIDA",
+                i_back_3: "Retrocede 3 casillas", i_lotto: "Ganaste la lotería: cobra 10.000", i_rend: "Ingresos por acciones, cobra 15.000", i_multa: "Multa por exceso de velocidad: paga 1.500", i_ben: "Paga 2.000 a caridad"
+            },
+            'fr': {
+                monopoly: "MONOPOLY", setup_title: "MONOPOLY", setup_desc: "Entrez les noms et choisissez un pion", btn_add_player: "+ Joueur", btn_start: "COMMENCER",
+                chance_title: "CHANCE", chest_title: "CAISSE COMMUNE", player: "Joueur", go: "DÉPART", go_desc: "Recevez 20.000 en passant",
+                jail: "Prison", jail_desc: "Simple Visite", parking: "Parc Gratuit", park_desc: "Gratuit", go_jail: "Allez en Prison!", go_jail_desc: "Allez en prison",
+                tax1: "Impôt sur le Revenu", tax1_desc: "Payez 20.000", tax2: "Taxe de Luxe", tax2_desc: "Payez 10.000",
+                station: "Gare", utility: "Service", prop_title: "Titre de Propriété", rent_base: "Loyer - Terrain nu",
+                with_house: "Avec", houses: "Maisons", hotel: "HÔTEL", mortgage: "Valeur Hypothécaire", house_cost: "Prix Maison/Hôtel",
+                buy_q: "Acheter pour", buy_btn: "ACHETER", pass_btn: "PASSER", rent_pay: "Vous devez payer", pay_btn: "PAYER LOYER",
+                your_prop: "Votre Propriété", build_btn: "CONSTRUIRE", end_turn: "FIN DU TOUR", ok_btn: "OK",
+                tray: "VOTRE PLATEAU:", wallet: "VOTRE PORTEFEUILLE:", confirm_pay: "CONFIRMER", cancel: "ANNULER / BANQUEROUTE",
+                pay_recv: "PAYER ET RECEVOIR", bankrupt_msg: "BANQUEROUTE POUR", val_msg: "Valeur", var_rent: "Le loyer varie selon la propriété.",
+                prop_of: "Propriété de", tap_notes: "Touchez les billets", empty: "Vide", pay_req: "Vous devez payer:",
+                buy_title: "Achat", rent_title: "Paiement du Loyer", build_title: "Construction", tax_title: "Paiement de Taxe",
+                go_msg: "Passé par la case DÉPART! Reçu 20.000",
+                c_go_jail: "Allez directement en prison, ne passez pas par DÉPART", c_go_vicolo: "Avancez à Vicolo Corto", c_inherit: "Vous héritez 10.000",
+                c_ins: "Assurance à échéance: payez 5.000", c_stock_s: "Vente d'actions: recevez 5.000", c_stock_d: "Dividendes: recevez 2.500", c_beauty: "2ème prix de beauté: recevez 1.000",
+                i_go_acc: "Avancez à Via Accademia: si vous passez DÉPART recevez 20.000", i_go_parco: "Avancez au Parco della Vittoria", i_go_start: "Avancez au DÉPART",
+                i_back_3: "Reculez de 3 cases", i_lotto: "Gagné au loto: recevez 10.000", i_rend: "Revenus: recevez 15.000", i_multa: "Amende excès vitesse: payez 1.500", i_ben: "Payez 2.000 pour la charité"
+            }
         };
+
+        function t(key) { return i18n[currentLang][key] || key; }
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick').includes(`'${lang}'`)) {
+                    btn.classList.add('active');
+                }
+            });
+            updateUIStrings();
+            if(gameState.players.length === 0) {
+                const board = document.getElementById('board');
+                if (board) {
+                    board.innerHTML = ''; initBoard(); // Rigenera tabellone tradotto
+                }
+            }
+        }
+        function updateUIStrings() {
+            document.querySelectorAll('[data-i18n]').forEach(el => { el.innerText = t(el.getAttribute('data-i18n')); });
+        }
+
+        const C = { BROWN: '#8e4a23', LIGHTBLUE: '#9bd2f0', PINK: '#d93c96', ORANGE: '#f7941d', RED: '#ed1b24', YELLOW: '#fff200', GREEN: '#00a650', DARKBLUE: '#0054a6' };
 
         const svgTrain = `<svg viewBox="0 0 100 100" class="svg-board-icon"><path d="M 20 70 L 80 70 L 80 40 L 60 40 L 60 20 L 40 20 L 40 40 L 20 50 Z" fill="#0054a6" stroke="#111" stroke-width="4"/><circle cx="30" cy="70" r="10" fill="#333" stroke="#111" stroke-width="3"/><circle cx="50" cy="70" r="10" fill="#333" stroke="#111" stroke-width="3"/><circle cx="70" cy="70" r="10" fill="#333" stroke="#111" stroke-width="3"/></svg>`;
         const svgBulb = `<svg viewBox="0 0 100 100" class="svg-board-icon"><circle cx="50" cy="35" r="25" fill="#fff200" stroke="#111" stroke-width="4"/><path d="M 35 50 L 65 50 L 60 75 L 40 75 Z" fill="#eaddcd" stroke="#111" stroke-width="4"/><rect x="42" y="75" width="16" height="15" fill="#333" rx="3"/></svg>`;
@@ -486,48 +559,50 @@
         const svgRing = `<svg viewBox="0 0 100 100" class="svg-board-icon"><circle cx="50" cy="65" r="25" fill="none" stroke="#fff200" stroke-width="8"/><circle cx="50" cy="65" r="25" fill="none" stroke="#111" stroke-width="2"/><polygon points="35,35 65,35 50,15" fill="#9bd2f0" stroke="#111" stroke-width="3"/><polygon points="35,35 65,35 50,50" fill="#fff" stroke="#111" stroke-width="3"/></svg>`;
         const svgBag = `<svg viewBox="0 0 100 100" class="svg-board-icon"><path d="M 20 85 L 80 85 C 90 85 90 45 75 40 L 65 25 L 35 25 L 25 40 C 10 45 10 85 20 85 Z" fill="#d7cdb9" stroke="#111" stroke-width="4"/><text x="50" y="70" font-size="30" font-family="Montserrat" font-weight="bold" fill="#ed1b24" text-anchor="middle">L.</text></svg>`;
 
-        const boardData = [
-            { id: 0, type: 'corner', name: "VIA!", desc: "Ritirate L. 20.000 passando", icon: "⬅️", price: 0 },
-            { id: 1, type: 'property', name: "Vicolo Corto", color: C.BROWN, price: 6000, rent: [200, 1000, 3000, 9000, 16000, 25000], houseCost: 5000 },
-            { id: 2, type: 'chance', name: "Probabilità", icon: "❓", color: 'var(--prob-color)' },
-            { id: 3, type: 'property', name: "Vicolo Stretto", color: C.BROWN, price: 6000, rent: [400, 2000, 6000, 18000, 32000, 45000], houseCost: 5000 },
-            { id: 4, type: 'tax', name: "Tassa Patrimoniale", desc: "Pagate L. 20.000", cost: 20000, svg: svgBag },
-            { id: 5, type: 'station', name: "Stazione Sud", price: 20000, svg: svgTrain },
-            { id: 6, type: 'property', name: "Bastioni Gran Sasso", color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
-            { id: 7, type: 'chest', name: "Imprevisti", icon: "❓", color: 'var(--impr-color)' },
-            { id: 8, type: 'property', name: "Viale Monterosa", color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
-            { id: 9, type: 'property', name: "Viale Vesuvio", color: C.LIGHTBLUE, price: 12000, rent: [800, 4000, 10000, 30000, 45000, 60000], houseCost: 5000 },
-            { id: 10, type: 'corner', name: "Prigione", desc: "Transito", icon: "⛓️" },
-            { id: 11, type: 'property', name: "Via Accademia", color: C.PINK, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
-            { id: 12, type: 'utility', name: "Società Elettrica", price: 15000, svg: svgBulb },
-            { id: 13, type: 'property', name: "Corso Ateneo", color: C.PINK, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
-            { id: 14, type: 'property', name: "Piazza Università", color: C.PINK, price: 16000, rent: [1200, 6000, 18000, 50000, 70000, 90000], houseCost: 10000 },
-            { id: 15, type: 'station', name: "Stazione Ovest", price: 20000, svg: svgTrain },
-            { id: 16, type: 'property', name: "Via Verdi", color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
-            { id: 17, type: 'chance', name: "Probabilità", icon: "❓", color: 'var(--prob-color)' },
-            { id: 18, type: 'property', name: "Corso Raffaello", color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
-            { id: 19, type: 'property', name: "Piazza Dante", color: C.ORANGE, price: 20000, rent: [1600, 8000, 22000, 60000, 80000, 100000], houseCost: 10000 },
-            { id: 20, type: 'corner', name: "Parcheggio", desc: "Gratuito", icon: "🅿️" },
-            { id: 21, type: 'property', name: "Via Marco Polo", color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
-            { id: 22, type: 'chest', name: "Imprevisti", icon: "❓", color: 'var(--impr-color)' },
-            { id: 23, type: 'property', name: "Corso Magellano", color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
-            { id: 24, type: 'property', name: "Largo Colombo", color: C.RED, price: 24000, rent: [2000, 10000, 30000, 75000, 92500, 110000], houseCost: 15000 },
-            { id: 25, type: 'station', name: "Stazione Nord", price: 20000, svg: svgTrain },
-            { id: 26, type: 'property', name: "Viale Costantino", color: C.YELLOW, price: 26000, rent: [2200, 11000, 33000, 80000, 97500, 115000], houseCost: 15000 },
-            { id: 27, type: 'property', name: "Viale Traiano", color: C.YELLOW, price: 26000, rent: [2200, 11000, 33000, 80000, 97500, 115000], houseCost: 15000 },
-            { id: 28, type: 'utility', name: "Acqua Potabile", price: 15000, svg: svgTap },
-            { id: 29, type: 'property', name: "Piazza G. Cesare", color: C.YELLOW, price: 28000, rent: [2400, 12000, 36000, 85000, 102500, 120000], houseCost: 15000 },
-            { id: 30, type: 'corner', name: "In Prigione!", desc: "Andate in prigione", icon: "👮" },
-            { id: 31, type: 'property', name: "Via Roma", color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
-            { id: 32, type: 'property', name: "Corso Impero", color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
-            { id: 33, type: 'chance', name: "Probabilità", icon: "❓", color: 'var(--prob-color)' },
-            { id: 34, type: 'property', name: "Largo Augusto", color: C.GREEN, price: 32000, rent: [2800, 15000, 45000, 100000, 120000, 140000], houseCost: 20000 },
-            { id: 35, type: 'station', name: "Stazione Est", price: 20000, svg: svgTrain },
-            { id: 36, type: 'chest', name: "Imprevisti", icon: "❓", color: 'var(--impr-color)' },
-            { id: 37, type: 'property', name: "Viale dei Giardini", color: C.DARKBLUE, price: 35000, rent: [3500, 17500, 50000, 110000, 130000, 150000], houseCost: 20000 },
-            { id: 38, type: 'tax', name: "Tassa di Lusso", desc: "Pagate L. 10.000", cost: 10000, svg: svgRing },
-            { id: 39, type: 'property', name: "Parco della Vittoria", color: C.DARKBLUE, price: 40000, rent: [5000, 20000, 60000, 140000, 170000, 200000], houseCost: 20000 }
-        ];
+        function getBoardData() {
+            return [
+                { id: 0, type: 'corner', name: t('go'), desc: t('go_desc'), icon: "⬅️", price: 0 },
+                { id: 1, type: 'property', name: "Vicolo Corto", color: C.BROWN, price: 6000, rent: [200, 1000, 3000, 9000, 16000, 25000], houseCost: 5000 },
+                { id: 2, type: 'chance', name: t('chance_title'), icon: "❓", color: 'var(--prob-color)' },
+                { id: 3, type: 'property', name: "Vicolo Stretto", color: C.BROWN, price: 6000, rent: [400, 2000, 6000, 18000, 32000, 45000], houseCost: 5000 },
+                { id: 4, type: 'tax', name: t('tax1'), desc: t('tax1_desc'), cost: 20000, svg: svgBag },
+                { id: 5, type: 'station', name: t('station') + " Sud", price: 20000, svg: svgTrain },
+                { id: 6, type: 'property', name: "Bastioni Gran Sasso", color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
+                { id: 7, type: 'chest', name: t('chest_title'), icon: "❓", color: 'var(--impr-color)' },
+                { id: 8, type: 'property', name: "Viale Monterosa", color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
+                { id: 9, type: 'property', name: "Viale Vesuvio", color: C.LIGHTBLUE, price: 12000, rent: [800, 4000, 10000, 30000, 45000, 60000], houseCost: 5000 },
+                { id: 10, type: 'corner', name: t('jail'), desc: t('jail_desc'), icon: "⛓️" },
+                { id: 11, type: 'property', name: "Via Accademia", color: C.PINK, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
+                { id: 12, type: 'utility', name: t('utility') + " Elettrica", price: 15000, svg: svgBulb },
+                { id: 13, type: 'property', name: "Corso Ateneo", color: C.PINK, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
+                { id: 14, type: 'property', name: "Piazza Università", color: C.PINK, price: 16000, rent: [1200, 6000, 18000, 50000, 70000, 90000], houseCost: 10000 },
+                { id: 15, type: 'station', name: t('station') + " Ovest", price: 20000, svg: svgTrain },
+                { id: 16, type: 'property', name: "Via Verdi", color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
+                { id: 17, type: 'chance', name: t('chance_title'), icon: "❓", color: 'var(--prob-color)' },
+                { id: 18, type: 'property', name: "Corso Raffaello", color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
+                { id: 19, type: 'property', name: "Piazza Dante", color: C.ORANGE, price: 20000, rent: [1600, 8000, 22000, 60000, 80000, 100000], houseCost: 10000 },
+                { id: 20, type: 'corner', name: t('parking'), desc: t('park_desc'), icon: "🅿️" },
+                { id: 21, type: 'property', name: "Via Marco Polo", color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
+                { id: 22, type: 'chest', name: t('chest_title'), icon: "❓", color: 'var(--impr-color)' },
+                { id: 23, type: 'property', name: "Corso Magellano", color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
+                { id: 24, type: 'property', name: "Largo Colombo", color: C.RED, price: 24000, rent: [2000, 10000, 30000, 75000, 92500, 110000], houseCost: 15000 },
+                { id: 25, type: 'station', name: t('station') + " Nord", price: 20000, svg: svgTrain },
+                { id: 26, type: 'property', name: "Viale Costantino", color: C.YELLOW, price: 26000, rent: [2200, 11000, 33000, 80000, 97500, 115000], houseCost: 15000 },
+                { id: 27, type: 'property', name: "Viale Traiano", color: C.YELLOW, price: 26000, rent: [2200, 11000, 33000, 80000, 97500, 115000], houseCost: 15000 },
+                { id: 28, type: 'utility', name: t('utility') + " Acqua", price: 15000, svg: svgTap },
+                { id: 29, type: 'property', name: "Piazza G. Cesare", color: C.YELLOW, price: 28000, rent: [2400, 12000, 36000, 85000, 102500, 120000], houseCost: 15000 },
+                { id: 30, type: 'corner', name: t('go_jail'), desc: t('go_jail_desc'), icon: "👮" },
+                { id: 31, type: 'property', name: "Via Roma", color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
+                { id: 32, type: 'property', name: "Corso Impero", color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
+                { id: 33, type: 'chance', name: t('chance_title'), icon: "❓", color: 'var(--prob-color)' },
+                { id: 34, type: 'property', name: "Largo Augusto", color: C.GREEN, price: 32000, rent: [2800, 15000, 45000, 100000, 120000, 140000], houseCost: 20000 },
+                { id: 35, type: 'station', name: t('station') + " Est", price: 20000, svg: svgTrain },
+                { id: 36, type: 'chest', name: t('chest_title'), icon: "❓", color: 'var(--impr-color)' },
+                { id: 37, type: 'property', name: "Viale dei Giardini", color: C.DARKBLUE, price: 35000, rent: [3500, 17500, 50000, 110000, 130000, 150000], houseCost: 20000 },
+                { id: 38, type: 'tax', name: t('tax2'), desc: t('tax2_desc'), cost: 10000, svg: svgRing },
+                { id: 39, type: 'property', name: "Parco della Vittoria", color: C.DARKBLUE, price: 40000, rent: [5000, 20000, 60000, 140000, 170000, 200000], houseCost: 20000 }
+            ];
+        }
 
         const cellPos = {};
         for(let i=0; i<=10; i++) cellPos[i] = { c: 11-i, r: 11 };
@@ -535,26 +610,29 @@
         for(let i=21; i<=30; i++) cellPos[i] = { c: i-19, r: 1 };
         for(let i=31; i<=39; i++) cellPos[i] = { c: 11, r: i-29 };
 
-        const probDeck = [
-            { txt: "Andate in prigione direttamente e senza passare dal «Via!»", action: (p) => goToJail(p) },
-            { txt: "Ritornate al Vicolo Corto", action: (p) => movePlayerTo(p, 1) },
-            { txt: "Ereditate da un lontano parente 10.000 lire", action: (p) => receiveMoney(p, 10000) },
-            { txt: "Scade il Vostro premio di assicurazione: pagate 5.000 lire", action: (p) => payBankActive(5000) },
-            { txt: "Avete venduto delle azioni: ricavate 5.000 lire", action: (p) => receiveMoney(p, 5000) },
-            { txt: "Maturano la cedola delle vostre azioni: ritirate 2.500 lire", action: (p) => receiveMoney(p, 2500) },
-            { txt: "Avete vinto il secondo premio in un concorso di bellezza: ritirate 1.000 lire", action: (p) => receiveMoney(p, 1000) }
-        ];
-
-        const imprDeck = [
-            { txt: "Andate sino a Via Accademia: se passate dal «Via!» ritirate le 20.000 lire", action: (p) => movePlayerTo(p, 11) },
-            { txt: "Andate sino al Parco della Vittoria", action: (p) => movePlayerTo(p, 39) },
-            { txt: "Andate avanti sino al «Via!»", action: (p) => movePlayerTo(p, 0) },
-            { txt: "Fate tre passi indietro", action: (p) => movePlayerTo(p, p.pos - 3 < 0 ? p.pos - 3 + 40 : p.pos - 3) },
-            { txt: "Avete vinto un terno al lotto: ritirate 10.000 lire", action: (p) => receiveMoney(p, 10000) },
-            { txt: "Maturano le cedole delle vostre cartelle di rendita, ritirate 15.000 lire", action: (p) => receiveMoney(p, 15000) },
-            { txt: "Multa di 1.500 lire per aver guidato senza patente", action: (p) => payBankActive(1500) },
-            { txt: "Versate 2.000 lire per beneficenza", action: (p) => payBankActive(2000) }
-        ];
+        function getProbDeck() {
+            return [
+                { txt: t('c_go_jail'), action: (p) => goToJail(p) },
+                { txt: t('c_go_vicolo'), action: (p) => movePlayerTo(p, 1) },
+                { txt: t('c_inherit'), action: (p) => receiveMoney(p, 10000) },
+                { txt: t('c_ins'), action: (p) => payBankActive(5000) },
+                { txt: t('c_stock_s'), action: (p) => receiveMoney(p, 5000) },
+                { txt: t('c_stock_d'), action: (p) => receiveMoney(p, 2500) },
+                { txt: t('c_beauty'), action: (p) => receiveMoney(p, 1000) }
+            ];
+        }
+        function getImprDeck() {
+            return [
+                { txt: t('i_go_acc'), action: (p) => movePlayerTo(p, 11) },
+                { txt: t('i_go_parco'), action: (p) => movePlayerTo(p, 39) },
+                { txt: t('i_go_start'), action: (p) => movePlayerTo(p, 0) },
+                { txt: t('i_back_3'), action: (p) => movePlayerTo(p, p.pos - 3 < 0 ? p.pos - 3 + 40 : p.pos - 3) },
+                { txt: t('i_lotto'), action: (p) => receiveMoney(p, 10000) },
+                { txt: t('i_rend'), action: (p) => receiveMoney(p, 15000) },
+                { txt: t('i_multa'), action: (p) => payBankActive(1500) },
+                { txt: t('i_ben'), action: (p) => payBankActive(2000) }
+            ];
+        }
 
         // --- SVGs Pedine ---
         const tokenSVGs = {
@@ -568,7 +646,6 @@
 
         let gameState = { players: [], currentPlayerIdx: 0, properties: {}, isMoving: false, lastRoll: 0 };
 
-        // Helper Funzioni
         function isLightColor(hex) {
             if(!hex) return false;
             const c = hex.substring(1); const rgb = parseInt(c, 16);
@@ -578,14 +655,12 @@
 
         function showToast(msg) {
             const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = msg;
+            const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = msg;
             container.appendChild(toast);
             setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
         }
 
-        // --- GESTIONE BANCONOTE FISICHE ---
+        // --- GESTIONE BANCONOTE (DESIGN FOTOCOPIA STORICA) ---
         function getNotesArray(amount) {
             let notes = []; let rem = amount;
             const addN = (val, count) => { for(let i=0; i<count; i++) notes.push(val); };
@@ -597,7 +672,19 @@
         }
 
         function createNoteHTML(val, onClickStr = '', style = '') {
-            return `<div class="real-note note-bg-${val}" onclick="${onClickStr}" style="${style}"><span class="note-val-badge">${val.toLocaleString('it-IT')}</span></div>`;
+            return `
+                <div class="real-note note-${val}" onclick="${onClickStr}" style="${style}">
+                    <div class="note-inner">
+                        <span class="note-corner tl">${val.toLocaleString('it-IT')}</span>
+                        <span class="note-corner tr">${val.toLocaleString('it-IT')}</span>
+                        <div class="note-center">
+                            <span class="note-brand">${t('monopoly')}</span>
+                            <span class="note-val">${val.toLocaleString('it-IT')}</span>
+                        </div>
+                        <span class="note-corner bl">${val.toLocaleString('it-IT')}</span>
+                        <span class="note-corner br">${val.toLocaleString('it-IT')}</span>
+                    </div>
+                </div>`;
         }
 
         function getDashboardNotesHTML(amount) {
@@ -605,7 +692,7 @@
             notes.forEach((val, i) => {
                 if(i < 12) html += createNoteHTML(val, '', `transform: rotate(${(Math.random() - 0.5) * 15}deg); z-index: ${i};`);
             });
-            if(notes.length > 12) html += `<div style="margin-left: 10px; align-self: center; font-weight:bold;">+${notes.length-12}</div>`;
+            if(notes.length > 12) html += `<div style="margin-left: 10px; align-self: center; font-weight:bold; color: #fff;">+${notes.length-12}</div>`;
             return html + '</div>';
         }
 
@@ -614,7 +701,7 @@
 
         function openPayment(amount, reason, callback) {
             const p = gameState.players[gameState.currentPlayerIdx];
-            if (p.balance < amount) { showToast(`⚠️ Non hai abbastanza fondi. ${p.name} è in BANCAROTTA!`); p.balance = -1; endTurn(); return; }
+            if (p.balance < amount) { showToast(`⚠️ ${t('bankrupt_msg')} ${p.name}!`); p.balance = -1; endTurn(); return; }
 
             document.getElementById('modal-action').style.display = 'none';
             document.getElementById('payment-wrapper').style.transform = `scale(1) rotate(${[0, 90, 180, -90, 0, 90][gameState.currentPlayerIdx] || 0}deg)`;
@@ -625,14 +712,14 @@
         }
 
         function renderPaymentUI() {
-            document.getElementById('pay-desc').innerHTML = `Devi versare: <b>L. ${currentPayment.amount.toLocaleString('it-IT')}</b>`;
+            document.getElementById('pay-desc').innerHTML = `${t('pay_req')} <b>L. ${currentPayment.amount.toLocaleString('it-IT')}</b>`;
             
             const trayDiv = document.getElementById('pay-tray');
-            trayDiv.innerHTML = currentPayment.tray.length === 0 ? '<span class="text-gray-400 text-sm">Tocca le banconote</span>' : '';
+            trayDiv.innerHTML = currentPayment.tray.length === 0 ? `<span class="text-gray-400 text-sm">${t('tap_notes')}</span>` : '';
             currentPayment.tray.forEach((val, i) => trayDiv.innerHTML += createNoteHTML(val, `moveNoteToWallet(${i})`, 'animation: jump 0.2s ease-out;'));
 
             const walletDiv = document.getElementById('pay-wallet');
-            walletDiv.innerHTML = currentPayment.wallet.length === 0 ? '<span class="text-gray-400 text-sm">Vuoto</span>' : '';
+            walletDiv.innerHTML = currentPayment.wallet.length === 0 ? `<span class="text-gray-400 text-sm">${t('empty')}</span>` : '';
             currentPayment.wallet.forEach((val, i) => walletDiv.innerHTML += createNoteHTML(val, `moveNoteToTray(${i})`));
 
             const sumEl = document.getElementById('tray-sum'); sumEl.innerText = `L. ${currentPayment.traySum.toLocaleString('it-IT')}`;
@@ -641,9 +728,9 @@
             if (currentPayment.traySum >= currentPayment.amount) {
                 sumEl.className = "float-right text-green-600 font-bold text-lg"; btnConfirm.disabled = false;
                 const change = currentPayment.traySum - currentPayment.amount;
-                btnConfirm.innerText = change > 0 ? `PAGA E RICEVI L. ${change.toLocaleString()} DI RESTO` : `PAGA L. ${currentPayment.amount.toLocaleString()}`;
+                btnConfirm.innerText = change > 0 ? `${t('pay_recv')} (L. ${change.toLocaleString()})` : `${t('confirm_pay')}`;
             } else {
-                sumEl.className = "float-right text-red-600 font-bold text-lg"; btnConfirm.disabled = true; btnConfirm.innerText = `CONFERMA PAGAMENTO`;
+                sumEl.className = "float-right text-red-600 font-bold text-lg"; btnConfirm.disabled = true; btnConfirm.innerText = t('confirm_pay');
             }
         }
 
@@ -652,23 +739,10 @@
         function confirmPayment() { if (currentPayment.traySum >= currentPayment.amount) { document.getElementById('modal-payment').style.display = 'none'; currentPayment.callback(); } }
         function cancelPayment() { document.getElementById('modal-payment').style.display = 'none'; endTurn(); }
 
-        // --- INIZIALIZZAZIONE E UI ---
-        function initBank() {
-            const bankVals = [50000, 10000, 1000, 100];
-            let trayHTML = '';
-            bankVals.forEach(v => {
-                trayHTML += `<div class="bank-slot">`;
-                for(let i=0; i<6; i++) {
-                    trayHTML += createNoteHTML(v, '', `position:absolute; bottom:${i*2}px; left:${i*2}px; z-index:${i};`);
-                }
-                trayHTML += `</div>`;
-            });
-            document.getElementById('bank-tray').innerHTML = trayHTML;
-        }
-
+        // --- INIZIALIZZAZIONE ---
         function initBoard() {
             const board = document.getElementById('board'); const fragment = document.createDocumentFragment(); 
-            boardData.forEach(data => {
+            getBoardData().forEach(data => {
                 const cell = document.createElement('div'); cell.className = `cell ${data.type === 'corner' ? 'corner' : ''}`; cell.id = `cell-${data.id}`;
                 const pos = cellPos[data.id]; cell.style.gridColumn = pos.c; cell.style.gridRow = pos.r;
                 cell.classList.add(data.id > 0 && data.id < 10 ? "bottom-row" : data.id > 10 && data.id < 20 ? "left-col" : data.id > 20 && data.id < 30 ? "top-row" : data.id > 30 && data.id < 40 ? "right-col" : "none");
@@ -686,12 +760,11 @@
                 if(data.type === 'property' || data.type === 'station' || data.type === 'utility') gameState.properties[data.id] = { ownerId: null, level: 0 };
             });
             board.appendChild(fragment);
-            initBank();
         }
 
         let setupPlayerCount = 0;
         function addSetupPlayer() {
-            if(setupPlayerCount >= 6) { showToast("Massimo 6 giocatori"); return; }
+            if(setupPlayerCount >= 4) { showToast("Massimo 4 giocatori (Tavolo completo)"); return; }
             setupPlayerCount++; 
             const defaultToken = tokensLib[(setupPlayerCount - 1) % tokensLib.length].id;
             
@@ -705,10 +778,8 @@
             `).join('');
 
             div.innerHTML = `
-                <input type="text" id="pname-${setupPlayerCount}" value="Gioc. ${setupPlayerCount}" class="border border-gray-400 p-2 w-full sm:w-1/3 rounded font-bold font-['Montserrat'] outline-none focus:border-red-600">
-                <div class="flex gap-1 justify-center sm:justify-end flex-1 flex-wrap" id="ptoken-container-${setupPlayerCount}">
-                    ${tokensHTML}
-                </div>
+                <input type="text" id="pname-${setupPlayerCount}" value="${t('player')} ${setupPlayerCount}" class="border border-gray-400 p-2 w-full sm:w-1/3 rounded font-bold font-['Montserrat'] outline-none focus:border-red-600">
+                <div class="flex gap-1 justify-center sm:justify-end flex-1 flex-wrap" id="ptoken-container-${setupPlayerCount}">${tokensHTML}</div>
                 <input type="hidden" id="ptoken-${setupPlayerCount}" value="${defaultToken}">
             `;
             document.getElementById('setup-players').appendChild(div);
@@ -741,21 +812,31 @@
         }
 
         function orientBoard() {
-            const rot = [0, 90, 180, -90, 0, 90][gameState.currentPlayerIdx] || 0;
+            const rot = [0, 90, 180, -90][gameState.currentPlayerIdx] || 0;
             document.getElementById('center-board').style.transform = `rotate(${rot}deg)`;
             document.getElementById('action-wrapper').style.transform = `scale(1) rotate(${rot}deg)`;
+            
+            // Evidenzia la zona giocatore corrente
+            document.querySelectorAll('.player-zone').forEach((z, i) => {
+                if(i === gameState.currentPlayerIdx) z.classList.add('active');
+                else z.classList.remove('active');
+            });
         }
 
+        // AGGIORNAMENTO CASSE GIOCATORI ESTERNE
         function updateDashboard() {
-            const dash = document.getElementById('dashboard'); dash.innerHTML = '';
             gameState.players.forEach((p, i) => {
-                const active = i === gameState.currentPlayerIdx ? 'active' : '';
-                dash.innerHTML += `
-                    <div class="player-card ${active}">
-                        <div class="player-name"><div class="dash-token">${tokenSVGs[p.emoji]}</div> ${p.name}</div>
-                        <div class="player-balance">L. ${p.balance.toLocaleString('it-IT')}</div>
-                        ${getDashboardNotesHTML(p.balance)}
-                    </div>`;
+                const zone = document.getElementById(`pz-${i}`);
+                if(!zone) return;
+                zone.style.display = 'flex';
+                zone.innerHTML = `
+                    <div class="pz-info">
+                        <div class="pz-token">${tokenSVGs[p.emoji]}</div>
+                        <div class="pz-name">${p.name}</div>
+                        <div class="pz-balance">L. ${p.balance.toLocaleString('it-IT')}</div>
+                    </div>
+                    ${getDashboardNotesHTML(p.balance)}
+                `;
             });
         }
 
@@ -773,6 +854,8 @@
         }
         let resizeTimeout; window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(updateTokens, 50); });
 
+        // --- LANCIO DADI E MOVIMENTO ---
+        const diceRots = { 1: {x: 0, y: 0}, 2: {x: 0, y: 90}, 3: {x: -90, y: 0}, 4: {x: 90, y: 0}, 5: {x: 0, y: -90}, 6: {x: 180, y: 0} };
         function createStardust() {
             const diceArea = document.getElementById('dice-area'); const rect = diceArea.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2; const centerY = rect.top + rect.height / 2;
@@ -787,7 +870,6 @@
             }
         }
 
-        const diceRots = { 1: {x: 0, y: 0}, 2: {x: 0, y: 90}, 3: {x: -90, y: 0}, 4: {x: 90, y: 0}, 5: {x: 0, y: -90}, 6: {x: 180, y: 0} };
         function rollDice() {
             const diceArea = document.getElementById('dice-area');
             if(!diceArea.classList.contains('dice-ready') || gameState.isMoving) return;
@@ -818,76 +900,76 @@
 
         function stepMove(player, stepsLeft) {
             if(stepsLeft === 0) { setTimeout(() => handleLanded(player), 3000); return; }
-            player.pos++; if(player.pos >= 40) { player.pos = 0; receiveMoney(player, 20000); showToast("Passaggio dal VIA! Ritirate L. 20.000"); }
+            player.pos++; if(player.pos >= 40) { player.pos = 0; receiveMoney(player, 20000); showToast(t('go_msg')); }
             updateTokens(); setTimeout(() => stepMove(player, stepsLeft - 1), 400); 
         }
         function movePlayerTo(player, targetPos) { player.pos = targetPos; updateTokens(); setTimeout(() => handleLanded(player), 1000); }
         function goToJail(player) { player.pos = 10; player.inJail = true; updateTokens(); endTurn(); }
 
         function handleLanded(player) {
-            const cell = boardData[player.pos]; let html = '';
+            const bd = getBoardData(); const cell = bd[player.pos]; let html = '';
             if (cell.type === 'property' || cell.type === 'station' || cell.type === 'utility') {
                 const propState = gameState.properties[cell.id];
                 const headerColor = cell.color || '#333'; const fontCol = isLightColor(headerColor) ? '#111' : '#fff';
                 html += `
                     <div class="card-property-original">
                         <div class="cpo-header" style="background-color: ${headerColor}; color: ${fontCol};">
-                            <div class="cpo-subtitle">${cell.type === 'property' ? 'Titolo di Proprietà' : ''}</div>
+                            <div class="cpo-subtitle">${cell.type === 'property' ? t('prop_title') : ''}</div>
                             <div class="cpo-title">${cell.name}</div>
                         </div>
                         <div class="cpo-body">
                             ${cell.type === 'property' ? `
-                                <div class="cpo-row mb-2"><span>Rendita - Solo terreno</span> <span>L. ${cell.rent[0]}</span></div>
-                                <div class="cpo-row"><span>Con 1 Casa</span> <span>L. ${cell.rent[1]}</span></div>
-                                <div class="cpo-row"><span>Con 2 Case</span> <span>L. ${cell.rent[2]}</span></div>
-                                <div class="cpo-row"><span>Con 3 Case</span> <span>L. ${cell.rent[3]}</span></div>
-                                <div class="cpo-row"><span>Con 4 Case</span> <span>L. ${cell.rent[4]}</span></div>
-                                <div class="cpo-row mt-2" style="font-size: 0.95rem;"><span>Con ALBERGO</span> <span>L. ${cell.rent[5]}</span></div>
+                                <div class="cpo-row mb-2"><span>${t('rent_base')}</span> <span>L. ${cell.rent[0]}</span></div>
+                                <div class="cpo-row"><span>${t('with_house')} 1 ${t('house')}</span> <span>L. ${cell.rent[1]}</span></div>
+                                <div class="cpo-row"><span>${t('with_house')} 2 ${t('houses')}</span> <span>L. ${cell.rent[2]}</span></div>
+                                <div class="cpo-row"><span>${t('with_house')} 3 ${t('houses')}</span> <span>L. ${cell.rent[3]}</span></div>
+                                <div class="cpo-row"><span>${t('with_house')} 4 ${t('houses')}</span> <span>L. ${cell.rent[4]}</span></div>
+                                <div class="cpo-row mt-2" style="font-size: 0.95rem;"><span>${t('with_house')} ${t('hotel')}</span> <span>L. ${cell.rent[5]}</span></div>
                                 <div class="cpo-divider"></div>
-                                <div class="cpo-footer">Valore ipotecario L. ${cell.price / 2}<br>Costo Casa/Alb L. ${cell.houseCost}</div>
-                            ` : `<div class="text-center font-bold text-lg mb-2">Valore L. ${cell.price}</div><div class="text-center italic">Rendita variabile.</div>`}
+                                <div class="cpo-footer">${t('mortgage')} L. ${cell.price / 2}<br>${t('house_cost')} L. ${cell.houseCost}</div>
+                            ` : `<div class="text-center font-bold text-lg mb-2">${t('val_msg')} L. ${cell.price}</div><div class="text-center italic">${t('var_rent')}</div>`}
                         </div>
                     </div>`;
 
                 if (!propState.ownerId) {
                     html += `
                         <div class="flex gap-2">
-                            <button class="btn btn-buy btn-inline" onclick="buyProperty(${cell.id})">COMPRA (L. ${cell.price})</button>
-                            <button class="btn btn-inline" onclick="endTurn()">PASSA</button>
+                            <button class="btn btn-buy btn-inline" onclick="buyProperty(${cell.id})">${t('buy_btn')} (L. ${cell.price})</button>
+                            <button class="btn btn-inline" onclick="endTurn()">${t('pass_btn')}</button>
                         </div>`;
                 } else if (propState.ownerId !== player.id) {
                     const owner = gameState.players.find(p => p.id === propState.ownerId); const rent = calculateRent(cell, propState);
                     html += `
-                        <p class="mb-3 text-red-600 font-bold text-lg">Proprietà di ${owner.name}</p>
-                        <button class="btn btn-pay" onclick="payRent(${cell.id}, ${rent})">PAGA AFFITTO L. ${rent}</button>`;
+                        <p class="mb-3 text-red-600 font-bold text-lg">${t('prop_of')} ${owner.name}</p>
+                        <button class="btn btn-pay" onclick="payRent(${cell.id}, ${rent})">${t('pay_btn')} L. ${rent}</button>`;
                 } else if (cell.type === 'property' && propState.level < 5) {
                     html += `
-                        <p class="mb-3 text-green-600 font-bold">Tua Proprietà</p>
+                        <p class="mb-3 text-green-600 font-bold">${t('your_prop')}</p>
                         <div class="flex gap-2">
-                            <button class="btn btn-buy btn-inline" onclick="buildHouse(${cell.id})">COSTRUISCI (L. ${cell.houseCost})</button>
-                            <button class="btn btn-inline" onclick="endTurn()">FINE</button>
+                            <button class="btn btn-buy btn-inline" onclick="buildHouse(${cell.id})">${t('build_btn')} (L. ${cell.houseCost})</button>
+                            <button class="btn btn-inline" onclick="endTurn()">${t('end_turn')}</button>
                         </div>`;
-                } else { html += `<button class="btn" onclick="endTurn()">FINE TURNO</button>`; }
+                } else { html += `<button class="btn" onclick="endTurn()">${t('end_turn')}</button>`; }
             } else if (cell.type === 'chance' || cell.type === 'chest') {
-                const isProb = cell.type === 'chance'; const deck = isProb ? probDeck : imprDeck;
+                const isProb = cell.type === 'chance'; const deck = isProb ? getProbDeck() : getImprDeck();
                 const card = deck[Math.floor(Math.random() * deck.length)];
                 html += `
                     <div class="card-event ${isProb ? 'probabilita' : 'imprevisti'}">
-                        <div class="card-event-title">${isProb ? "PROBABILITÀ" : "IMPREVISTI"}</div>
+                        <div class="card-event-title">${isProb ? t('chance_title') : t('chest_title')}</div>
                         <div class="card-event-text">"${card.txt}"</div>
                     </div>
-                    <button class="btn" onclick="resolveCard(${deck.indexOf(card)}, '${cell.type}')">OK</button>`;
+                    <button class="btn" onclick="resolveCard(${deck.indexOf(card)}, '${cell.type}')">${t('ok_btn')}</button>`;
             } else if (cell.type === 'tax') {
                 html += `
                     <h2 class="text-xl font-bold mb-3 text-red-600 font-['Montserrat']">${cell.name}</h2>
                     <p class="mb-4 text-lg font-bold">${cell.desc}</p>
-                    <button class="btn btn-pay" onclick="payBankActive(${cell.cost})">PAGA L. ${cell.cost}</button>`;
+                    <button class="btn btn-pay" onclick="payBankActive(${cell.cost})">${t('pay_btn')} L. ${cell.cost}</button>`;
             } else if (cell.id === 30) {
                 html += `
-                    <h2 class="text-xl font-bold mb-3 text-red-600 font-['Montserrat']">IN PRIGIONE!</h2>
-                    <button class="btn" onclick="goToJailActive()">VAI IN PRIGIONE</button>`;
+                    <h2 class="text-xl font-bold mb-3 text-red-600 font-['Montserrat']">${t('go_jail')}</h2>
+                    <button class="btn" onclick="goToJailActive()">${t('go_jail')}</button>`;
             } else {
-                html += `<h2 class="text-xl font-bold mb-3 font-['Montserrat']">${cell.name}</h2><button class="btn" onclick="endTurn()">CONTINUA</button>`;
+                html += `<h2 class="text-xl font-bold mb-3 font-['Montserrat']">${cell.name}</h2><button class="btn" onclick="endTurn()">${t('ok_btn')}</button>`;
             }
             openModal(html);
         }
@@ -900,8 +982,8 @@
         }
 
         function buyProperty(cellId) {
-            const p = gameState.players[gameState.currentPlayerIdx]; const cell = boardData.find(c => c.id === cellId);
-            openPayment(cell.price, `Acquisto ${cell.name}`, () => {
+            const p = gameState.players[gameState.currentPlayerIdx]; const cell = getBoardData().find(c => c.id === cellId);
+            openPayment(cell.price, `${t('buy_title')} ${cell.name}`, () => {
                 p.balance -= cell.price; gameState.properties[cellId].ownerId = p.id;
                 document.getElementById(`cell-${cellId}`).style.borderBottom = `clamp(3px, 0.6vmin, 6px) solid ${cell.color || '#333'}`;
                 updateDashboard(); endTurn();
@@ -909,14 +991,14 @@
         }
         function payRent(cellId, amount) {
             const p = gameState.players[gameState.currentPlayerIdx]; const ownerId = gameState.properties[cellId].ownerId;
-            openPayment(amount, "Pagamento Affitto", () => {
+            openPayment(amount, t('rent_title'), () => {
                 p.balance -= amount; gameState.players.find(x => x.id === ownerId).balance += amount;
                 updateDashboard(); endTurn();
             });
         }
         function buildHouse(cellId) {
-            const p = gameState.players[gameState.currentPlayerIdx]; const cell = boardData.find(c => c.id === cellId);
-            openPayment(cell.houseCost, "Costruzione Edificio", () => {
+            const p = gameState.players[gameState.currentPlayerIdx]; const cell = getBoardData().find(c => c.id === cellId);
+            openPayment(cell.houseCost, t('build_title'), () => {
                 p.balance -= cell.houseCost; const propState = gameState.properties[cellId]; propState.level++;
                 const cb = document.getElementById(`cb-${cellId}`); cb.innerHTML = '';
                 if(propState.level === 5) cb.innerHTML = `<div class="hotel"></div>`;
@@ -925,18 +1007,18 @@
             });
         }
         function resolveCard(cardIdx, type) {
-            const card = (type === 'chance' ? probDeck : imprDeck)[cardIdx]; closeModal(); card.action(gameState.players[gameState.currentPlayerIdx]);
+            const card = (type === 'chance' ? getProbDeck() : getImprDeck())[cardIdx]; closeModal(); card.action(gameState.players[gameState.currentPlayerIdx]);
             if(!card.action.toString().includes('movePlayerTo') && !card.action.toString().includes('payBankActive')) endTurn();
         }
         function payBankActive(amount) { 
-            openPayment(amount, "Pagamento Tassa/Banca", () => { gameState.players[gameState.currentPlayerIdx].balance -= amount; updateDashboard(); endTurn(); });
+            openPayment(amount, t('tax_title'), () => { gameState.players[gameState.currentPlayerIdx].balance -= amount; updateDashboard(); endTurn(); });
         }
         function receiveMoney(player, amount) { player.balance += amount; updateDashboard(); }
         function goToJailActive() { closeModal(); goToJail(gameState.players[gameState.currentPlayerIdx]); }
 
         function endTurn() {
             closeModal(); gameState.isMoving = false;
-            if(gameState.players[gameState.currentPlayerIdx].balance < 0) showToast(`BANCAROTTA PER ${gameState.players[gameState.currentPlayerIdx].name}!`);
+            if(gameState.players[gameState.currentPlayerIdx].balance < 0) showToast(`⚠️ ${t('bankrupt_msg')} ${gameState.players[gameState.currentPlayerIdx].name}!`);
             gameState.currentPlayerIdx = (gameState.currentPlayerIdx + 1) % gameState.players.length;
             orientBoard(); updateDashboard(); setTimeout(() => { document.getElementById('dice-area').classList.add('dice-ready'); }, 800);
         }
@@ -944,7 +1026,7 @@
         function openModal(contentHtml) { document.getElementById('action-content').innerHTML = contentHtml; document.getElementById('modal-action').style.display = 'flex'; }
         function closeModal() { document.getElementById('modal-action').style.display = 'none'; }
 
-        window.onload = () => { initBoard(); addSetupPlayer(); addSetupPlayer(); };
+        window.onload = () => { setLang('it'); addSetupPlayer(); addSetupPlayer(); };
     </script>
 </body>
 </html>
