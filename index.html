@@ -3,338 +3,408 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Betting Exchange Pro - Tabletop Edition</title>
+    <meta name="description" content="Monopoli - Edizione Classica Tabletop">
+    <title>Monopoli - Edizione Classica Tabletop</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Rye&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --back-blue: #1fb2e3;
-            --lay-pink: #f48fb1;
-            --bg-board: #e6eadb; /* Colore classico panna del tabellone */
-            --border-color: #222;
+            /* Colori Originali Editrice Giochi */
+            --bg-board: #c1d6c8; 
+            --border-color: #111;
+            --brown: #8e4a23; --lightblue: #9bd2f0; --pink: #d93c96;
+            --orange: #f7941d; --red: #ed1b24; --yellow: #fff200;
+            --green: #00a650; --darkblue: #0054a6;
+            --prob-color: #e6ebc8; --impr-color: #f79759;
+            
+            /* Texture Carta leggerissima generata via Data URI per performance istantanee */
+            --paper-tex: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E");
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at center, #2e4732 0%, #0a120c 100%); /* Panno verde tavolo */
-            color: #ededed;
-            margin: 0;
-            overflow: hidden; /* Nessuno scroll, è un'app fissa */
-            touch-action: none; /* Previene zoom e scroll su mobile */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at center, #2e4732 0%, #0a120c 100%);
+            color: #111; margin: 0; padding: 0;
+            overflow: hidden; touch-action: none; user-select: none;
+            -webkit-user-select: none; -moz-user-select: none;
+            -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
         }
-
-        .mono { font-family: 'Roboto Mono', monospace; }
 
         #app-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100vw;
-            height: 100vh;
-            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            width: 100vw; height: 100vh; position: relative;
         }
 
+        /* TABELLONE SCALABILE (Quadrato perfetto, mai tagliato) */
         #board-area {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            /* Usiamo vmin per far stare il tabellone perfettamente in ogni schermo */
-            width: 98vmin;
-            height: 98vmin;
-            max-width: 900px;
-            max-height: 900px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 0 10px #111; /* Effetto scatola 3D */
-            border-radius: 8px;
-            background-color: var(--border-color);
+            position: relative; display: flex; align-items: center; justify-content: center;
+            width: min(96vw, 96vh); height: min(96vw, 96vh);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 0 clamp(2px, 1vmin, 8px) #eaddcd;
+            background-color: var(--border-color); border-radius: 4px;
+            contain: layout style paint;
         }
 
         #board {
-            width: 100%;
-            height: 100%;
-            display: grid;
-            grid-template-columns: repeat(11, 1fr);
-            grid-template-rows: repeat(11, 1fr);
-            gap: 2px;
-            padding: 2px;
-            border-radius: 6px;
+            width: 100%; height: 100%; display: grid;
+            /* Angoli leggermente più larghi come nel gioco fisico (14%) */
+            grid-template-columns: 14% repeat(9, 1fr) 14%;
+            grid-template-rows: 14% repeat(9, 1fr) 14%;
+            gap: clamp(1px, 0.2vmin, 2px);
+            background-color: var(--border-color); padding: clamp(1px, 0.2vmin, 2px);
+            border-radius: 2px;
         }
 
         .cell {
-            background-color: var(--bg-board);
-            color: #000;
-            position: relative;
-            display: flex;
-            overflow: hidden;
+            background-color: var(--bg-board); background-image: var(--paper-tex);
+            position: relative; display: flex; overflow: hidden; box-sizing: border-box;
         }
 
-        /* Il contenitore interno ruota per orientarsi verso i bordi del tavolo */
+        /* Gestione rigorosa dei contenuti interni per prevenire sbavature */
         .cell-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            box-sizing: border-box;
-            transform-origin: center center;
-            padding: 1px;
+            width: 100%; height: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: space-between; text-align: center;
+            transform-origin: center center; padding: 0; box-sizing: border-box;
         }
 
-        /* Regole geometriche per leggere dal proprio lato del tavolo */
         .bottom-row .cell-content { transform: rotate(0deg); }
         .left-col .cell-content { transform: rotate(90deg); }
         .top-row .cell-content { transform: rotate(180deg); }
         .right-col .cell-content { transform: rotate(-90deg); }
 
-        /* Angoli ruotati verso il centro */
-        .cell.corner { background-color: var(--bg-board); border: 1px solid #999; }
-        .cell.corner .cell-content { justify-content: center; }
+        .cell.corner { justify-content: center; align-items: center; }
+        .cell.corner .cell-content { justify-content: center; padding: 5%; }
         #cell-0 .cell-content { transform: rotate(-45deg); }
         #cell-10 .cell-content { transform: rotate(45deg); }
         #cell-20 .cell-content { transform: rotate(135deg); }
         #cell-30 .cell-content { transform: rotate(-135deg); }
 
-        /* Strisce Colore originali (ora sempre al top del cell-content) */
         .color-bar {
-            width: 100%;
-            height: 22%;
-            min-height: 8px;
-            border-bottom: 2px solid #000;
-            margin-bottom: 2px;
+            width: 100%; height: 21%; min-height: 4px;
+            border-bottom: clamp(1px, 0.2vmin, 3px) solid #111; 
+            flex-shrink: 0; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.15);
+        }
+
+        /* Testi adattivi compressi fluidamente */
+        .property-name {
+            font-weight: 700; font-size: clamp(6px, 1.1vmin, 14px); line-height: 1.05;
+            text-transform: uppercase; padding: 2px 2%; margin: auto 0;
+            font-family: 'Montserrat', sans-serif; letter-spacing: -0.03em;
+            word-wrap: break-word; overflow-wrap: break-word; text-align: center;
+            display: flex; align-items: center; justify-content: center; flex-grow: 1;
+            max-height: 50%; overflow: hidden;
+        }
+
+        .property-price {
+            font-size: clamp(5px, 0.9vmin, 12px); font-weight: bold; 
+            margin-bottom: 2%; flex-shrink: 0; letter-spacing: -0.02em;
+        }
+
+        .icon-large { font-size: clamp(12px, 3vmin, 35px); margin: auto; flex-shrink: 0; }
+        .svg-board-icon { 
+            width: clamp(14px, 3.5vmin, 40px); height: clamp(14px, 3.5vmin, 40px); 
+            margin: auto; display: block; filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3)); 
             flex-shrink: 0;
         }
-
-        /* Tipografia dinamica per scalare con lo schermo */
-        .market-icon { font-size: clamp(0.6rem, 1.5vmin, 1.2rem); line-height: 1; }
-        .market-title { 
-            font-weight: 800; 
-            line-height: 1.1; 
-            text-transform: uppercase; 
-            font-size: clamp(0.35rem, 0.9vmin, 0.65rem);
-            text-align: center;
-            width: 95%;
-        }
         
-        .odds-container {
-            display: flex;
-            width: 100%;
-            gap: 1px;
-            margin-top: auto;
-            border-top: 1px solid #ccc;
-        }
-        
-        .odd-box {
-            flex: 1;
-            text-align: center;
-            padding: 1px 0;
-            font-weight: 900;
-            font-size: clamp(0.35rem, 1vmin, 0.65rem);
-        }
-        .odd-back { background-color: var(--back-blue); color: #fff; }
-        .odd-lay { background-color: var(--lay-pink); color: #fff; }
-
-        .order-badge {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background: #eab308;
-            color: #000;
-            border-radius: 50%;
-            width: clamp(10px, 2vmin, 14px);
-            height: clamp(10px, 2vmin, 14px);
-            font-size: clamp(0.3rem, 1vmin, 0.5rem);
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 5;
-        }
-
         #center-board {
-            grid-column: 2 / span 9;
-            grid-row: 2 / span 9;
-            background-color: var(--bg-board);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            /* La transizione fa ruotare dolcemente il centro verso il giocatore attivo */
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: center center;
-            border-radius: 4px;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
-            overflow: hidden;
+            grid-column: 2 / span 9; grid-row: 2 / span 9;
+            background-color: var(--bg-board); background-image: var(--paper-tex);
+            position: relative; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: center center; display: flex;
+            align-items: center; justify-content: center; overflow: hidden;
+            will-change: transform; border-radius: 2px;
+            box-shadow: inset 0 0 5vmin rgba(0,0,0,0.1);
         }
 
-        .logo-wrapper {
-            position: relative;
-            width: 15vmin;
-            height: 15vmin;
-            border-radius: 50%;
-            padding: 3px;
-            background: linear-gradient(135deg, var(--back-blue), var(--lay-pink));
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            margin-bottom: 2vmin;
-            z-index: 10;
-        }
-        .logo-wrapper img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-
-        .escrow-pill {
-            display: flex;
-            align-items: center;
-            gap: 1vmin;
-            background: #fff;
-            border: 2px solid #eab308;
-            border-radius: 50px;
-            padding: 0.5vmin 2vmin;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            z-index: 10;
+        .logo-container {
+            position: absolute; background: #ed1b24; color: white;
+            padding: clamp(6px, 1.2vmin, 15px) clamp(15px, 3.5vmin, 40px); 
+            border: clamp(2px, 0.5vmin, 6px) solid white;
+            font-size: clamp(18px, 4.8vmin, 60px); font-family: 'Montserrat', sans-serif;
+            font-weight: 800; letter-spacing: 0.15em;
+            box-shadow: 0 0 0 clamp(1px, 0.3vmin, 4px) #111, clamp(2px, 0.5vmin, 8px) clamp(2px, 0.5vmin, 8px) clamp(4px, 1vmin, 12px) rgba(0,0,0,0.4);
+            transform: rotate(-45deg); z-index: 5; text-shadow: 2px 2px 0 #900;
         }
 
-        .dice-area {
-            position: absolute;
-            bottom: 5vmin;
-            display: flex;
-            gap: 3vmin;
-            z-index: 20;
-            cursor: pointer;
-            perspective: 1000px;
+        .deck {
+            position: absolute; width: 19vmin; height: 11.5vmin;
+            min-width: 60px; min-height: 40px; border-radius: 4px;
+            border: clamp(1px, 0.2vmin, 3px) dashed rgba(0,0,0,0.5); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; background-image: var(--paper-tex);
+        }
+        .deck-imprevisti { top: 12%; left: 12%; transform: rotate(135deg); background-color: var(--impr-color); box-shadow: 0.3vmin 0.3vmin 1.5vmin rgba(0,0,0,0.4); }
+        .deck-probabilita { bottom: 12%; right: 12%; transform: rotate(-45deg); background-color: var(--prob-color); box-shadow: 0.3vmin 0.3vmin 1.5vmin rgba(0,0,0,0.4); }
+        .deck-title { font-size: clamp(8px, 1.8vmin, 18px); font-weight: 800; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; color:#111; }
+        .deck-q { font-size: clamp(16px, 4vmin, 40px); font-family: 'Playfair Display', serif; font-weight: bold; opacity: 0.5; color:#111; }
+
+        /* EFFETTO POLVERE DI STELLE */
+        .stardust {
+            position: fixed; border-radius: 50%; pointer-events: none; z-index: 999;
+            box-shadow: 0 0 1vmin currentColor;
+            animation: stardust-burst 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        @keyframes stardust-burst {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; }
         }
 
+        /* DADI 3D EFFETTO LEGNO NERO E ORO */
+        .dice-area { position: absolute; display: flex; gap: clamp(10px, 2.5vmin, 30px); z-index: 20; perspective: 1000px; }
+        @keyframes dice-pulse {
+            0% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 0 rgba(255,215,0,0)); }
+            100% { transform: scale(1.1) translateY(-1vmin); filter: drop-shadow(0 1vmin 2vmin rgba(255,215,0,0.8)); }
+        }
+        .dice-ready { animation: dice-pulse 1s infinite alternate ease-in-out; cursor: pointer; }
         .die-3d {
-            width: 6vmin;
-            height: 6vmin;
-            position: relative;
-            transform-style: preserve-3d;
+            width: clamp(25px, 5.5vmin, 60px); height: clamp(25px, 5.5vmin, 60px); position: relative; transform-style: preserve-3d;
             transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 1vmin 2vmin rgba(0,0,0,0.8); will-change: transform;
         }
-
         .die-face {
             position: absolute; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #ffffff, #f0f0f0);
-            border: 1px solid #ccc; border-radius: 8px;
-            display: grid; padding: 4px;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 2px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.9) 100%),
+                        repeating-linear-gradient(45deg, #111 0%, #1a1a1a 10%, #111 20%);
+            border: clamp(1px, 0.2vmin, 3px) solid #000; border-radius: clamp(3px, 1vmin, 10px); display: grid; padding: clamp(2px, 0.5vmin, 6px);
+            grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 1px;
+            box-shadow: inset 0.2vmin 0.2vmin 0.5vmin rgba(255,255,255,0.2), inset -0.2vmin -0.2vmin 1vmin rgba(0,0,0,0.9);
+            box-sizing: border-box;
         }
-        
-        .die-dot { background: #222; border-radius: 50%; width: 100%; height: 100%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8); }
-        .dot-1 { grid-area: 1 / 1; } .dot-3 { grid-area: 1 / 3; }
-        .dot-4 { grid-area: 2 / 1; } .dot-5 { grid-area: 2 / 2; }
+        .die-dot { 
+            background: radial-gradient(circle at 30% 30%, #fffacd, #d4af37, #8b6508);
+            border-radius: 50%; width: 100%; height: 100%; 
+            box-shadow: inset 0.1vmin 0.1vmin 0.4vmin rgba(0,0,0,0.9), 0 0.1vmin 0.1vmin rgba(255,255,255,0.2); 
+        }
+        .dot-1 { grid-area: 1 / 1; } .dot-3 { grid-area: 1 / 3; } .dot-4 { grid-area: 2 / 1; } .dot-5 { grid-area: 2 / 2; }
         .dot-6 { grid-area: 2 / 3; } .dot-7 { grid-area: 3 / 1; } .dot-9 { grid-area: 3 / 3; }
-
-        .face-1 { transform: rotateY(0deg) translateZ(3vmin); }
-        .face-2 { transform: rotateY(-90deg) translateZ(3vmin); }
-        .face-3 { transform: rotateX(90deg) translateZ(3vmin); }
-        .face-4 { transform: rotateX(-90deg) translateZ(3vmin); }
-        .face-5 { transform: rotateY(90deg) translateZ(3vmin); }
-        .face-6 { transform: rotateY(180deg) translateZ(3vmin); }
-
+        
+        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); } 
+        .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); }
+        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); } 
+        .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); }
+        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); } 
+        .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(25px, 5.5vmin, 60px) / 2)); }
+        .anim-jump { animation: jump 1.2s ease-out forwards; }
         @keyframes jump {
             0% { transform: translateY(0) scale(1); }
-            40% { transform: translateY(-10vmin) scale(1.3) rotateX(180deg) rotateZ(90deg); }
-            70% { transform: translateY(-2vmin) scale(1.05); }
+            40% { transform: translateY(-15vmin) scale(1.3) rotateX(360deg) rotateZ(180deg); }
+            70% { transform: translateY(-3vmin) scale(1.05); }
             100% { transform: translateY(0) scale(1); }
         }
-        .anim-jump { animation: jump 1.2s ease-out forwards; }
 
-        #terminal-drawer {
-            position: fixed;
-            top: 0; right: -400px; /* Nascosto di default */
-            width: 350px;
-            height: 100vh;
-            max-width: 85vw;
-            background: #111;
-            z-index: 100;
-            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            border-left: 1px solid #333;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+        /* PEDINE & EDIFICI */
+        .token {
+            position: absolute; z-index: 30;
+            width: clamp(20px, 4.5vmin, 45px); height: clamp(20px, 4.5vmin, 45px);
+            filter: drop-shadow(0 0.5vmin 0.5vmin rgba(0,0,0,0.6)) drop-shadow(0 0.2vmin 0.1vmin rgba(0,0,0,0.8));
+            transition: all 0.4s linear; transform: translate(-50%, -50%); will-change: left, top;
         }
-        #terminal-drawer.open { right: 0; }
+        .token-svg { width: 100%; height: 100%; display: block; }
+        
+        .house { width: clamp(6px, 1.4vmin, 16px); height: clamp(6px, 1.4vmin, 16px); background-color: #00a650; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .hotel { width: clamp(8px, 2vmin, 22px); height: clamp(8px, 2vmin, 22px); background-color: #ed1b24; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
 
-        .btn-toggle-terminal {
-            position: fixed;
-            top: 2vmin; right: 2vmin;
-            z-index: 90;
-            background: #22c55e;
-            color: #000;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            cursor: pointer;
-            display: flex; align-items: center; gap: 8px;
+        /* CASSA BANCO */
+        #bank-tray {
+            position: fixed; top: 10px; right: 10px; z-index: 90;
+            background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%);
+            border: 2px solid #900; border-radius: 12px;
+            padding: 10px; display: flex; gap: 6px;
+            box-shadow: inset 4px 4px 10px rgba(255,255,255,0.2), inset -4px -4px 10px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.6);
+            pointer-events: none; max-width: 40vw; flex-wrap: wrap; justify-content: flex-end;
+        }
+        .bank-slot {
+            background: #8e0000; border-radius: 6px;
+            width: clamp(50px, 8vmin, 80px); height: clamp(35px, 5.5vmin, 55px);
+            position: relative;
+            box-shadow: inset 3px 3px 8px rgba(0,0,0,0.8), inset -2px -2px 5px rgba(255,255,255,0.1);
+        }
+        .bank-slot .real-note {
+            width: 90%; height: 90%; position: absolute; bottom: 5%; left: 5%;
+            font-size: clamp(8px, 1.5vmin, 14px); box-shadow: -1px -1px 3px rgba(0,0,0,0.5);
         }
 
-        /* Modali con supporto rotazione (per i giocatori ai lati) */
+        /* MODALI OTTIMIZZATI */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
             display: none; justify-content: center; align-items: center; z-index: 200;
         }
-        .modal-box-wrapper {
-            transition: transform 0.3s ease;
-        }
+        .modal-box-wrapper { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; width: 100%; display: flex; justify-content: center; }
         .modal-box {
-            background: #1a1a1a; border: 1px solid #444; border-radius: 8px;
-            width: 90vw; max-width: 450px; padding: 0; box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-            color: #fff; position: relative;
+            background: #fdfbf7; background-image: var(--paper-tex);
+            border: clamp(2px, 0.4vmin, 6px) solid #333; border-radius: 8px;
+            width: 95vw; max-width: 480px; max-height: 95vh; padding: clamp(15px, 4vw, 25px); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            color: #111; position: relative; text-align: center; overflow-y: auto; overflow-x: hidden;
+            box-sizing: border-box;
         }
+
+        /* SCELTA PEDINE SETUP */
+        .token-option {
+            width: clamp(40px, 8vw, 60px); height: clamp(40px, 8vw, 60px);
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid transparent; border-radius: 8px; cursor: pointer; transition: 0.2s;
+            background: rgba(0,0,0,0.05); flex-shrink: 0;
+        }
+        .token-option:hover { background: rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .token-option.selected { border-color: #ed1b24; background: #ffebee; transform: scale(1.1); box-shadow: 0 4px 10px rgba(237,27,36,0.3); }
+        .token-svg-setup { width: 85%; height: 85%; filter: drop-shadow(2px 3px 2px rgba(0,0,0,0.4)); display: block; pointer-events: none;}
+
+        /* CARTE ED EVENTI */
+        .card-event {
+            padding: clamp(15px, 4vw, 30px) clamp(10px, 3vw, 20px); border: 1px solid rgba(0,0,0,0.2); 
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05), 0 4px 10px rgba(0,0,0,0.2);
+            margin-bottom: 15px; aspect-ratio: 1.5/1;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-sizing: border-box; width: 100%; background-image: var(--paper-tex);
+        }
+        .card-event.imprevisti { background-color: var(--impr-color); }
+        .card-event.probabilita { background-color: var(--prob-color); }
+        .card-event-title { font-size: clamp(16px, 4vw, 1.4rem); font-weight: 800; letter-spacing: 0.15em; font-family: 'Montserrat', sans-serif; margin-bottom: 1rem; color: #222; text-transform: uppercase; }
+        .card-event-text { font-size: clamp(14px, 3.5vw, 1.2rem); font-family: 'Playfair Display', serif; color: #222; font-style: italic; line-height: 1.4; word-wrap: break-word; }
+
+        .card-property-original {
+            background: #fff; background-image: var(--paper-tex); border: 1px solid #999; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            padding: clamp(5px, 2vw, 10px); margin-bottom: 15px; box-sizing: border-box; width: 100%;
+        }
+        .cpo-header { border: 2px solid #111; padding: 10px 5px; margin-bottom: 10px; word-wrap: break-word;}
+        .cpo-subtitle { font-size: clamp(8px, 2vw, 0.6rem); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .cpo-title { font-size: clamp(16px, 4vw, 1.4rem); font-family: 'Montserrat', sans-serif; font-weight: 800; text-transform: uppercase; line-height:1.1;}
+        .cpo-body { font-size: clamp(11px, 3vw, 0.85rem); font-family: sans-serif; line-height: 1.5; padding: 0 5px; text-align: left; }
+        .cpo-row { display: flex; justify-content: space-between; margin-bottom: 2px; flex-wrap: wrap;}
+        .cpo-row span:last-child { font-weight: bold; }
+        .cpo-divider { border-top: 1px solid #ccc; margin: 8px 0; }
+        .cpo-footer { font-size: clamp(9px, 2.5vw, 0.75rem); text-align: center; color: #555; }
+
+        /* BANCONOTE 3D */
+        .real-note {
+            width: clamp(60px, 12vw, 100px); height: clamp(30px, 6vw, 50px);
+            border-radius: 4px; border: 1px solid rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Rye', cursive; font-weight: bold; font-size: clamp(10px, 2vw, 16px); color: #111;
+            position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 2px 3px 5px rgba(0,0,0,0.4); user-select: none; flex-shrink: 0; box-sizing: border-box;
+            background-image: var(--paper-tex);
+        }
+        .real-note::before { content: ''; position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px; border: 1px dashed rgba(0,0,0,0.4); border-radius: 2px; pointer-events: none; }
+        .real-note:hover { transform: translateY(-4px) scale(1.05); box-shadow: 4px 6px 10px rgba(0,0,0,0.5); z-index: 10; }
         
-        .btn-rotate-modal {
-            position: absolute; top: -40px; right: 0; background: #333; color: #fff;
-            border: 1px solid #555; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem;
-            cursor: pointer; display: flex; align-items: center; gap: 5px;
-        }
+        .note-bg-100 { background-color: #aadbed; background: radial-gradient(ellipse at center, #fff 10%, #aadbed 90%); }
+        .note-bg-1000 { background-color: #aee0b6; background: radial-gradient(ellipse at center, #fff 10%, #aee0b6 90%); }
+        .note-bg-10000 { background-color: #d7cdb9; background: radial-gradient(ellipse at center, #fff 10%, #d7cdb9 90%); }
+        .note-bg-50000 { background-color: #f6c0c4; background: radial-gradient(ellipse at center, #fff 10%, #f6c0c4 90%); }
 
-        .token {
-            position: absolute; z-index: 30; font-size: clamp(16px, 3.5vmin, 32px);
-            filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.6));
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        .note-val-badge { background: rgba(255,255,255,0.85); padding: 1px 6px; border-radius: 50px; border: 1px solid #555; font-family: 'Montserrat', sans-serif; font-size: 0.85em; }
 
-        .btn { padding: 0.75rem 1rem; border-radius: 4px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border: none; color: #fff; }
-        .btn-action { background: #3b82f6; }
-        .btn-action:hover { background: #2563eb; }
-        .btn-back { background-color: var(--back-blue); color: #000; }
-        .btn-lay { background-color: var(--lay-pink); color: #000; }
+        .note-stack { display: flex; flex-wrap: wrap; margin-top: 5px; min-height: 35px; }
+        .note-stack .real-note { margin-right: clamp(-30px, -6vw, -20px); margin-bottom: -15px; transform-origin: center; }
+        .note-stack .real-note:hover { margin-right: 5px; transform: scale(1.2) translateY(-10px); }
+
+        .payment-zone {
+            background: rgba(0,0,0,0.05); border: 2px dashed #999; border-radius: 8px;
+            min-height: 60px; display: flex; flex-wrap: wrap; gap: 8px; padding: 10px;
+            justify-content: center; align-items: center; margin-bottom: 15px; box-sizing: border-box; width: 100%;
+        }
+        .payment-zone .real-note { margin: 0; }
+
+        /* PULSANTI RESPONSIVI */
+        .modal-box .flex.gap-2 { flex-wrap: wrap; justify-content: center; width: 100%; }
+        .btn {
+            padding: clamp(10px, 2vw, 12px) clamp(12px, 3vw, 18px); 
+            border: 2px solid #111; border-radius: 6px; font-weight: 800;
+            cursor: pointer; transition: all 0.2s; background: #eee; text-transform: uppercase;
+            width: 100%; margin-top: 5px; font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 0 #111;
+            box-sizing: border-box; display: inline-flex; justify-content: center; align-items: center; text-align: center;
+            line-height: 1.2; word-wrap: break-word; font-size: clamp(11px, 2.5vw, 14px);
+        }
+        .btn:active { transform: translateY(4px); box-shadow: 0 0 0 #111; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: 0 4px 0 #111; }
+        .btn-buy { background: #00a650; color: white; border-color: #007336; box-shadow: 0 4px 0 #007336; }
+        .btn-buy:active { box-shadow: 0 0 0 #007336; }
+        .btn-pay { background: #ed1b24; color: white; border-color: #b00f17; box-shadow: 0 4px 0 #b00f17; }
+        .btn-pay:active { box-shadow: 0 0 0 #b00f17; }
+        .btn-inline { width: auto; flex: 1 1 auto; min-width: 120px; }
+
+        /* DASHBOARD GIOCATORI */
+        #dashboard {
+            position: fixed; top: 10px; left: 10px; z-index: 100;
+            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+            max-width: 100vw; box-sizing: border-box;
+        }
+        .player-card {
+            background: rgba(255,255,255,0.95); border: 2px solid #333; border-radius: 8px;
+            padding: clamp(6px, 1.5vw, 12px); min-width: clamp(120px, 25vw, 220px); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            transition: transform 0.3s, border-color 0.3s; pointer-events: auto; box-sizing: border-box;
+        }
+        .player-card.active { transform: scale(1.05); border-color: #ed1b24; border-width: 3px; }
+        .player-name { display:flex; align-items:center; gap:6px; font-size: clamp(12px, 3vw, 16px); font-weight: bold; font-family: 'Montserrat', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dash-token { width: clamp(16px, 4vw, 24px); height: clamp(16px, 4vw, 24px); display: inline-block; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.4)); flex-shrink: 0;}
+        .player-balance { font-size: clamp(14px, 3.5vw, 18px); font-weight: bold; color: #00a650; margin-bottom: 4px; }
+
+        /* NOTIFICHE CUSTOM (Sostituiscono alert) */
+        #toast-container {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .toast {
+            background: #111; color: #fff; padding: 12px 24px; border-radius: 8px;
+            font-family: 'Montserrat', sans-serif; font-weight: bold; font-size: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-left: 4px solid #ed1b24;
+            animation: slideDown 0.3s ease-out forwards, fadeOut 0.5s ease-in 2.5s forwards;
+        }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* ADATTABILITA' ESTREMA PER SMARTPHONE */
+        @media (max-width: 768px) {
+            #dashboard { 
+                top: auto; bottom: 10px; left: 0; width: 100vw; 
+                flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 0 5px;
+            }
+            .player-card { min-width: auto; padding: 6px; flex: 1 1 auto; max-width: 48%; }
+            .note-stack { display: none; } 
+            
+            #bank-tray { top: 5px; right: 5px; padding: 6px; gap: 4px; border-radius: 8px; max-width: 50vw; }
+            .bank-slot { width: 40px; height: 25px; border-radius: 4px; }
+            .bank-slot .real-note { font-size: 8px; border-width: 1px; }
+
+            .modal-box { padding: 15px 10px; }
+            .payment-zone { padding: 8px; gap: 5px; }
+            .real-note { width: 60px; height: 30px; font-size: 10px; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Pulsante Toggle Drawer -->
-    <button class="btn-toggle-terminal" onclick="toggleTerminal()">
-        <span>☰</span> Terminale & Log
-    </button>
+    <!-- SVG Definitions per Legno 3D Pedine -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="woodW" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#ccc"/></linearGradient>
+        <linearGradient id="woodY" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff200"/><stop offset="100%" stop-color="#ccb900"/></linearGradient>
+        <linearGradient id="woodR" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff4d4d"/><stop offset="100%" stop-color="#b30000"/></linearGradient>
+        <linearGradient id="woodG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00e676"/><stop offset="100%" stop-color="#008040"/></linearGradient>
+      </defs>
+    </svg>
+
+    <div id="toast-container"></div>
+    <div id="dashboard"></div>
+    <div id="bank-tray"></div>
 
     <div id="app-container">
-        <!-- Tabellone Tabletop -->
         <div id="board-area">
             <div id="board">
-                <!-- Centro Animato -->
+                <!-- Generato tramite JS DocumentFragment per zero lag -->
                 <div id="center-board">
-                    <div class="logo-wrapper">
-                        <img src="logo-tondo.jpeg" alt="Logo" onerror="this.src='https://placehold.co/200x200/1fb2e3/ffffff?text=BE'">
-                    </div>
+                    <div class="deck deck-imprevisti"><span class="deck-q">?</span><span class="deck-title">IMPREVISTI</span></div>
+                    <div class="logo-container">MONOPOLI</div>
+                    <div class="deck deck-probabilita"><span class="deck-q">?</span><span class="deck-title">PROBABILITÀ</span></div>
                     
-                    <div class="escrow-pill">
-                        <span class="text-xl md:text-3xl">💰</span>
-                        <div class="flex flex-col">
-                            <span class="text-[0.5rem] font-bold text-gray-500 uppercase leading-none" data-i18n="escrow_title">Cassa</span>
-                            <span id="escrow-display" class="font-mono font-black text-gray-800 text-sm md:text-lg leading-tight">€0.00</span>
-                        </div>
-                    </div>
-
-                    <!-- Dadi 3D Interattivi -->
                     <div class="dice-area" id="dice-area" onclick="rollDice()">
                         <div class="die-wrapper" id="bounce1">
                             <div class="die-3d" id="die1" style="transform: rotateX(-20deg) rotateY(30deg);">
@@ -348,7 +418,6 @@
                         </div>
                         <div class="die-wrapper" id="bounce2">
                             <div class="die-3d" id="die2" style="transform: rotateX(15deg) rotateY(-45deg);">
-                                <!-- Stesse facce per il dado 2 -->
                                 <div class="die-face face-1"><div class="die-dot dot-5"></div></div>
                                 <div class="die-face face-2"><div class="die-dot dot-1"></div><div class="die-dot dot-9"></div></div>
                                 <div class="die-face face-3"><div class="die-dot dot-1"></div><div class="die-dot dot-5"></div><div class="die-dot dot-9"></div></div>
@@ -361,624 +430,521 @@
                 </div>
             </div>
         </div>
-
-        <!-- Terminale Laterale (Drawer) -->
-        <div id="terminal-drawer">
-            <div class="p-4 bg-black border-b border-gray-800 flex justify-between items-center">
-                <span class="font-bold text-gray-300">DASHBOARD</span>
-                <button onclick="toggleTerminal()" class="text-gray-500 hover:text-white text-xl">×</button>
-            </div>
-            
-            <div id="players-list" class="flex-shrink-0 border-b border-gray-800"></div>
-
-            <div class="p-2 bg-[#0a0a0a] text-xs text-gray-500 font-bold border-b border-gray-800">POSIZIONI APERTE</div>
-            <div id="portfolio-area" class="flex-1 overflow-y-auto p-3 bg-[#111]"></div>
-
-            <div id="action-log" class="h-40 bg-black overflow-y-auto p-2 text-xs font-mono border-t border-gray-800 flex flex-col-reverse"></div>
-        </div>
     </div>
 
     <!-- Modale Setup -->
     <div id="modal-setup" class="modal-overlay" style="display: flex;">
         <div class="modal-box-wrapper" style="transform: scale(1) rotate(0deg)">
-            <div class="modal-box p-6 text-center border-t-4 border-t-blue-500">
-                <h1 class="text-2xl font-bold mb-2">Betting Exchange Pro</h1>
-                <p class="text-gray-400 text-sm mb-6">Seleziona i Trader per iniziare la sessione al tavolo.</p>
-                <div class="flex justify-center gap-3 mb-4">
-                    <button class="btn bg-gray-800 hover:bg-blue-600 px-6" onclick="initGame(2)">2</button>
-                    <button class="btn bg-gray-800 hover:bg-blue-600 px-6" onclick="initGame(3)">3</button>
-                    <button class="btn bg-gray-800 hover:bg-blue-600 px-6" onclick="initGame(4)">4</button>
-                </div>
-                <div class="text-xs text-gray-500 mt-4">Ogni giocatore parte con €10.000 e una pedina classica.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modale Mercato -->
-    <div id="modal-market" class="modal-overlay">
-        <div class="modal-box-wrapper" id="market-wrapper" style="transform: scale(1) rotate(0deg)">
-            <button class="btn-rotate-modal" onclick="rotateModal('market-wrapper')">↻ Ruota Vista</button>
-            <div class="modal-box">
-                <div id="market-header" class="p-3 bg-black border-b border-gray-700 font-bold text-center text-lg"></div>
-                <div class="p-4">
-                    <div class="flex justify-between items-center bg-[#111] p-3 rounded mb-4 border border-gray-800">
-                        <div class="text-center w-1/2 border-r border-gray-700">
-                            <div class="text-[0.6rem] text-gray-500 mb-1">PUNTA</div>
-                            <div id="market-back-odd" class="text-3xl font-bold text-blue-400 mono">2.00</div>
-                        </div>
-                        <div class="text-center w-1/2">
-                            <div class="text-[0.6rem] text-gray-500 mb-1">BANCA</div>
-                            <div id="market-lay-odd" class="text-3xl font-bold text-pink-400 mono">2.02</div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center bg-black border border-gray-700 rounded p-2 mb-4">
-                        <span class="text-gray-500 text-xl font-bold ml-2">€</span>
-                        <input type="number" id="input-stake" value="100" min="10" step="10" class="bg-transparent border-none text-white text-xl w-full outline-none text-right" oninput="updateMath()">
-                    </div>
-
-                    <div id="order-math-display" class="bg-[#111] p-3 rounded mb-4 text-sm"></div>
-
-                    <div class="flex gap-3">
-                        <button class="btn btn-back flex-1" onclick="placeOrder('BACK')">PUNTA</button>
-                        <button class="btn btn-lay flex-1" onclick="placeOrder('LAY')">BANCA</button>
-                    </div>
-                    <button class="btn bg-gray-800 w-full mt-3" onclick="skipMarket()">Salta Turno</button>
+            <div class="modal-box" style="max-width: 550px;">
+                <h1 class="text-4xl font-bold mb-2 text-red-600" style="font-family: 'Montserrat', sans-serif;">MONOPOLI</h1>
+                <p class="mb-6 text-sm text-gray-600">Inserisci i nomi e scegli la tua pedina in legno intagliata</p>
+                <div id="setup-players" class="flex flex-col gap-4 mb-6"></div>
+                <div class="flex gap-2">
+                    <button class="btn btn-inline" onclick="addSetupPlayer()">+ Giocatore</button>
+                    <button class="btn btn-buy btn-inline" onclick="startGame()">INIZIA PARTITA</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modale Probabilità (Segnali) -->
-    <div id="modal-signal" class="modal-overlay">
-        <div class="modal-box-wrapper" id="signal-wrapper" style="transform: scale(1) rotate(0deg)">
-            <button class="btn-rotate-modal" onclick="rotateModal('signal-wrapper')">↻ Ruota Vista</button>
-            <div class="modal-box border-t-4 border-t-purple-500">
-                <div class="p-4 bg-purple-900/30 font-bold text-purple-400 flex items-center gap-2">
-                    <span>📊</span> SEGNALE SALA TRADING VIP
-                </div>
-                <div id="signal-content" class="p-5 font-mono text-xs text-gray-300 leading-relaxed bg-[#0a0a0a]"></div>
-                <div class="p-3 bg-black">
-                    <button class="btn bg-purple-600 w-full" onclick="closeSignal()">Ricevuto</button>
-                </div>
-            </div>
+    <!-- Modale Azione Standard -->
+    <div id="modal-action" class="modal-overlay">
+        <div class="modal-box-wrapper" id="action-wrapper" style="transform: scale(1) rotate(0deg)">
+            <div class="modal-box" id="action-content"></div>
         </div>
     </div>
 
-    <!-- Modale P2P Match -->
-    <div id="modal-match" class="modal-overlay">
-        <div class="modal-box-wrapper" id="match-wrapper" style="transform: scale(1) rotate(0deg)">
-            <button class="btn-rotate-modal" onclick="rotateModal('match-wrapper')">↻ Ruota Vista</button>
-            <div class="modal-box border-t-4 border-t-yellow-500">
-                <div class="p-3 bg-yellow-900/30 text-yellow-400 font-bold text-center">OFFERTA SUL MERCATO</div>
-                <div class="p-4 text-center">
-                    <p id="match-desc" class="text-sm mb-3 text-gray-200"></p>
-                    <div class="bg-black p-3 rounded mb-4 font-mono text-left text-xs border border-gray-700">
-                        <div id="match-details-1" class="mb-2"></div>
-                        <div id="match-details-2" class="text-red-400 font-bold"></div>
-                    </div>
-                    <div id="match-buttons" class="flex flex-col gap-2"></div>
-                    <button class="btn bg-gray-800 w-full mt-3" onclick="closeMatchModal()">Nessuno Accetta</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Modale Pagamento Vassoio -->
+    <div id="modal-payment" class="modal-overlay">
+        <div class="modal-box-wrapper" id="payment-wrapper" style="transform: scale(1) rotate(0deg)">
+            <div class="modal-box" style="max-width: 500px;">
+                <h2 id="pay-title" class="text-2xl font-bold mb-2 font-['Montserrat'] uppercase text-red-600">PAGAMENTO</h2>
+                <p id="pay-desc" class="mb-4 text-gray-700"></p>
+                
+                <div class="text-left font-bold text-sm text-gray-500 mb-1">IL TUO VASSOIO: <span id="tray-sum" class="float-right text-red-600">L. 0</span></div>
+                <div id="pay-tray" class="payment-zone"></div>
 
-    <!-- Modale Matchday -->
-    <div id="modal-matchday" class="modal-overlay z-[300]">
-        <div class="modal-box-wrapper" id="matchday-wrapper" style="transform: scale(1) rotate(0deg)">
-            <button class="btn-rotate-modal" onclick="rotateModal('matchday-wrapper')">↻ Ruota Vista</button>
-            <div class="modal-box border-t-4 border-t-green-500 max-w-lg">
-                <div class="p-4 bg-green-900/30 text-green-400 font-bold text-center text-xl tracking-widest">⚽ MATCHDAY SIMULATION</div>
-                <div class="p-4">
-                    <p class="text-center text-gray-400 mb-3 text-xs">I mercati sono chiusi. Risoluzione eventi RNG.</p>
-                    <div id="matchday-results" class="max-h-64 overflow-y-auto bg-black border border-gray-800 rounded p-3 text-xs font-mono mb-4"></div>
-                    <button class="btn bg-green-600 w-full" onclick="closeMatchdayModal()">Incassa & Continua</button>
-                </div>
+                <div class="text-left font-bold text-sm text-gray-500 mb-1">IL TUO PORTAFOGLIO:</div>
+                <div id="pay-wallet" class="payment-zone" style="background: rgba(0,166,80,0.05); border-color: #00a650;"></div>
+
+                <button id="btn-confirm-pay" class="btn btn-buy" disabled onclick="confirmPayment()">CONFERMA PAGAMENTO</button>
+                <button id="btn-cancel-pay" class="btn mt-2" onclick="cancelPayment()">ANNULLA / BANCAROTTA</button>
             </div>
         </div>
     </div>
 
     <script>
-        const sfx = {
-            synth: null,
-            init() { if(!this.synth) this.synth = new Tone.PolySynth(Tone.Synth).toDestination(); },
-            playDice() { this.init(); try { Tone.Transport.start(); this.synth.triggerAttackRelease(["C5", "E5"], "16n"); } catch(e){} },
-            playCash() { this.init(); try { this.synth.triggerAttackRelease(["G5", "B5", "D6"], "8n"); } catch(e){} },
-            playError() { this.init(); try { this.synth.triggerAttackRelease(["C3", "D#3"], "8n"); } catch(e){} },
-            playMatch() { this.init(); try { this.synth.triggerAttackRelease(["E5", "G5"], "8n"); } catch(e){} }
+        const C = {
+            BROWN: '#8e4a23', LIGHTBLUE: '#9bd2f0', PINK: '#d93c96',
+            ORANGE: '#f7941d', RED: '#ed1b24', YELLOW: '#fff200',
+            GREEN: '#00a650', DARKBLUE: '#0054a6'
         };
 
-        const cellPos = {
-            0: { c: 11, r: 11 }, 1: { c: 10, r: 11 }, 2: { c: 9, r: 11 }, 3: { c: 8, r: 11 }, 4: { c: 7, r: 11 },
-            5: { c: 6, r: 11 }, 6: { c: 5, r: 11 }, 7: { c: 4, r: 11 }, 8: { c: 3, r: 11 }, 9: { c: 2, r: 11 },
-            10: { c: 1, r: 11 }, 11: { c: 1, r: 10 }, 12: { c: 1, r: 9 }, 13: { c: 1, r: 8 }, 14: { c: 1, r: 7 },
-            15: { c: 1, r: 6 }, 16: { c: 1, r: 5 }, 17: { c: 1, r: 4 }, 18: { c: 1, r: 3 }, 19: { c: 1, r: 2 },
-            20: { c: 1, r: 1 }, 21: { c: 2, r: 1 }, 22: { c: 3, r: 1 }, 23: { c: 4, r: 1 }, 24: { c: 5, r: 1 },
-            25: { c: 6, r: 1 }, 26: { c: 7, r: 1 }, 27: { c: 8, r: 1 }, 28: { c: 9, r: 1 }, 29: { c: 10, r: 1 },
-            30: { c: 11, r: 1 }, 31: { c: 11, r: 2 }, 32: { c: 11, r: 3 }, 33: { c: 11, r: 4 }, 34: { c: 11, r: 5 },
-            35: { c: 11, r: 6 }, 36: { c: 11, r: 7 }, 37: { c: 11, r: 8 }, 38: { c: 11, r: 9 }, 39: { c: 11, r: 10 }
+        const svgTrain = `<svg viewBox="0 0 100 100" class="svg-board-icon"><path d="M 20 70 L 80 70 L 80 40 L 60 40 L 60 20 L 40 20 L 40 40 L 20 50 Z" fill="#0054a6" stroke="#111" stroke-width="4"/><circle cx="30" cy="70" r="10" fill="#333" stroke="#111" stroke-width="3"/><circle cx="50" cy="70" r="10" fill="#333" stroke="#111" stroke-width="3"/><circle cx="70" cy="70" r="10" fill="#333" stroke="#111" stroke-width="3"/></svg>`;
+        const svgBulb = `<svg viewBox="0 0 100 100" class="svg-board-icon"><circle cx="50" cy="35" r="25" fill="#fff200" stroke="#111" stroke-width="4"/><path d="M 35 50 L 65 50 L 60 75 L 40 75 Z" fill="#eaddcd" stroke="#111" stroke-width="4"/><rect x="42" y="75" width="16" height="15" fill="#333" rx="3"/></svg>`;
+        const svgTap = `<svg viewBox="0 0 100 100" class="svg-board-icon"><path d="M 25 50 L 50 50 L 50 70 L 65 70 L 65 40 L 25 40 Z" fill="#9bd2f0" stroke="#111" stroke-width="4"/><rect x="15" y="35" width="10" height="20" fill="#ccc" stroke="#111" stroke-width="4"/><circle cx="60" cy="85" r="8" fill="#9bd2f0" stroke="#111" stroke-width="3"/></svg>`;
+        const svgRing = `<svg viewBox="0 0 100 100" class="svg-board-icon"><circle cx="50" cy="65" r="25" fill="none" stroke="#fff200" stroke-width="8"/><circle cx="50" cy="65" r="25" fill="none" stroke="#111" stroke-width="2"/><polygon points="35,35 65,35 50,15" fill="#9bd2f0" stroke="#111" stroke-width="3"/><polygon points="35,35 65,35 50,50" fill="#fff" stroke="#111" stroke-width="3"/></svg>`;
+        const svgBag = `<svg viewBox="0 0 100 100" class="svg-board-icon"><path d="M 20 85 L 80 85 C 90 85 90 45 75 40 L 65 25 L 35 25 L 25 40 C 10 45 10 85 20 85 Z" fill="#d7cdb9" stroke="#111" stroke-width="4"/><text x="50" y="70" font-size="30" font-family="Montserrat" font-weight="bold" fill="#ed1b24" text-anchor="middle">L.</text></svg>`;
+
+        const boardData = [
+            { id: 0, type: 'corner', name: "VIA!", desc: "Ritirate L. 20.000 passando", icon: "⬅️", price: 0 },
+            { id: 1, type: 'property', name: "Vicolo Corto", color: C.BROWN, price: 6000, rent: [200, 1000, 3000, 9000, 16000, 25000], houseCost: 5000 },
+            { id: 2, type: 'chance', name: "Probabilità", icon: "❓", color: 'var(--prob-color)' },
+            { id: 3, type: 'property', name: "Vicolo Stretto", color: C.BROWN, price: 6000, rent: [400, 2000, 6000, 18000, 32000, 45000], houseCost: 5000 },
+            { id: 4, type: 'tax', name: "Tassa Patrimoniale", desc: "Pagate L. 20.000", cost: 20000, svg: svgBag },
+            { id: 5, type: 'station', name: "Stazione Sud", price: 20000, svg: svgTrain },
+            { id: 6, type: 'property', name: "Bastioni Gran Sasso", color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
+            { id: 7, type: 'chest', name: "Imprevisti", icon: "❓", color: 'var(--impr-color)' },
+            { id: 8, type: 'property', name: "Viale Monterosa", color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
+            { id: 9, type: 'property', name: "Viale Vesuvio", color: C.LIGHTBLUE, price: 12000, rent: [800, 4000, 10000, 30000, 45000, 60000], houseCost: 5000 },
+            { id: 10, type: 'corner', name: "Prigione", desc: "Transito", icon: "⛓️" },
+            { id: 11, type: 'property', name: "Via Accademia", color: C.PINK, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
+            { id: 12, type: 'utility', name: "Società Elettrica", price: 15000, svg: svgBulb },
+            { id: 13, type: 'property', name: "Corso Ateneo", color: C.PINK, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
+            { id: 14, type: 'property', name: "Piazza Università", color: C.PINK, price: 16000, rent: [1200, 6000, 18000, 50000, 70000, 90000], houseCost: 10000 },
+            { id: 15, type: 'station', name: "Stazione Ovest", price: 20000, svg: svgTrain },
+            { id: 16, type: 'property', name: "Via Verdi", color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
+            { id: 17, type: 'chance', name: "Probabilità", icon: "❓", color: 'var(--prob-color)' },
+            { id: 18, type: 'property', name: "Corso Raffaello", color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
+            { id: 19, type: 'property', name: "Piazza Dante", color: C.ORANGE, price: 20000, rent: [1600, 8000, 22000, 60000, 80000, 100000], houseCost: 10000 },
+            { id: 20, type: 'corner', name: "Parcheggio", desc: "Gratuito", icon: "🅿️" },
+            { id: 21, type: 'property', name: "Via Marco Polo", color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
+            { id: 22, type: 'chest', name: "Imprevisti", icon: "❓", color: 'var(--impr-color)' },
+            { id: 23, type: 'property', name: "Corso Magellano", color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
+            { id: 24, type: 'property', name: "Largo Colombo", color: C.RED, price: 24000, rent: [2000, 10000, 30000, 75000, 92500, 110000], houseCost: 15000 },
+            { id: 25, type: 'station', name: "Stazione Nord", price: 20000, svg: svgTrain },
+            { id: 26, type: 'property', name: "Viale Costantino", color: C.YELLOW, price: 26000, rent: [2200, 11000, 33000, 80000, 97500, 115000], houseCost: 15000 },
+            { id: 27, type: 'property', name: "Viale Traiano", color: C.YELLOW, price: 26000, rent: [2200, 11000, 33000, 80000, 97500, 115000], houseCost: 15000 },
+            { id: 28, type: 'utility', name: "Acqua Potabile", price: 15000, svg: svgTap },
+            { id: 29, type: 'property', name: "Piazza G. Cesare", color: C.YELLOW, price: 28000, rent: [2400, 12000, 36000, 85000, 102500, 120000], houseCost: 15000 },
+            { id: 30, type: 'corner', name: "In Prigione!", desc: "Andate in prigione", icon: "👮" },
+            { id: 31, type: 'property', name: "Via Roma", color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
+            { id: 32, type: 'property', name: "Corso Impero", color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
+            { id: 33, type: 'chance', name: "Probabilità", icon: "❓", color: 'var(--prob-color)' },
+            { id: 34, type: 'property', name: "Largo Augusto", color: C.GREEN, price: 32000, rent: [2800, 15000, 45000, 100000, 120000, 140000], houseCost: 20000 },
+            { id: 35, type: 'station', name: "Stazione Est", price: 20000, svg: svgTrain },
+            { id: 36, type: 'chest', name: "Imprevisti", icon: "❓", color: 'var(--impr-color)' },
+            { id: 37, type: 'property', name: "Viale dei Giardini", color: C.DARKBLUE, price: 35000, rent: [3500, 17500, 50000, 110000, 130000, 150000], houseCost: 20000 },
+            { id: 38, type: 'tax', name: "Tassa di Lusso", desc: "Pagate L. 10.000", cost: 10000, svg: svgRing },
+            { id: 39, type: 'property', name: "Parco della Vittoria", color: C.DARKBLUE, price: 40000, rent: [5000, 20000, 60000, 140000, 170000, 200000], houseCost: 20000 }
+        ];
+
+        const cellPos = {};
+        for(let i=0; i<=10; i++) cellPos[i] = { c: 11-i, r: 11 };
+        for(let i=11; i<=20; i++) cellPos[i] = { c: 1, r: 21-i };
+        for(let i=21; i<=30; i++) cellPos[i] = { c: i-19, r: 1 };
+        for(let i=31; i<=39; i++) cellPos[i] = { c: 11, r: i-29 };
+
+        const probDeck = [
+            { txt: "Andate in prigione direttamente e senza passare dal «Via!»", action: (p) => goToJail(p) },
+            { txt: "Ritornate al Vicolo Corto", action: (p) => movePlayerTo(p, 1) },
+            { txt: "Ereditate da un lontano parente 10.000 lire", action: (p) => receiveMoney(p, 10000) },
+            { txt: "Scade il Vostro premio di assicurazione: pagate 5.000 lire", action: (p) => payBankActive(5000) },
+            { txt: "Avete venduto delle azioni: ricavate 5.000 lire", action: (p) => receiveMoney(p, 5000) },
+            { txt: "Maturano la cedola delle vostre azioni: ritirate 2.500 lire", action: (p) => receiveMoney(p, 2500) },
+            { txt: "Avete vinto il secondo premio in un concorso di bellezza: ritirate 1.000 lire", action: (p) => receiveMoney(p, 1000) }
+        ];
+
+        const imprDeck = [
+            { txt: "Andate sino a Via Accademia: se passate dal «Via!» ritirate le 20.000 lire", action: (p) => movePlayerTo(p, 11) },
+            { txt: "Andate sino al Parco della Vittoria", action: (p) => movePlayerTo(p, 39) },
+            { txt: "Andate avanti sino al «Via!»", action: (p) => movePlayerTo(p, 0) },
+            { txt: "Fate tre passi indietro", action: (p) => movePlayerTo(p, p.pos - 3 < 0 ? p.pos - 3 + 40 : p.pos - 3) },
+            { txt: "Avete vinto un terno al lotto: ritirate 10.000 lire", action: (p) => receiveMoney(p, 10000) },
+            { txt: "Maturano le cedole delle vostre cartelle di rendita, ritirate 15.000 lire", action: (p) => receiveMoney(p, 15000) },
+            { txt: "Multa di 1.500 lire per aver guidato senza patente", action: (p) => payBankActive(1500) },
+            { txt: "Versate 2.000 lire per beneficenza", action: (p) => payBankActive(2000) }
+        ];
+
+        // --- SVGs Pedine ---
+        const tokenSVGs = {
+            'candelabro': `<svg viewBox="0 0 100 100" class="token-svg"><rect x="40" y="55" width="20" height="25" fill="url(#woodW)" stroke="#111" stroke-width="3"/><ellipse cx="50" cy="55" rx="25" ry="10" fill="url(#woodY)" stroke="#111" stroke-width="3"/><path d="M 30 95 L 70 95 L 60 75 L 40 75 Z" fill="url(#woodR)" stroke="#111" stroke-width="3"/><circle cx="50" cy="30" r="18" fill="url(#woodR)" stroke="#111" stroke-width="3"/><path d="M 42 40 L 58 40 L 60 55 L 40 55 Z" fill="url(#woodY)" stroke="#111" stroke-width="3"/></svg>`,
+            'fiasco': `<svg viewBox="0 0 100 100" class="token-svg"><path d="M 35 90 L 65 90 L 60 75 L 40 75 Z" fill="url(#woodR)" stroke="#111" stroke-width="3"/><circle cx="50" cy="50" r="25" fill="url(#woodY)" stroke="#111" stroke-width="3"/><path d="M 40 25 L 60 25 L 55 35 L 45 35 Z" fill="url(#woodR)" stroke="#111" stroke-width="3"/><rect x="42" y="15" width="16" height="10" fill="url(#woodY)" stroke="#111" stroke-width="3"/></svg>`,
+            'pera': `<svg viewBox="0 0 100 100" class="token-svg"><path d="M 50 15 C 30 40 20 60 30 80 C 40 95 60 95 70 80 C 80 60 70 40 50 15 Z" fill="url(#woodG)" stroke="#111" stroke-width="3"/><rect x="48" y="5" width="4" height="15" fill="#555" stroke="#111" stroke-width="2"/></svg>`,
+            'piantagrassa': `<svg viewBox="0 0 100 100" class="token-svg"><path d="M 30 90 L 70 90 L 65 75 L 35 75 Z" fill="url(#woodR)" stroke="#111" stroke-width="3"/><circle cx="50" cy="60" r="20" fill="url(#woodG)" stroke="#111" stroke-width="3"/><circle cx="50" cy="40" r="15" fill="url(#woodG)" stroke="#111" stroke-width="3"/><circle cx="50" cy="25" r="10" fill="url(#woodG)" stroke="#111" stroke-width="3"/></svg>`,
+            'mela': `<svg viewBox="0 0 100 100" class="token-svg"><circle cx="40" cy="55" r="25" fill="url(#woodR)" stroke="#111" stroke-width="3"/><circle cx="60" cy="55" r="25" fill="url(#woodR)" stroke="#111" stroke-width="3"/><path d="M 50 35 Q 60 10 70 20 Q 60 30 50 35 Z" fill="url(#woodY)" stroke="#111" stroke-width="3"/></svg>`
         };
+        const tokensLib = [{id: 'candelabro', name: 'Candelabro'}, {id: 'fiasco', name: 'Fiasco'}, {id: 'pera', name: 'Pera'}, {id: 'piantagrassa', name: 'Pianta Grassa'}, {id: 'mela', name: 'Mela'}];
 
-        const colorsMap = {
-            marrone: "#8b4513", azzurro: "#87ceeb", rosa: "#ff1493", arancione: "#ffa500",
-            rosso: "#ff0000", giallo: "#ffff00", verde: "#22c55e", viola: "#00008b"
-        };
+        let gameState = { players: [], currentPlayerIdx: 0, properties: {}, isMoving: false, lastRoll: 0 };
 
-        function getBoardData() {
-            return [
-                { id: 0, type: 'corner', name: "VIA", icon: "🏁" },
-                { id: 1, type: 'market', icon: "⚽", name: "Juve-Milan 1", back: 2.10, lay: 2.14, color: colorsMap.marrone },
-                { id: 2, type: 'chance', icon: "📈", name: "Probabilità" },
-                { id: 3, type: 'market', icon: "⚽", name: "Inter-Roma 1", back: 1.85, lay: 1.88, color: colorsMap.marrone },
-                { id: 4, type: 'tax', icon: "💦", name: "Irrigazione", cost: 200 },
-                { id: 5, type: 'station', icon: "🏆", name: "Scudetto" },
-                { id: 6, type: 'market', icon: "⚽", name: "Napoli-Lazio X", back: 3.40, lay: 3.50, color: colorsMap.azzurro },
-                { id: 7, type: 'chance', icon: "📰", name: "Imprevisto" },
-                { id: 8, type: 'market', icon: "⚽", name: "Bologna O 2.5", back: 1.90, lay: 1.95, color: colorsMap.azzurro },
-                { id: 9, type: 'market', icon: "⚽", name: "Atalanta O 2.5", back: 1.65, lay: 1.70, color: colorsMap.azzurro },
-                { id: 10, type: 'corner', name: "VAR CHECK", icon: "📺" },
-                { id: 11, type: 'market', icon: "⚽", name: "EPL: City Win", back: 1.35, lay: 1.38, color: colorsMap.rosa },
-                { id: 12, type: 'market', icon: "⚽", name: "EPL: Ars Win", back: 2.40, lay: 2.46, color: colorsMap.rosa },
-                { id: 13, type: 'market', icon: "⚽", name: "EPL: Liv Win", back: 1.95, lay: 2.00, color: colorsMap.rosa },
-                { id: 14, type: 'tax', icon: "💡", name: "Illuminazione", cost: 500 },
-                { id: 15, type: 'station', icon: "🏆", name: "Coppa Italia" },
-                { id: 16, type: 'chance', icon: "📈", name: "Probabilità" },
-                { id: 17, type: 'market', icon: "⚽", name: "LaLiga: RMA 1", back: 1.50, lay: 1.54, color: colorsMap.arancione },
-                { id: 18, type: 'market', icon: "⚽", name: "LaLiga: BAR X", back: 4.00, lay: 4.20, color: colorsMap.arancione },
-                { id: 19, type: 'market', icon: "⚽", name: "LaLiga: ATM 2", back: 3.10, lay: 3.25, color: colorsMap.arancione },
-                { id: 20, type: 'corner', name: "FREE BET", icon: "🎁" },
-                { id: 21, type: 'market', icon: "⚽", name: "Bundes: Bayern", back: 1.25, lay: 1.28, color: colorsMap.rosso },
-                { id: 22, type: 'chance', icon: "📰", name: "Imprevisto" },
-                { id: 23, type: 'market', icon: "⚽", name: "Bundes: BVB", back: 2.60, lay: 2.70, color: colorsMap.rosso },
-                { id: 24, type: 'market', icon: "⚽", name: "Bundes: Lev X", back: 3.80, lay: 4.00, color: colorsMap.rosso },
-                { id: 25, type: 'station', icon: "🏆", name: "Champions L." },
-                { id: 26, type: 'market', icon: "⚽", name: "UCL: O 3.5", back: 2.90, lay: 3.05, color: colorsMap.giallo },
-                { id: 27, type: 'tax', icon: "🏟️", name: "Manutenzione", cost: 300 },
-                { id: 28, type: 'market', icon: "⚽", name: "UCL: CS 1-0", back: 8.00, lay: 8.60, color: colorsMap.giallo },
-                { id: 29, type: 'market', icon: "⚽", name: "UCL: CS 0-0", back: 12.00, lay: 13.50, color: colorsMap.giallo },
-                { id: 30, type: 'corner', name: "ESPULSIONE", icon: "🟥" },
-                { id: 31, type: 'market', icon: "⚽", name: "Euro: FRA Win", back: 5.50, lay: 6.00, color: colorsMap.verde },
-                { id: 32, type: 'market', icon: "⚽", name: "Euro: ENG Win", back: 4.50, lay: 5.00, color: colorsMap.verde },
-                { id: 33, type: 'chance', icon: "📈", name: "Probabilità" },
-                { id: 34, type: 'market', icon: "⚽", name: "Euro: ITA Qual", back: 1.85, lay: 1.90, color: colorsMap.verde },
-                { id: 35, type: 'station', icon: "🏆", name: "Mondiale" },
-                { id: 36, type: 'chance', icon: "📰", name: "Imprevisto" },
-                { id: 37, type: 'market', icon: "⚽", name: "W.Cup: BRA Win", back: 6.00, lay: 6.60, color: colorsMap.viola },
-                { id: 38, type: 'market', icon: "⚽", name: "W.Cup: ARG Win", back: 7.00, lay: 7.80, color: colorsMap.viola },
-                { id: 39, type: 'market', icon: "⚽", name: "W.Cup: SPA Win", back: 8.50, lay: 9.50, color: colorsMap.viola }
-            ];
+        // Helper Funzioni
+        function isLightColor(hex) {
+            if(!hex) return false;
+            const c = hex.substring(1); const rgb = parseInt(c, 16);
+            const r = (rgb >> 16) & 0xff; const g = (rgb >>  8) & 0xff; const b = (rgb >>  0) & 0xff;
+            return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 128;
         }
 
-        let gameState = { status: 'IDLE', players: [], currentPlayerIdx: 0, turnCount: 1, escrow: 0, orders: {}, matchedBets: [] };
-        const tokens = ["🎩", "🚗", "🚢", "🐕"];
-        const pColors = ['#1fb2e3', '#f48fb1', '#22c55e', '#eab308'];
-        let currentActiveMarket = null;
-        let rotations = {}; // Salva la rotazione dei modali
-        let isDrawerOpen = false;
-
-        function toggleTerminal() {
-            isDrawerOpen = !isDrawerOpen;
-            const drawer = document.getElementById('terminal-drawer');
-            if(isDrawerOpen) drawer.classList.add('open');
-            else drawer.classList.remove('open');
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = msg;
+            container.appendChild(toast);
+            setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
         }
 
-        function rotateModal(id) {
-            if(!rotations[id]) rotations[id] = 0;
-            rotations[id] = (rotations[id] + 90) % 360;
-            document.getElementById(id).style.transform = `scale(1) rotate(${rotations[id]}deg)`;
+        // --- GESTIONE BANCONOTE FISICHE ---
+        function getNotesArray(amount) {
+            let notes = []; let rem = amount;
+            const addN = (val, count) => { for(let i=0; i<count; i++) notes.push(val); };
+            addN(50000, Math.floor(rem / 50000)); rem %= 50000;
+            addN(10000, Math.floor(rem / 10000)); rem %= 10000;
+            addN(1000,  Math.floor(rem / 1000));  rem %= 1000;
+            addN(100,   Math.floor(rem / 100));   rem %= 100;
+            return notes;
         }
 
-        function logSys(msg, colorClass = '') {
-            const log = document.getElementById('action-log');
-            const d = new Date();
-            const time = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
-            log.innerHTML = `<div class="mb-1"><span class="text-gray-600">[${time}]</span> <span class="${colorClass}">${msg}</span></div>` + log.innerHTML;
+        function createNoteHTML(val, onClickStr = '', style = '') {
+            return `<div class="real-note note-bg-${val}" onclick="${onClickStr}" style="${style}"><span class="note-val-badge">${val.toLocaleString('it-IT')}</span></div>`;
         }
 
-        function formatMoney(n) { return '€' + n.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'); }
-
-        function initGame(num) {
-            document.getElementById('modal-setup').style.display = 'none';
-            for(let i=0; i<num; i++) {
-                gameState.players.push({ id: i, name: `Trader ${i+1}`, emoji: tokens[i], color: pColors[i], balance: 10000, pos: 0, active: true, liability: 0, inJail: false });
-            }
-            getBoardData().forEach(c => { if(c.type === 'market') gameState.orders[c.id] = []; });
-            
-            const board = document.getElementById('board');
-            getBoardData().forEach(data => {
-                const cell = document.createElement('div');
-                cell.className = `cell ${data.type === 'corner' ? 'corner' : ''}`;
-                cell.id = `cell-${data.id}`;
-                const pos = cellPos[data.id];
-                cell.style.gridColumn = pos.c; cell.style.gridRow = pos.r;
-
-                if(data.id > 0 && data.id < 10) cell.classList.add("bottom-row");
-                else if(data.id > 10 && data.id < 20) cell.classList.add("left-col");
-                else if(data.id > 20 && data.id < 30) cell.classList.add("top-row");
-                else if(data.id > 30 && data.id < 40) cell.classList.add("right-col");
-
-                let contentHTML = `<div class="cell-content">`;
-                
-                if (data.type === 'market') {
-                    contentHTML += `<div class="color-bar" style="background-color: ${data.color};"></div>
-                                    <div class="market-title">${data.name}</div>
-                                    <div class="odds-container">
-                                        <div class="odd-box odd-back">${data.back.toFixed(2)}</div>
-                                        <div class="odd-box odd-lay">${data.lay.toFixed(2)}</div>
-                                    </div>
-                                    <div id="order-badge-${data.id}" class="order-badge" style="display:none;">0</div>`;
-                } else {
-                    const extra = data.cost ? `<div class="text-[0.4rem] font-bold text-red-600 mt-1">€${data.cost}</div>` : '';
-                    contentHTML += `<div class="market-icon mt-1">${data.icon}</div>
-                                    <div class="market-title">${data.name}</div>${extra}`;
-                }
-                
-                contentHTML += `</div>`;
-                cell.innerHTML = contentHTML;
-                board.appendChild(cell);
+        function getDashboardNotesHTML(amount) {
+            const notes = getNotesArray(amount); let html = '<div class="note-stack">';
+            notes.forEach((val, i) => {
+                if(i < 12) html += createNoteHTML(val, '', `transform: rotate(${(Math.random() - 0.5) * 15}deg); z-index: ${i};`);
             });
-
-            createTokens();
-            updateUI();
-            logSys(`Sessione Tabletop avviata con ${num} trader.`, 'text-green-400');
-            orientCenterBoard();
+            if(notes.length > 12) html += `<div style="margin-left: 10px; align-self: center; font-weight:bold;">+${notes.length-12}</div>`;
+            return html + '</div>';
         }
 
-        function createTokens() {
+        // --- SISTEMA DI PAGAMENTO ---
+        let currentPayment = { amount: 0, callback: null, traySum: 0, wallet: [], tray: [] };
+
+        function openPayment(amount, reason, callback) {
+            const p = gameState.players[gameState.currentPlayerIdx];
+            if (p.balance < amount) { showToast(`⚠️ Non hai abbastanza fondi. ${p.name} è in BANCAROTTA!`); p.balance = -1; endTurn(); return; }
+
+            document.getElementById('modal-action').style.display = 'none';
+            document.getElementById('payment-wrapper').style.transform = `scale(1) rotate(${[0, 90, 180, -90, 0, 90][gameState.currentPlayerIdx] || 0}deg)`;
+
+            currentPayment = { amount: amount, callback: callback, traySum: 0, wallet: getNotesArray(p.balance), tray: [] };
+            document.getElementById('pay-title').innerText = reason; renderPaymentUI();
+            document.getElementById('modal-payment').style.display = 'flex';
+        }
+
+        function renderPaymentUI() {
+            document.getElementById('pay-desc').innerHTML = `Devi versare: <b>L. ${currentPayment.amount.toLocaleString('it-IT')}</b>`;
+            
+            const trayDiv = document.getElementById('pay-tray');
+            trayDiv.innerHTML = currentPayment.tray.length === 0 ? '<span class="text-gray-400 text-sm">Tocca le banconote</span>' : '';
+            currentPayment.tray.forEach((val, i) => trayDiv.innerHTML += createNoteHTML(val, `moveNoteToWallet(${i})`, 'animation: jump 0.2s ease-out;'));
+
+            const walletDiv = document.getElementById('pay-wallet');
+            walletDiv.innerHTML = currentPayment.wallet.length === 0 ? '<span class="text-gray-400 text-sm">Vuoto</span>' : '';
+            currentPayment.wallet.forEach((val, i) => walletDiv.innerHTML += createNoteHTML(val, `moveNoteToTray(${i})`));
+
+            const sumEl = document.getElementById('tray-sum'); sumEl.innerText = `L. ${currentPayment.traySum.toLocaleString('it-IT')}`;
+            const btnConfirm = document.getElementById('btn-confirm-pay');
+            
+            if (currentPayment.traySum >= currentPayment.amount) {
+                sumEl.className = "float-right text-green-600 font-bold text-lg"; btnConfirm.disabled = false;
+                const change = currentPayment.traySum - currentPayment.amount;
+                btnConfirm.innerText = change > 0 ? `PAGA E RICEVI L. ${change.toLocaleString()} DI RESTO` : `PAGA L. ${currentPayment.amount.toLocaleString()}`;
+            } else {
+                sumEl.className = "float-right text-red-600 font-bold text-lg"; btnConfirm.disabled = true; btnConfirm.innerText = `CONFERMA PAGAMENTO`;
+            }
+        }
+
+        function moveNoteToTray(index) { const val = currentPayment.wallet.splice(index, 1)[0]; currentPayment.tray.push(val); currentPayment.traySum += val; renderPaymentUI(); }
+        function moveNoteToWallet(index) { const val = currentPayment.tray.splice(index, 1)[0]; currentPayment.wallet.push(val); currentPayment.traySum -= val; renderPaymentUI(); }
+        function confirmPayment() { if (currentPayment.traySum >= currentPayment.amount) { document.getElementById('modal-payment').style.display = 'none'; currentPayment.callback(); } }
+        function cancelPayment() { document.getElementById('modal-payment').style.display = 'none'; endTurn(); }
+
+        // --- INIZIALIZZAZIONE E UI ---
+        function initBank() {
+            const bankVals = [50000, 10000, 1000, 100];
+            let trayHTML = '';
+            bankVals.forEach(v => {
+                trayHTML += `<div class="bank-slot">`;
+                for(let i=0; i<6; i++) {
+                    trayHTML += createNoteHTML(v, '', `position:absolute; bottom:${i*2}px; left:${i*2}px; z-index:${i};`);
+                }
+                trayHTML += `</div>`;
+            });
+            document.getElementById('bank-tray').innerHTML = trayHTML;
+        }
+
+        function initBoard() {
+            const board = document.getElementById('board'); const fragment = document.createDocumentFragment(); 
+            boardData.forEach(data => {
+                const cell = document.createElement('div'); cell.className = `cell ${data.type === 'corner' ? 'corner' : ''}`; cell.id = `cell-${data.id}`;
+                const pos = cellPos[data.id]; cell.style.gridColumn = pos.c; cell.style.gridRow = pos.r;
+                cell.classList.add(data.id > 0 && data.id < 10 ? "bottom-row" : data.id > 10 && data.id < 20 ? "left-col" : data.id > 20 && data.id < 30 ? "top-row" : data.id > 30 && data.id < 40 ? "right-col" : "none");
+
+                let html = `<div class="cell-content">`;
+                if (data.type === 'property') {
+                    html += `<div class="color-bar" id="cb-${data.id}" style="background-color: ${data.color};"></div><div class="property-name">${data.name}</div><div class="property-price">L. ${data.price}</div>`;
+                } else if (data.type === 'corner') {
+                    html += `<div class="icon-large">${data.icon}</div><div class="property-name">${data.name}</div>`;
+                } else {
+                    html += `<div class="property-name mt-1 mb-1">${data.name}</div>${data.svg ? data.svg : `<div class="icon-large">${data.icon}</div>`}`;
+                    if(data.price || data.cost) html += `<div class="property-price">L. ${data.price || data.cost}</div>`;
+                }
+                html += `</div>`; cell.innerHTML = html; fragment.appendChild(cell);
+                if(data.type === 'property' || data.type === 'station' || data.type === 'utility') gameState.properties[data.id] = { ownerId: null, level: 0 };
+            });
+            board.appendChild(fragment);
+            initBank();
+        }
+
+        let setupPlayerCount = 0;
+        function addSetupPlayer() {
+            if(setupPlayerCount >= 6) { showToast("Massimo 6 giocatori"); return; }
+            setupPlayerCount++; 
+            const defaultToken = tokensLib[(setupPlayerCount - 1) % tokensLib.length].id;
+            
+            const div = document.createElement('div'); 
+            div.className = "flex gap-2 items-center justify-between p-2 border-b border-gray-300 w-full flex-wrap";
+            
+            let tokensHTML = tokensLib.map(t => `
+                <div class="token-option ${t.id === defaultToken ? 'selected' : ''}" data-pid="${setupPlayerCount}" data-tid="${t.id}" onclick="selectToken(${setupPlayerCount}, '${t.id}')">
+                    ${tokenSVGs[t.id].replace('token-svg', 'token-svg-setup')}
+                </div>
+            `).join('');
+
+            div.innerHTML = `
+                <input type="text" id="pname-${setupPlayerCount}" value="Gioc. ${setupPlayerCount}" class="border border-gray-400 p-2 w-full sm:w-1/3 rounded font-bold font-['Montserrat'] outline-none focus:border-red-600">
+                <div class="flex gap-1 justify-center sm:justify-end flex-1 flex-wrap" id="ptoken-container-${setupPlayerCount}">
+                    ${tokensHTML}
+                </div>
+                <input type="hidden" id="ptoken-${setupPlayerCount}" value="${defaultToken}">
+            `;
+            document.getElementById('setup-players').appendChild(div);
+        }
+
+        function selectToken(playerId, tokenId) {
+            document.getElementById(`ptoken-${playerId}`).value = tokenId;
+            const container = document.getElementById(`ptoken-container-${playerId}`);
+            container.querySelectorAll('.token-option').forEach(el => {
+                if(el.getAttribute('data-tid') === tokenId) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+        }
+
+        function startGame() {
+            if(setupPlayerCount < 2) return showToast("Aggiungi almeno 2 giocatori");
+            for(let i=1; i<=setupPlayerCount; i++) {
+                gameState.players.push({
+                    id: i, name: document.getElementById(`pname-${i}`).value, emoji: document.getElementById(`ptoken-${i}`).value, 
+                    balance: 150000, pos: 0, inJail: false, jailTurns: 0
+                });
+            }
+            document.getElementById('modal-setup').style.display = 'none';
             gameState.players.forEach(p => {
-                const t = document.createElement('div');
-                t.id = `token-${p.id}`; t.className = 'token'; t.innerText = p.emoji;
+                const t = document.createElement('div'); t.id = `token-${p.id}`; t.className = 'token'; t.innerHTML = tokenSVGs[p.emoji];
                 document.getElementById('board-area').appendChild(t);
             });
-            setTimeout(updateTokens, 100);
+            updateTokens(); updateDashboard(); orientBoard(); document.getElementById('dice-area').classList.add('dice-ready');
+            showToast("Che la partita abbia inizio!");
+        }
+
+        function orientBoard() {
+            const rot = [0, 90, 180, -90, 0, 90][gameState.currentPlayerIdx] || 0;
+            document.getElementById('center-board').style.transform = `rotate(${rot}deg)`;
+            document.getElementById('action-wrapper').style.transform = `scale(1) rotate(${rot}deg)`;
+        }
+
+        function updateDashboard() {
+            const dash = document.getElementById('dashboard'); dash.innerHTML = '';
+            gameState.players.forEach((p, i) => {
+                const active = i === gameState.currentPlayerIdx ? 'active' : '';
+                dash.innerHTML += `
+                    <div class="player-card ${active}">
+                        <div class="player-name"><div class="dash-token">${tokenSVGs[p.emoji]}</div> ${p.name}</div>
+                        <div class="player-balance">L. ${p.balance.toLocaleString('it-IT')}</div>
+                        ${getDashboardNotesHTML(p.balance)}
+                    </div>`;
+            });
         }
 
         function updateTokens() {
+            if (gameState.players.length === 0) return;
+            const parentRect = document.getElementById('board-area').getBoundingClientRect();
             gameState.players.forEach(p => {
-                if(!p.active) return;
-                const cell = document.getElementById(`cell-${p.pos}`);
-                if(!cell) return;
+                const cell = document.getElementById(`cell-${p.pos}`); if(!cell) return;
                 const rect = cell.getBoundingClientRect();
-                const parentRect = document.getElementById('board-area').getBoundingClientRect();
-                
-                const offsetX = (p.id % 2 === 0 ? -10 : 10);
-                const offsetY = (p.id < 2 ? -10 : 10);
-                
+                const offsetX = (p.id % 2 === 0 ? -5 : 5); const offsetY = (p.id > 2 ? -5 : 5);
                 const tEl = document.getElementById(`token-${p.id}`);
-                tEl.style.left = `${(rect.left - parentRect.left) + rect.width/2 + offsetX - 12}px`;
-                tEl.style.top = `${(rect.top - parentRect.top) + rect.height/2 + offsetY - 12}px`;
+                tEl.style.left = `${(rect.left - parentRect.left) + rect.width/2 + offsetX}px`;
+                tEl.style.top = `${(rect.top - parentRect.top) + rect.height/2 + offsetY}px`;
             });
         }
-        window.addEventListener('resize', updateTokens);
+        let resizeTimeout; window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(updateTokens, 50); });
 
-        function updateUI() {
-            const pList = document.getElementById('players-list');
-            pList.innerHTML = '';
-            gameState.players.forEach((p, i) => {
-                const isActive = i === gameState.currentPlayerIdx;
-                pList.innerHTML += `
-                    <div class="p-3 border-l-4 ${isActive ? 'bg-gray-900 border-blue-500' : 'border-transparent'} flex justify-between items-center transition-colors">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xl filter drop-shadow-md">${p.emoji}</span>
-                            <span class="${!p.active ? 'line-through text-gray-600' : 'font-bold text-sm text-gray-200'}">${p.name} ${p.inJail ? '🟥' : ''}</span>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-green-400 font-bold">${formatMoney(p.balance)}</div>
-                            <div class="text-red-400 text-[0.65rem]">Rischio: ${formatMoney(p.liability)}</div>
-                        </div>
-                    </div>`;
-            });
-
-            document.getElementById('escrow-display').innerText = formatMoney(gameState.escrow);
-
-            const portArea = document.getElementById('portfolio-area');
-            portArea.innerHTML = '';
-            let hasOrd = false;
-            
-            gameState.matchedBets.forEach(b => {
-                hasOrd = true;
-                const pBack = gameState.players.find(x => x.id === b.backerId).emoji;
-                const pLay = gameState.players.find(x => x.id === b.layerId).emoji;
-                portArea.innerHTML += `
-                    <div class="bg-[#1a1a1a] border border-gray-700 rounded p-2 mb-2 text-xs border-l-2 border-l-green-500">
-                        <div class="font-bold text-gray-300 mb-1">${b.name} <span class="float-right text-green-400">MATCHED</span></div>
-                        <div class="flex justify-between">
-                            <span><span class="text-blue-400">PUNTA:</span> ${pBack} (€${b.stake.toFixed(0)})</span>
-                            <span><span class="text-pink-400">BANCA:</span> ${pLay} (@${b.odd.toFixed(2)})</span>
-                        </div>
-                    </div>`;
-            });
-
-            const bData = getBoardData();
-            Object.keys(gameState.orders).forEach(cellId => {
-                const cellOrders = gameState.orders[cellId];
-                const badge = document.getElementById(`order-badge-${cellId}`);
-                if(badge) { badge.innerText = cellOrders.length; badge.style.display = cellOrders.length > 0 ? 'flex' : 'none'; }
-
-                cellOrders.forEach(o => {
-                    hasOrd = true;
-                    const p = gameState.players.find(x => x.id === o.player).emoji;
-                    const mName = bData.find(m => m.id == cellId).name;
-                    const isBack = o.type === 'BACK';
-                    portArea.innerHTML += `
-                        <div class="bg-[#1a1a1a] border border-gray-700 rounded p-2 mb-2 text-xs border-l-2 border-l-yellow-500">
-                            <div class="font-bold text-gray-300 mb-1">${mName} <span class="float-right text-yellow-500">PENDING</span></div>
-                            <div><span class="${isBack ? 'text-blue-400' : 'text-pink-400'}">${isBack ? 'PUNTA' : 'BANCA'}</span> ${p} @ ${o.odd.toFixed(2)} (€${o.stake})</div>
-                        </div>`;
-                });
-            });
-            if(!hasOrd) portArea.innerHTML = `<div class="text-gray-600 text-center text-xs mt-4">Nessun ordine nel book.</div>`;
+        function createStardust() {
+            const diceArea = document.getElementById('dice-area'); const rect = diceArea.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2; const centerY = rect.top + rect.height / 2;
+            for (let i = 0; i < 40; i++) {
+                const star = document.createElement('div'); star.className = 'stardust';
+                star.style.left = `${centerX}px`; star.style.top = `${centerY}px`;
+                const angle = Math.random() * Math.PI * 2; const velocity = 5 + Math.random() * 20; 
+                star.style.setProperty('--tx', `${Math.cos(angle) * velocity}vmin`); star.style.setProperty('--ty', `${Math.sin(angle) * velocity}vmin`);
+                star.style.color = Math.random() > 0.5 ? '#ffd700' : '#ffffff'; star.style.background = star.style.color;
+                const size = 0.3 + Math.random() * 0.5; star.style.width = `${size}vmin`; star.style.height = `${size}vmin`;
+                document.body.appendChild(star); setTimeout(() => star.remove(), 1000);
+            }
         }
 
-        const diceRots = {
-            1: {x: 0, y: 0}, 2: {x: 0, y: 90}, 3: {x: -90, y: 0},
-            4: {x: 90, y: 0}, 5: {x: 0, y: -90}, 6: {x: 180, y: 0}
-        };
-
+        const diceRots = { 1: {x: 0, y: 0}, 2: {x: 0, y: 90}, 3: {x: -90, y: 0}, 4: {x: 90, y: 0}, 5: {x: 0, y: -90}, 6: {x: 180, y: 0} };
         function rollDice() {
-            if(gameState.status !== 'IDLE') return;
-            gameState.status = 'ROLLING';
+            const diceArea = document.getElementById('dice-area');
+            if(!diceArea.classList.contains('dice-ready') || gameState.isMoving) return;
+            diceArea.classList.remove('dice-ready'); createStardust();
             
+            const p = gameState.players[gameState.currentPlayerIdx];
+            if(p.inJail) {
+                p.jailTurns++;
+                if(p.jailTurns > 3) { p.inJail = false; p.jailTurns = 0; payBankActive(5000); return; } 
+                else { setTimeout(() => endTurn(), 1000); return; }
+            }
+
+            gameState.isMoving = true;
+            const val1 = Math.floor(Math.random() * 6) + 1; const val2 = Math.floor(Math.random() * 6) + 1;
+            gameState.lastRoll = val1 + val2;
+
             const d1El = document.getElementById('die1'); const d2El = document.getElementById('die2');
             const b1 = document.getElementById('bounce1'); const b2 = document.getElementById('bounce2');
-            const p = gameState.players[gameState.currentPlayerIdx];
-            sfx.playDice();
-
-            const val1 = Math.floor(Math.random() * 6) + 1; const val2 = Math.floor(Math.random() * 6) + 1;
-            const spinX1 = Math.floor(Math.random() * 3 + 2) * 360; const spinY1 = Math.floor(Math.random() * 3 + 2) * 360;
-            const spinX2 = Math.floor(Math.random() * 3 + 2) * 360; const spinY2 = Math.floor(Math.random() * 3 + 2) * 360;
-
-            b1.classList.remove('anim-jump'); b2.classList.remove('anim-jump');
-            void b1.offsetWidth; void b2.offsetWidth;
+            b1.classList.remove('anim-jump'); b2.classList.remove('anim-jump'); void b1.offsetWidth; void b2.offsetWidth;
             b1.classList.add('anim-jump'); b2.classList.add('anim-jump');
 
-            d1El.style.transform = `rotateX(${diceRots[val1].x + spinX1}deg) rotateY(${diceRots[val1].y + spinY1}deg)`;
-            d2El.style.transform = `rotateX(${diceRots[val2].x + spinX2}deg) rotateY(${diceRots[val2].y + spinY2}deg)`;
+            const spin = () => Math.floor(Math.random() * 2 + 2) * 360;
+            d1El.style.transform = `rotateX(${diceRots[val1].x + spin()}deg) rotateY(${diceRots[val1].y + spin()}deg)`;
+            d2El.style.transform = `rotateX(${diceRots[val2].x + spin()}deg) rotateY(${diceRots[val2].y + spin()}deg)`;
 
-            logSys(`${p.emoji} Lancia i dadi...`);
-
-            setTimeout(() => {
-                logSys(`Esito: <b class="text-white">${val1+val2}</b>`);
-                movePlayer(p, val1+val2);
-            }, 1300);
+            setTimeout(() => { stepMove(p, gameState.lastRoll); }, 1200);
         }
 
-        function orientCenterBoard() {
-            // Ruota la parte centrale verso il giocatore attivo (ideale per il tavolo)
-            const angles = [0, 90, 180, -90];
-            const rot = angles[gameState.currentPlayerIdx % 4] || 0;
-            document.getElementById('center-board').style.transform = `rotate(${rot}deg)`;
+        function stepMove(player, stepsLeft) {
+            if(stepsLeft === 0) { setTimeout(() => handleLanded(player), 3000); return; }
+            player.pos++; if(player.pos >= 40) { player.pos = 0; receiveMoney(player, 20000); showToast("Passaggio dal VIA! Ritirate L. 20.000"); }
+            updateTokens(); setTimeout(() => stepMove(player, stepsLeft - 1), 400); 
         }
+        function movePlayerTo(player, targetPos) { player.pos = targetPos; updateTokens(); setTimeout(() => handleLanded(player), 1000); }
+        function goToJail(player) { player.pos = 10; player.inJail = true; updateTokens(); endTurn(); }
 
-        function movePlayer(player, amount) {
-            const oldPos = player.pos; let newPos = oldPos + amount;
-            let passedGo = false;
-            if (newPos >= 40) { newPos = newPos % 40; passedGo = true; }
-            player.pos = newPos; updateTokens();
+        function handleLanded(player) {
+            const cell = boardData[player.pos]; let html = '';
+            if (cell.type === 'property' || cell.type === 'station' || cell.type === 'utility') {
+                const propState = gameState.properties[cell.id];
+                const headerColor = cell.color || '#333'; const fontCol = isLightColor(headerColor) ? '#111' : '#fff';
+                html += `
+                    <div class="card-property-original">
+                        <div class="cpo-header" style="background-color: ${headerColor}; color: ${fontCol};">
+                            <div class="cpo-subtitle">${cell.type === 'property' ? 'Titolo di Proprietà' : ''}</div>
+                            <div class="cpo-title">${cell.name}</div>
+                        </div>
+                        <div class="cpo-body">
+                            ${cell.type === 'property' ? `
+                                <div class="cpo-row mb-2"><span>Rendita - Solo terreno</span> <span>L. ${cell.rent[0]}</span></div>
+                                <div class="cpo-row"><span>Con 1 Casa</span> <span>L. ${cell.rent[1]}</span></div>
+                                <div class="cpo-row"><span>Con 2 Case</span> <span>L. ${cell.rent[2]}</span></div>
+                                <div class="cpo-row"><span>Con 3 Case</span> <span>L. ${cell.rent[3]}</span></div>
+                                <div class="cpo-row"><span>Con 4 Case</span> <span>L. ${cell.rent[4]}</span></div>
+                                <div class="cpo-row mt-2" style="font-size: 0.95rem;"><span>Con ALBERGO</span> <span>L. ${cell.rent[5]}</span></div>
+                                <div class="cpo-divider"></div>
+                                <div class="cpo-footer">Valore ipotecario L. ${cell.price / 2}<br>Costo Casa/Alb L. ${cell.houseCost}</div>
+                            ` : `<div class="text-center font-bold text-lg mb-2">Valore L. ${cell.price}</div><div class="text-center italic">Rendita variabile.</div>`}
+                        </div>
+                    </div>`;
 
-            if (passedGo) {
-                player.balance += 2000;
-                logSys(`${player.name} passa dal VIA: +€2.000`, 'text-green-400');
-                sfx.playCash(); resolveMatchday(); 
-            }
-
-            setTimeout(() => { handleCellLanded(player, getBoardData()[newPos]); }, 600);
-        }
-
-        function nextTurn() {
-            gameState.currentPlayerIdx = (gameState.currentPlayerIdx + 1) % gameState.players.length;
-            if(gameState.currentPlayerIdx === 0) gameState.turnCount++;
-            
-            const nextP = gameState.players[gameState.currentPlayerIdx];
-            if(!nextP.active) return nextTurn();
-            
-            orientCenterBoard();
-
-            if(nextP.inJail) {
-                logSys(`${nextP.emoji} Salta il turno per Espulsione 🟥`, 'text-red-400');
-                nextP.inJail = false; // Sconta 1 turno
-                setTimeout(nextTurn, 1500);
-                return;
-            }
-
-            gameState.status = 'IDLE'; updateUI();
-        }
-
-        function handleCellLanded(player, cell) {
-            logSys(`${player.emoji} atterra su: <b class="text-white">${cell.name}</b>`);
-            
-            if (cell.type === 'market') openMarketModal(cell, player);
-            else if (cell.type === 'tax') {
-                player.balance -= cell.cost; sfx.playError();
-                logSys(`Pagate spese per ${cell.name}: €${cell.cost}`, 'text-red-400');
-                checkBankruptcy(player); nextTurn();
+                if (!propState.ownerId) {
+                    html += `
+                        <div class="flex gap-2">
+                            <button class="btn btn-buy btn-inline" onclick="buyProperty(${cell.id})">COMPRA (L. ${cell.price})</button>
+                            <button class="btn btn-inline" onclick="endTurn()">PASSA</button>
+                        </div>`;
+                } else if (propState.ownerId !== player.id) {
+                    const owner = gameState.players.find(p => p.id === propState.ownerId); const rent = calculateRent(cell, propState);
+                    html += `
+                        <p class="mb-3 text-red-600 font-bold text-lg">Proprietà di ${owner.name}</p>
+                        <button class="btn btn-pay" onclick="payRent(${cell.id}, ${rent})">PAGA AFFITTO L. ${rent}</button>`;
+                } else if (cell.type === 'property' && propState.level < 5) {
+                    html += `
+                        <p class="mb-3 text-green-600 font-bold">Tua Proprietà</p>
+                        <div class="flex gap-2">
+                            <button class="btn btn-buy btn-inline" onclick="buildHouse(${cell.id})">COSTRUISCI (L. ${cell.houseCost})</button>
+                            <button class="btn btn-inline" onclick="endTurn()">FINE</button>
+                        </div>`;
+                } else { html += `<button class="btn" onclick="endTurn()">FINE TURNO</button>`; }
+            } else if (cell.type === 'chance' || cell.type === 'chest') {
+                const isProb = cell.type === 'chance'; const deck = isProb ? probDeck : imprDeck;
+                const card = deck[Math.floor(Math.random() * deck.length)];
+                html += `
+                    <div class="card-event ${isProb ? 'probabilita' : 'imprevisti'}">
+                        <div class="card-event-title">${isProb ? "PROBABILITÀ" : "IMPREVISTI"}</div>
+                        <div class="card-event-text">"${card.txt}"</div>
+                    </div>
+                    <button class="btn" onclick="resolveCard(${deck.indexOf(card)}, '${cell.type}')">OK</button>`;
+            } else if (cell.type === 'tax') {
+                html += `
+                    <h2 class="text-xl font-bold mb-3 text-red-600 font-['Montserrat']">${cell.name}</h2>
+                    <p class="mb-4 text-lg font-bold">${cell.desc}</p>
+                    <button class="btn btn-pay" onclick="payBankActive(${cell.cost})">PAGA L. ${cell.cost}</button>`;
             } else if (cell.id === 30) {
-                logSys(`ESPULSIONE! Cartellino Rosso per ${player.name}`, 'text-red-500 font-bold');
-                player.pos = 10; player.inJail = true; updateTokens(); sfx.playError(); nextTurn();
-            } else if (cell.type === 'chance') {
-                drawSignalCard(player);
+                html += `
+                    <h2 class="text-xl font-bold mb-3 text-red-600 font-['Montserrat']">IN PRIGIONE!</h2>
+                    <button class="btn" onclick="goToJailActive()">VAI IN PRIGIONE</button>`;
             } else {
-                nextTurn();
+                html += `<h2 class="text-xl font-bold mb-3 font-['Montserrat']">${cell.name}</h2><button class="btn" onclick="endTurn()">CONTINUA</button>`;
             }
-            updateUI();
+            openModal(html);
         }
 
-        function drawSignalCard(player) {
-            const isWin = Math.random() > 0.5;
-            const targetPrice = isWin ? "Raggiunto ✔️" : "Fallito ❌";
-            const pnl = isWin ? 500 : -500;
-            const color = isWin ? "text-green-400" : "text-red-400";
-            
-            const html = `
-                <div class="mb-2"><span class="text-gray-500">Evento:</span> Lazio vs Inter</div>
-                <div class="mb-2"><span class="text-gray-500">Minuto:</span> 15'</div>
-                <div class="mb-2"><span class="text-gray-500">Stats Live:</span> DA/m Proiettato: 1.45 | Score: 0-1</div>
-                <div class="mb-4"><span class="text-gray-500">Operazione:</span> <span class="text-blue-400 font-bold">BACK OVER 1.5</span> (Safe Play)</div>
-                
-                <div class="border-t border-gray-700 pt-3 mb-2 font-bold text-gray-400">LIVE EXECUTION (TRADE MANAGEMENT):</div>
-                <div class="mb-1"><span class="text-gray-500">Target Price (1.35):</span> <span class="${color}">${targetPrice}</span></div>
-                <div class="mb-1"><span class="text-gray-500">Stop Loss:</span> Minuto 65' se 0-1</div>
-                <div class="mt-4 border-t border-gray-700 pt-3 text-lg text-center ${color} font-black">
-                    P&L: ${pnl > 0 ? '+' : ''}€${Math.abs(pnl)}
-                </div>
-            `;
-            
-            document.getElementById('signal-content').innerHTML = html;
-            document.getElementById('modal-signal').style.display = 'flex';
-            
-            if(isWin) { player.balance += 500; sfx.playCash(); }
-            else { player.balance -= 500; sfx.playError(); checkBankruptcy(player); }
-            updateUI();
-        }
-        function closeSignal() { document.getElementById('modal-signal').style.display = 'none'; nextTurn(); }
-
-        function openMarketModal(cell, player) {
-            gameState.status = 'MARKET'; currentActiveMarket = cell;
-            document.getElementById('market-header').innerText = cell.name;
-            document.getElementById('market-back-odd').innerText = cell.back.toFixed(2);
-            document.getElementById('market-lay-odd').innerText = cell.lay.toFixed(2);
-            document.getElementById('input-stake').value = 100;
-            updateMath(); document.getElementById('modal-market').style.display = 'flex';
+        function calculateRent(cell, propState) {
+            if (cell.type === 'property') return cell.rent[propState.level];
+            if (cell.type === 'station') return 2500 * Math.pow(2, [5,15,25,35].filter(id => gameState.properties[id].ownerId === propState.ownerId).length - 1);
+            if (cell.type === 'utility') return gameState.lastRoll * ([12,28].filter(id => gameState.properties[id].ownerId === propState.ownerId).length === 2 ? 1000 : 400);
+            return 0;
         }
 
-        function updateMath() {
-            if(!currentActiveMarket) return;
-            const stake = parseFloat(document.getElementById('input-stake').value) || 0;
-            const backProfit = stake * (currentActiveMarket.back - 1);
-            const layLiability = stake * (currentActiveMarket.lay - 1);
-
-            document.getElementById('order-math-display').innerHTML = `
-                <div class="flex justify-between mb-2 pb-2 border-b border-gray-700"><span class="text-blue-400">Se PUNTI:</span><span class="text-right">Costo: €${stake.toFixed(2)}<br>Vincita: <b class="text-green-400">+€${backProfit.toFixed(2)}</b></span></div>
-                <div class="flex justify-between"><span class="text-pink-400">Se BANCHI:</span><span class="text-right">Rischio: <b class="text-red-400">€${layLiability.toFixed(2)}</b><br>Vincita: <b class="text-green-400">+€${stake.toFixed(2)}</b></span></div>
-            `;
-        }
-
-        function skipMarket() {
-            document.getElementById('modal-market').style.display = 'none'; currentActiveMarket = null;
-            logSys(`Nessun ordine piazzato.`); nextTurn();
-        }
-
-        function placeOrder(type) {
-            const player = gameState.players[gameState.currentPlayerIdx];
-            const stake = parseFloat(document.getElementById('input-stake').value);
-            if(isNaN(stake) || stake <= 0) return alert("Stake non valido");
-
-            const odd = type === 'BACK' ? currentActiveMarket.back : currentActiveMarket.lay;
-            const reqFunds = type === 'BACK' ? stake : stake * (odd - 1);
-
-            if (player.balance < reqFunds) return alert("Fondi insufficienti!");
-
-            player.balance -= reqFunds; player.liability += reqFunds; gameState.escrow += reqFunds;
-
-            const order = { id: Date.now(), cellId: currentActiveMarket.id, player: player.id, type: type, odd: odd, stake: stake, liability: reqFunds };
-
-            logSys(`${type} su ${currentActiveMarket.name} @ ${odd} (€${stake})`, type==='BACK'?'text-blue-400':'text-pink-400');
-            
-            document.getElementById('modal-market').style.display = 'none'; updateUI();
-            offerToTable(order);
-        }
-
-        function offerToTable(order) {
-            const proposer = gameState.players.find(p => p.id === order.player);
-            const m = getBoardData().find(x => x.id === order.cellId);
-            const cType = order.type === 'BACK' ? 'BANCA' : 'PUNTA';
-            const cCost = order.type === 'BACK' ? order.stake * (order.odd - 1) : order.stake;
-
-            document.getElementById('match-desc').innerHTML = `<span class="text-xl">${proposer.emoji}</span> offre su <b>${m.name}</b>`;
-            document.getElementById('match-details-1').innerHTML = `<span class="${order.type==='BACK'?'text-blue-400':'text-pink-400'}">${order.type}</span> €${order.stake} @ ${order.odd.toFixed(2)}`;
-            document.getElementById('match-details-2').innerHTML = `Per Matchare devi <b>${cType}</b> (-€${cCost.toFixed(2)})`;
-
-            const btnContainer = document.getElementById('match-buttons'); btnContainer.innerHTML = '';
-            let hasMatchers = false;
-
-            gameState.players.forEach(p => {
-                if(p.id !== proposer.id && p.active) {
-                    if (p.balance >= cCost) {
-                        hasMatchers = true;
-                        btnContainer.innerHTML += `<button class="btn w-full flex justify-between items-center" style="background-color: ${p.color}" onclick='acceptMatch(${p.id}, ${JSON.stringify(order)})'><span>${p.emoji} ${p.name} ACCETTA</span> <span>-€${cCost.toFixed(2)}</span></button>`;
-                    }
-                }
+        function buyProperty(cellId) {
+            const p = gameState.players[gameState.currentPlayerIdx]; const cell = boardData.find(c => c.id === cellId);
+            openPayment(cell.price, `Acquisto ${cell.name}`, () => {
+                p.balance -= cell.price; gameState.properties[cellId].ownerId = p.id;
+                document.getElementById(`cell-${cellId}`).style.borderBottom = `clamp(3px, 0.6vmin, 6px) solid ${cell.color || '#333'}`;
+                updateDashboard(); endTurn();
             });
-
-            if(!hasMatchers) {
-                logSys(`Nessuno ha fondi per matchare. Ordine pendente.`);
-                gameState.orders[order.cellId].push(order); updateUI(); nextTurn();
-            } else {
-                document.getElementById('modal-match').style.display = 'flex';
-            }
         }
-
-        function acceptMatch(matcherId, order) {
-            const matcher = gameState.players.find(p => p.id === matcherId);
-            const proposer = gameState.players.find(p => p.id === order.player);
-            const market = getBoardData().find(m => m.id === order.cellId);
-            const cCost = order.type === 'BACK' ? order.stake * (order.odd - 1) : order.stake;
-
-            matcher.balance -= cCost; matcher.liability += cCost; gameState.escrow += cCost;
-
-            gameState.matchedBets.push({
-                marketId: market.id, name: market.name,
-                backerId: order.type === 'BACK' ? proposer.id : matcher.id, layerId: order.type === 'LAY' ? proposer.id : matcher.id,
-                odd: order.odd, stake: order.stake, liability: order.type === 'BACK' ? order.stake * (order.odd - 1) : order.stake * (order.odd - 1)
+        function payRent(cellId, amount) {
+            const p = gameState.players[gameState.currentPlayerIdx]; const ownerId = gameState.properties[cellId].ownerId;
+            openPayment(amount, "Pagamento Affitto", () => {
+                p.balance -= amount; gameState.players.find(x => x.id === ownerId).balance += amount;
+                updateDashboard(); endTurn();
             });
-            
-            sfx.playMatch();
-            logSys(`MATCH FATTO! ${matcher.emoji} ha accettato.`, 'text-green-400');
-            document.getElementById('modal-match').style.display = 'none'; updateUI(); nextTurn();
         }
-
-        function closeMatchModal() {
-            logSys(`Ordine lasciato pendente nel book.`);
-            const player = gameState.players[gameState.currentPlayerIdx];
-            const stake = parseFloat(document.getElementById('input-stake').value);
-            const type = document.getElementById('match-details-1').innerHTML.includes('BACK') ? 'BACK' : 'LAY';
-            const odd = type === 'BACK' ? currentActiveMarket.back : currentActiveMarket.lay;
-            gameState.orders[currentActiveMarket.id].push({ id: Date.now(), cellId: currentActiveMarket.id, player: player.id, type: type, odd: odd, stake: stake, liability: type === 'BACK' ? stake : stake * (odd - 1) });
-            document.getElementById('modal-match').style.display = 'none'; currentActiveMarket = null; updateUI(); nextTurn();
-        }
-
-        function resolveMatchday() {
-            if (gameState.matchedBets.length === 0) return;
-            const resDiv = document.getElementById('matchday-results'); resDiv.innerHTML = '';
-            
-            gameState.matchedBets.forEach(bet => {
-                const trueProb = 1 / bet.odd; const rng = Math.random();
-                const backer = gameState.players.find(p => p.id === bet.backerId);
-                const layer = gameState.players.find(p => p.id === bet.layerId);
-                let winner, loser, grossReturn; const pot = bet.stake + bet.liability;
-
-                if (rng <= trueProb) {
-                    winner = backer; loser = layer; grossReturn = pot; 
-                    resDiv.innerHTML += `<div class="border-b border-gray-700 py-2"><span class="text-blue-400 font-bold">✔️ ${bet.name}</span><br>Vince: <b>${winner.emoji} (Punta)</b> €${pot.toFixed(2)}</div>`;
-                } else {
-                    winner = layer; loser = backer; grossReturn = pot;
-                    resDiv.innerHTML += `<div class="border-b border-gray-700 py-2"><span class="text-pink-400 font-bold">❌ ${bet.name}</span><br>Vince: <b>${winner.emoji} (Banca)</b> €${pot.toFixed(2)}</div>`;
-                }
-
-                backer.liability -= bet.stake; layer.liability -= bet.liability; gameState.escrow -= pot;
-                const netProfit = grossReturn - (winner.id === backer.id ? bet.stake : bet.liability);
-                const finalPayout = grossReturn - (netProfit * 0.05); // 5% commission
-                winner.balance += finalPayout;
-                
-                logSys(`[Matchday] ${winner.emoji} vince €${finalPayout.toFixed(2)}`, 'text-green-400');
+        function buildHouse(cellId) {
+            const p = gameState.players[gameState.currentPlayerIdx]; const cell = boardData.find(c => c.id === cellId);
+            openPayment(cell.houseCost, "Costruzione Edificio", () => {
+                p.balance -= cell.houseCost; const propState = gameState.properties[cellId]; propState.level++;
+                const cb = document.getElementById(`cb-${cellId}`); cb.innerHTML = '';
+                if(propState.level === 5) cb.innerHTML = `<div class="hotel"></div>`;
+                else for(let i=0; i<propState.level; i++) cb.innerHTML += `<div class="house"></div>`;
+                updateDashboard(); endTurn();
             });
-            sfx.playCash();
-            gameState.matchedBets = []; document.getElementById('modal-matchday').style.display = 'flex'; updateUI();
+        }
+        function resolveCard(cardIdx, type) {
+            const card = (type === 'chance' ? probDeck : imprDeck)[cardIdx]; closeModal(); card.action(gameState.players[gameState.currentPlayerIdx]);
+            if(!card.action.toString().includes('movePlayerTo') && !card.action.toString().includes('payBankActive')) endTurn();
+        }
+        function payBankActive(amount) { 
+            openPayment(amount, "Pagamento Tassa/Banca", () => { gameState.players[gameState.currentPlayerIdx].balance -= amount; updateDashboard(); endTurn(); });
+        }
+        function receiveMoney(player, amount) { player.balance += amount; updateDashboard(); }
+        function goToJailActive() { closeModal(); goToJail(gameState.players[gameState.currentPlayerIdx]); }
+
+        function endTurn() {
+            closeModal(); gameState.isMoving = false;
+            if(gameState.players[gameState.currentPlayerIdx].balance < 0) showToast(`BANCAROTTA PER ${gameState.players[gameState.currentPlayerIdx].name}!`);
+            gameState.currentPlayerIdx = (gameState.currentPlayerIdx + 1) % gameState.players.length;
+            orientBoard(); updateDashboard(); setTimeout(() => { document.getElementById('dice-area').classList.add('dice-ready'); }, 800);
         }
 
-        function closeMatchdayModal() { document.getElementById('modal-matchday').style.display = 'none'; }
+        function openModal(contentHtml) { document.getElementById('action-content').innerHTML = contentHtml; document.getElementById('modal-action').style.display = 'flex'; }
+        function closeModal() { document.getElementById('modal-action').style.display = 'none'; }
 
-        function checkBankruptcy(player) {
-            if (player.balance < 0) {
-                sfx.playError();
-                logSys(`🚨 BANCAROTTA! ${player.name} è fuori.`, 'text-red-500 font-bold text-lg');
-                player.active = false;
-                const tEl = document.getElementById(`token-${player.id}`); if(tEl) tEl.style.display = 'none';
-                Object.keys(gameState.orders).forEach(cellId => { gameState.orders[cellId] = gameState.orders[cellId].filter(o => o.player !== player.id); });
-            }
-        }
+        window.onload = () => { initBoard(); addSetupPlayer(); addSetupPlayer(); };
     </script>
 </body>
 </html>
