@@ -10,22 +10,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Oswald:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* Colori Originali Editrice Giochi */
-            --bg-board: #cde6d0; --border-color: #111;
+            /* Colori Originali Editrice Giochi Tabellone */
+            --bg-board: #b8d4c0; --border-color: #111;
             --brown: #8e4a23; --lightblue: #9bd2f0; --pink: #d93c96;
             --orange: #f7941d; --red: #ed1b24; --yellow: #fff200;
             --green: #00a650; --darkblue: #0054a6;
             --prob-color: #e6ebc8; --impr-color: #f79759;
             
-            /* Colori Banconote Originali perfezionati */
-            --note-100: #7ebae3; --note-1000: #88ce92;
-            --note-10000: #d6caaa; --note-50000: #eb9a9f;
+            /* Colori Esatti Banconote campionati dalla foto */
+            --n100-c: #5ea3cc; 
+            --n1000-c: #74bc7e;
+            --n10000-c: #d4c0a5; 
+            --n50000-c: #e8868f;
 
-            /* Texture Carta leggerissima in Data URI */
+            /* Texture Carta (Data URI leggerissimo) */
             --paper-tex: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
             --table-tex: radial-gradient(circle at center, #2e4732 0%, #0a120c 100%);
         }
@@ -90,9 +92,9 @@
         }
 
         .property-name {
-            font-weight: 700; font-size: clamp(5px, 0.95vmin, 12px); line-height: 1.05;
+            font-weight: 800; font-size: clamp(5px, 0.95vmin, 12px); line-height: 1.05;
             text-transform: uppercase; padding: 2px 2%; margin: auto 0;
-            font-family: 'Montserrat', sans-serif; letter-spacing: -0.03em;
+            font-family: 'Montserrat', sans-serif; letter-spacing: -0.02em;
             word-wrap: break-word; overflow-wrap: break-word; text-align: center;
             display: flex; align-items: center; justify-content: center; flex-grow: 1;
             max-height: 50%; overflow: hidden;
@@ -100,7 +102,7 @@
 
         .property-price { font-size: clamp(4px, 0.8vmin, 10px); font-weight: bold; margin-bottom: 2%; flex-shrink: 0; letter-spacing: -0.02em; }
         .icon-large { font-size: clamp(10px, 2.5vmin, 30px); margin: auto; flex-shrink: 0; }
-        .svg-board-icon { width: clamp(12px, 3vmin, 35px); height: clamp(12px, 3vmin, 35px); margin: auto; display: block; filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3)); flex-shrink: 0; }
+        .svg-board-icon { width: clamp(12px, 3.2vmin, 35px); height: clamp(12px, 3.2vmin, 35px); margin: auto; display: block; filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3)); flex-shrink: 0; }
         
         #center-board {
             grid-column: 2 / span 9; grid-row: 2 / span 9;
@@ -111,37 +113,39 @@
         }
 
         .logo-container {
-            position: absolute; background: #ed1b24; color: white;
-            padding: clamp(4px, 1vmin, 12px) clamp(10px, 3vmin, 35px); 
-            border: clamp(2px, 0.5vmin, 6px) solid white;
-            font-size: clamp(16px, 4vmin, 55px); font-family: 'Montserrat', sans-serif;
+            position: absolute; background: #e31821; color: white;
+            padding: clamp(6px, 1.5vmin, 15px) clamp(15px, 4vmin, 40px); 
+            /* Doppio bordo stile scatola originale */
+            border: clamp(2px, 0.4vmin, 5px) solid #111;
+            font-size: clamp(16px, 4.5vmin, 55px); font-family: 'Montserrat', sans-serif;
             font-weight: 900; letter-spacing: 0.15em;
-            box-shadow: 0 0 0 clamp(1px, 0.3vmin, 4px) #111, clamp(2px, 0.5vmin, 8px) clamp(2px, 0.5vmin, 8px) clamp(4px, 1vmin, 12px) rgba(0,0,0,0.4);
+            box-shadow: inset 0 0 0 clamp(2px, 0.5vmin, 6px) #fff, 0 0 0 clamp(1px, 0.3vmin, 4px) #111, clamp(3px, 1vmin, 10px) clamp(3px, 1vmin, 10px) clamp(5px, 2vmin, 15px) rgba(0,0,0,0.5);
             transform: rotate(-45deg); z-index: 5; text-shadow: 2px 2px 0 #900;
         }
 
         .deck {
             position: absolute; width: 17vmin; height: 10vmin;
             min-width: 50px; min-height: 30px; border-radius: 4px;
-            border: clamp(1px, 0.2vmin, 3px) dashed rgba(0,0,0,0.5); display: flex; flex-direction: column;
+            border: clamp(1px, 0.2vmin, 2px) solid rgba(0,0,0,0.8); display: flex; flex-direction: column;
             justify-content: center; align-items: center; background-image: var(--paper-tex);
+            box-shadow: -1px 1px 0 #fff, -2px 2px 0 #ccc, -3px 3px 0 #fff, -4px 4px 0 #999, -6px 6px 15px rgba(0,0,0,0.5);
         }
-        .deck-imprevisti { top: 12%; left: 12%; transform: rotate(135deg); background-color: var(--impr-color); box-shadow: 0.3vmin 0.3vmin 1.5vmin rgba(0,0,0,0.4); }
-        .deck-probabilita { bottom: 12%; right: 12%; transform: rotate(-45deg); background-color: var(--prob-color); box-shadow: 0.3vmin 0.3vmin 1.5vmin rgba(0,0,0,0.4); }
-        .deck-title { font-size: clamp(6px, 1.5vmin, 14px); font-weight: 800; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; color:#111; text-transform: uppercase;}
-        .deck-q { font-size: clamp(14px, 3.5vmin, 35px); font-family: 'Playfair Display', serif; font-weight: bold; opacity: 0.5; color:#111; }
+        .deck-imprevisti { top: 12%; left: 12%; transform: rotate(135deg); background-color: var(--impr-color); }
+        .deck-probabilita { bottom: 12%; right: 12%; transform: rotate(-45deg); background-color: var(--prob-color); }
+        .deck-title { font-size: clamp(6px, 1.5vmin, 14px); font-weight: 900; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; color:#111; text-transform: uppercase;}
+        .deck-q { font-size: clamp(14px, 3.5vmin, 35px); font-family: 'Playfair Display', serif; font-weight: bold; opacity: 0.6; color:#111; line-height: 1; }
 
         /* AREE GIOCATORI SUI BORDI DELLO SCHERMO */
         .player-zone {
             position: absolute; z-index: 5;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.2); padding: 1vmin; border-radius: 12px;
+            background: rgba(0,0,0,0.3); padding: 1vmin; border-radius: 12px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
         }
         .player-zone.active {
-            background: rgba(237, 27, 36, 0.2); border: 2px solid #ed1b24;
-            box-shadow: 0 0 20px rgba(237, 27, 36, 0.4), inset 0 0 15px rgba(0,0,0,0.5);
+            background: rgba(237, 27, 36, 0.25); border: 2px solid #ed1b24;
+            box-shadow: 0 0 20px rgba(237, 27, 36, 0.4), inset 0 0 15px rgba(0,0,0,0.6);
         }
         
         .pz-bottom { bottom: 1vmin; left: 50%; transform: translateX(-50%); width: 60vw; }
@@ -154,49 +158,66 @@
         .pz-token { width: clamp(20px, 3.5vmin, 35px); height: clamp(20px, 3.5vmin, 35px); filter: drop-shadow(1px 2px 2px #000); }
         .pz-balance { font-family: 'Oswald', sans-serif; font-size: clamp(14px, 2.2vmin, 24px); color: #00e676; text-shadow: 1px 1px 2px #000; }
 
-        /* BANCONOTE FOTOCOPIA ORIGINALI EDITRICE GIOCHI */
+        /* =========================================
+           SIMULATORE STAMPA BANCONOTE FOTOCOPIA 
+           ========================================= */
         .real-note {
-            width: clamp(55px, 9vmin, 90px); height: clamp(30px, 5vmin, 50px);
-            border-radius: 1px; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            width: clamp(70px, 13vmin, 120px); 
+            aspect-ratio: 1.85 / 1;
+            background-color: #fdfbf7; /* Colore carta margine bianco */
+            border-radius: 2px; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 1px 2px 4px rgba(0,0,0,0.5); user-select: none; flex-shrink: 0; box-sizing: border-box;
-            background-image: var(--paper-tex); display: flex; align-items: center; justify-content: center;
-            border: 2px solid rgba(0,0,0,0.85); padding: 2px;
+            background-image: var(--paper-tex); 
+            padding: 2.5%; /* Margine bianco esterno */
+            container-type: inline-size;
         }
         
-        .note-inner {
-            width: 100%; height: 100%; border: 1px solid rgba(0,0,0,0.6); position: relative;
+        .note-margin {
+            width: 100%; height: 100%; position: relative;
+            border: 1px solid currentColor; padding: 2%; box-sizing: border-box;
+        }
+
+        .note-frame {
+            width: 100%; height: 100%; position: relative;
+            background-color: currentColor; border: 1px solid currentColor;
             display: flex; align-items: center; justify-content: center; border-radius: 1px;
-            background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px),
-                        repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+            /* Pattern Guilloché incrociato fedele all'originale */
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(255,255,255,0.45) 1px, rgba(255,255,255,0.45) 2.5px),
+                repeating-linear-gradient(-45deg, transparent, transparent 1px, rgba(255,255,255,0.45) 1px, rgba(255,255,255,0.45) 2.5px);
+            box-sizing: border-box;
         }
         
+        /* I 4 quadratini agli angoli */
         .note-corner {
-            position: absolute; font-family: 'Oswald', sans-serif; font-weight: 700;
-            font-size: clamp(5px, 0.9vmin, 8px); color: rgba(0,0,0,0.9);
-            background: rgba(255,255,255,0.7); padding: 0 3px; border: 1px solid rgba(0,0,0,0.5);
-            border-radius: 2px; z-index: 2;
+            position: absolute; font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 700;
+            font-size: 11cqi; color: currentColor; background: #fdfbf7; 
+            padding: 1% 4%; border: 1px solid currentColor; line-height: 1.1; z-index: 2;
         }
-        .note-corner.tl { top: -2px; left: -2px; } .note-corner.tr { top: -2px; right: -2px; }
-        .note-corner.bl { bottom: -2px; left: -2px; } .note-corner.br { bottom: -2px; right: -2px; }
+        .note-corner.tl { top: -1px; left: -1px; } .note-corner.tr { top: -1px; right: -1px; }
+        .note-corner.bl { bottom: -1px; left: -1px; } .note-corner.br { bottom: -1px; right: -1px; }
         
+        /* Ovale Bianco Centrale */
         .note-center {
-            background: rgba(255,255,255,0.95); border: 2px solid rgba(0,0,0,0.7); border-radius: 50%;
-            width: 70%; height: 85%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.3); z-index: 1;
+            background: #fdfbf7; border-radius: 50%;
+            width: 62%; height: 88%; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            box-shadow: inset 0 0 0 2px #fdfbf7, inset 0 0 0 3.5px currentColor, inset 0 0 5px rgba(0,0,0,0.2); z-index: 1;
+            padding: 1.5% 0; box-sizing: border-box; position: relative;
         }
         
-        .note-brand { font-family: 'Montserrat', sans-serif; font-size: clamp(3px, 0.6vmin, 6px); font-weight: 800; color: #222; letter-spacing: 0.5px; opacity: 0.8; }
-        .note-val { font-family: 'Montserrat', sans-serif; font-size: clamp(10px, 1.8vmin, 16px); font-weight: 900; color: #111; line-height: 1.1; }
+        .note-arch { width: 90%; height: 35%; overflow: visible; margin-top: 3%; flex-shrink: 0; }
+        .note-val { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 25cqi; font-weight: 900; color: currentColor; line-height: 0.8; letter-spacing: -0.5px; }
+        .note-train { font-size: 12cqi; line-height: 1; opacity: 0.7; color: #111; margin-bottom: 2%; flex-shrink: 0;}
         
-        .real-note:hover { transform: translateY(-5px) scale(1.1); box-shadow: 3px 5px 10px rgba(0,0,0,0.6); z-index: 10; }
+        .real-note:hover { transform: translateY(-5px) scale(1.1); box-shadow: 3px 5px 12px rgba(0,0,0,0.6); z-index: 10; }
         
-        .note-100 { background-color: var(--note-100); }
-        .note-1000 { background-color: var(--note-1000); }
-        .note-10000 { background-color: var(--note-10000); }
-        .note-50000 { background-color: var(--note-50000); }
+        .note-100 { color: var(--n100-c); }
+        .note-1000 { color: var(--n1000-c); }
+        .note-10000 { color: var(--n10000-c); }
+        .note-50000 { color: var(--n50000-c); }
 
         .note-stack { display: flex; flex-wrap: wrap; justify-content: center; min-height: 35px; width: 100%; }
-        .note-stack .real-note { margin-right: clamp(-35px, -5vmin, -20px); transform-origin: center; }
+        .note-stack .real-note { margin-right: clamp(-50px, -7vmin, -30px); transform-origin: center; }
         .note-stack .real-note:last-child { margin-right: 0; }
         .note-stack .real-note:hover { margin-right: 5px; }
 
@@ -232,21 +253,21 @@
         .stardust { position: fixed; border-radius: 50%; pointer-events: none; z-index: 999; box-shadow: 0 0 1vmin currentColor; animation: stardust-burst 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
         @keyframes stardust-burst { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; } }
 
-        /* PEDINE VETTORIALI IN LEGNO 3D */
+        /* PEDINE EMOJI STILE TELEGRAM 3D */
         .token {
-            position: absolute; z-index: 30; width: clamp(24px, 5vmin, 45px); height: clamp(24px, 5vmin, 45px);
+            position: absolute; z-index: 30; width: clamp(26px, 6vmin, 55px); height: clamp(26px, 6vmin, 55px);
             transition: all 0.4s linear; transform: translate(-50%, -50%); will-change: left, top;
         }
-        .token-svg { width: 100%; height: 100%; display: block; overflow: visible; filter: drop-shadow(2px 4px 3px rgba(0,0,0,0.6)); }
+        .token-svg { width: 100%; height: 100%; display: block; overflow: visible; filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.7)); }
         
-        /* CASETTE E ALBERGHI IN STILE BLOCCHETTI DI LEGNO 3D */
+        /* CASETTE E ALBERGHI IN STILE BLOCCHETTI DI LEGNO 3D ORIGINALI */
         .house { 
-            width: clamp(8px, 1.6vmin, 16px); height: clamp(8px, 1.6vmin, 16px); 
+            width: clamp(5px, 1.2vmin, 14px); height: clamp(5px, 1.2vmin, 14px); 
             background-color: #00a650; border-radius: 1px;
             box-shadow: inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); 
         }
         .hotel { 
-            width: clamp(10px, 2.2vmin, 22px); height: clamp(10px, 2.2vmin, 22px); 
+            width: clamp(7px, 1.8vmin, 20px); height: clamp(7px, 1.8vmin, 20px); 
             background-color: #ed1b24; border-radius: 2px;
             box-shadow: inset -3px -3px 0px rgba(0,0,0,0.3), inset 3px 3px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); 
         }
@@ -332,37 +353,28 @@
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-        /* ADATTABILITÀ MOBILE */
+        /* ADATTABILITÀ MOBILE ESTREMA */
         @media (max-width: 768px) {
             #board-area { width: 98vw; height: 98vw; }
             .player-zone { transform: none !important; position: static !important; width: auto; max-width: 48%; padding: 4px; border-radius: 6px; }
             #player-zones { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; padding: 5px; height: 100%; box-sizing: border-box; }
             .pz-info { gap: 5px; } .pz-name { font-size: 10px; } .pz-balance { font-size: 12px; }
-            .note-stack { display: none; } /* Nascondi stack dettagliati su dashboard mobile */
+            .note-stack { display: none; } /* Nascondi stack dettagliati su dashboard mobile per salvare spazio */
         }
     </style>
 </head>
 <body>
 
-    <!-- SVG Definitions per Legno 3D Fotorealistico Pedine -->
+    <!-- SVG Filtro Effetto 3D Telegram per Emojis -->
     <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
       <defs>
-        <radialGradient id="gradRed" cx="30%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#ff7f7f"/><stop offset="50%" stop-color="#cc0000"/><stop offset="100%" stop-color="#660000"/>
-        </radialGradient>
-        <radialGradient id="gradGreen" cx="30%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#66ff66"/><stop offset="50%" stop-color="#009900"/><stop offset="100%" stop-color="#003300"/>
-        </radialGradient>
-        <radialGradient id="gradYellow" cx="30%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#ffff99"/><stop offset="50%" stop-color="#e6b800"/><stop offset="100%" stop-color="#806600"/>
-        </radialGradient>
-        
-        <!-- Filtro Effetto 3D Telegram per Emojis -->
         <filter id="emoji3D" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="2" dy="5" stdDeviation="3" flood-opacity="0.6" />
-          <feSpecularLighting in="SourceAlpha" surfaceScale="4" specularConstant="1" specularExponent="20" lighting-color="#ffffff" result="specOut">
-            <fePointLight x="-20" y="-20" z="100"/>
+          <feDropShadow dx="1" dy="3" stdDeviation="2" flood-opacity="0.5" />
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>
+          <feSpecularLighting in="blur" surfaceScale="4" specularConstant="1.2" specularExponent="15" lighting-color="#ffffff" result="specOut">
+            <fePointLight x="-10" y="-10" z="100"/>
           </feSpecularLighting>
+          <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut"/>
           <feBlend in="specOut" in2="SourceGraphic" mode="screen"/>
         </filter>
       </defs>
@@ -381,7 +393,6 @@
     <div id="app-container">
         <div id="board-area">
             <div id="board">
-                <!-- Generato Dinamicamente dal JS in initBoard() per sicurezza e traduzione -->
                 <div id="center-board">
                     <div class="deck deck-imprevisti"><span class="deck-q">?</span><span class="deck-title" data-i18n="chest_title">IMPREVISTI</span></div>
                     <div class="logo-container" data-i18n="monopoly">MONOPOLI</div>
@@ -414,7 +425,7 @@
         </div>
     </div>
 
-    <!-- Modale Setup con Tendina e Preview 3D -->
+    <!-- Modale Setup -->
     <div id="modal-setup" class="modal-overlay" style="display: flex;">
         <div class="modal-box-wrapper" style="transform: scale(1) rotate(0deg)">
             <div class="modal-box" style="max-width: 550px; position:relative;">
@@ -541,6 +552,7 @@
         };
 
         function t(key) { return i18n[currentLang][key] || key; }
+        
         function setLang(lang) {
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -549,7 +561,6 @@
             });
             updateUIStrings();
             
-            // Rigenera solo le celle in modo sicuro
             if(gameState.players.length === 0) {
                 const board = document.getElementById('board');
                 if (board) { 
@@ -558,6 +569,7 @@
                 }
             }
         }
+        
         function updateUIStrings() {
             document.querySelectorAll('[data-i18n]').forEach(el => { el.innerText = t(el.getAttribute('data-i18n')); });
         }
@@ -670,11 +682,13 @@
             setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
         }
 
+        // Generatore ID per le scritte curve in SVG (evita bug di rendering nei browser)
+        let noteSvgIdCounter = 0;
+
         function getNotesArray(amount) {
             let notes = []; let rem = amount;
             let c100 = 0, c1000 = 0, c10000 = 0, c50000 = 0;
             
-            // Garantisce sempre banconote piccole se la disponibilità lo permette
             if (rem >= 500) { c100 = 5; rem -= 500; }
             if (rem >= 5000) { c1000 = 5; rem -= 5000; }
             if (rem >= 40000) { c10000 = 4; rem -= 40000; }
@@ -685,25 +699,34 @@
             c100 += Math.floor(rem / 100); rem %= 100;
             
             const addN = (val, count) => { for(let i=0; i<count; i++) notes.push(val); };
-            addN(50000, c50000);
-            addN(10000, c10000);
-            addN(1000, c1000);
-            addN(100, c100);
+            addN(50000, c50000); addN(10000, c10000); addN(1000, c1000); addN(100, c100);
             return notes;
         }
 
         function createNoteHTML(val, onClickStr = '', style = '') {
+            const strVal = val.toLocaleString('it-IT');
+            noteSvgIdCounter++;
+            const pathId = `arch-${val}-${noteSvgIdCounter}`;
+            
             return `
                 <div class="real-note note-${val}" onclick="${onClickStr}" style="${style}">
-                    <div class="note-inner">
-                        <span class="note-corner tl">${val.toLocaleString('it-IT')}</span>
-                        <span class="note-corner tr">${val.toLocaleString('it-IT')}</span>
-                        <div class="note-center">
-                            <span class="note-brand">${t('monopoly')}</span>
-                            <span class="note-val">${val.toLocaleString('it-IT')}</span>
+                    <div class="note-margin">
+                        <div class="note-frame">
+                            <span class="note-corner tl">${strVal}</span>
+                            <span class="note-corner tr">${strVal}</span>
+                            <div class="note-center">
+                                <svg viewBox="0 0 100 35" class="note-arch">
+                                    <path id="${pathId}" d="M 5 30 Q 50 -10 95 30" fill="none"/>
+                                    <text fill="currentColor" font-size="18" font-weight="900" font-family="Montserrat" letter-spacing="1">
+                                        <textPath href="#${pathId}" startOffset="50%" text-anchor="middle">${t('monopoly')}</textPath>
+                                    </text>
+                                </svg>
+                                <span class="note-val">${strVal}</span>
+                                <span class="note-train">🚂</span>
+                            </div>
+                            <span class="note-corner bl">${strVal}</span>
+                            <span class="note-corner br">${strVal}</span>
                         </div>
-                        <span class="note-corner bl">${val.toLocaleString('it-IT')}</span>
-                        <span class="note-corner br">${val.toLocaleString('it-IT')}</span>
                     </div>
                 </div>`;
         }
