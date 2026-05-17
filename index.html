@@ -139,13 +139,13 @@
         .has-color-bar { padding-top: 24%; }
 
         .property-name {
-            font-weight: 700; font-size: clamp(4px, 1.1vmin, 13px); line-height: 1.1;
+            font-weight: 700; font-size: clamp(3px, 0.9vmin, 11px); line-height: 1.1;
             text-transform: uppercase; margin: auto 0; font-family: 'Montserrat', sans-serif; letter-spacing: -0.02em;
             display: flex; align-items: center; justify-content: center; flex-grow: 1;
             padding: 0 4%; z-index: 1; color: #111; text-wrap: balance; word-wrap: break-word; text-align: center;
         }
 
-        .property-price { font-size: clamp(3.5px, 0.8vmin, 10px); font-weight: 700; margin-bottom: 3%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; }
+        .property-price { font-size: clamp(3.5px, 0.75vmin, 9.5px); font-weight: 700; margin-bottom: 3%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; }
         .icon-large { margin: auto; display: flex; align-items: center; justify-content: center; flex-grow: 1; }
         .svg-board-icon { width: clamp(18px, 4.5vmin, 55px); height: auto; max-height: clamp(18px, 4.5vmin, 55px); margin: auto; }
         
@@ -170,7 +170,7 @@
         /* FIX: Scritte dimensionate e posizionate per non toccare i bordi */
         .board-slot-text {
             position: absolute; font-family: 'Montserrat', sans-serif;
-            font-size: clamp(7px, 1.4vmin, 18px); font-weight: 900;
+            font-size: clamp(5px, 1.1vmin, 13px); font-weight: 900;
             letter-spacing: 0.08em; color: #1a1a1a; white-space: nowrap; opacity: 0.85; text-align: center;
         }
         
@@ -267,18 +267,18 @@
         
         .modal-box.solid-card { border-radius: 8px; border: 1px solid rgba(0,0,0,0.2); padding: 0; width: 85vw; max-width: 350px; overflow: visible;}
         
-        /* CSS per l'effetto di rotazione carta 3D */
-        .flip-container { background-color: transparent; width: 100%; max-width: 320px; aspect-ratio: 5/7.2; perspective: 1000px; margin: 0 auto; position: relative; z-index: 210;}
-        .flip-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
+        /* CSS per l'effetto di rotazione carta 3D - CORRETTO PER SAFARI/iOS */
+        .flip-container { background-color: transparent; width: 100%; max-width: 320px; aspect-ratio: 5/7.2; perspective: 1000px; -webkit-perspective: 1000px; margin: 0 auto; position: relative; z-index: 210;}
+        .flip-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; -webkit-transform-style: preserve-3d; cursor: pointer; }
         .flip-inner:hover { filter: brightness(1.05); }
-        .flip-inner.is-flipped { transform: rotateY(180deg); }
+        .flip-inner.is-flipped { transform: rotateY(180deg); -webkit-transform: rotateY(180deg); }
         .flip-front, .flip-back { 
             position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; 
             border-radius: 8px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
             background: #fdfbf7; background-image: var(--paper-tex); border: 1px solid #ccc; 
             display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;
         }
-        .flip-back { transform: rotateY(180deg); padding: 20px; justify-content: flex-start; align-items: center;}
+        .flip-back { transform: rotateY(180deg); -webkit-transform: rotateY(180deg); padding: 20px; justify-content: flex-start; align-items: center;}
 
         .card-property-original { background: transparent; padding: clamp(10px, 2.5vw, 15px); box-sizing: border-box; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start;}
         .cpo-header { border: 2px solid #111; padding: 8px 4px; margin-bottom: 15px; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 25%;}
@@ -791,8 +791,8 @@
                 } else if (data.type === 'corner') {
                     html += data.svg;
                 } else if (data.type === 'tax') {
-                    html += `<div class="property-name" style="padding-top:15%">${data.name}</div>${data.svg ? data.svg : ``}`;
-                    if(data.cost) html += `<div class="property-price" style="font-size: clamp(3.5px, 0.75vmin, 9.5px);">${t('pay_tax')}<br>L. ${data.cost.toLocaleString('it-IT')}</div>`;
+                    html += `<div class="property-name" style="padding-top:15%; font-size: clamp(3.5px, 0.8vmin, 9px);">${data.name}</div>${data.svg ? data.svg : ``}`;
+                    if(data.cost) html += `<div class="property-price" style="font-size: clamp(3px, 0.7vmin, 8.5px);">${t('pay_tax')}<br>L. ${data.cost.toLocaleString('it-IT')}</div>`;
                 } else {
                     html += `<div class="property-name" style="padding-top:5%; height:30%; font-size: clamp(4px, 0.85vmin, 10px);">${data.name}</div>
                              <div class="icon-large" style="display:flex; align-items:center; justify-content:center; flex-grow:1; width:100%; height:55%;">${data.svg ? data.svg : ``}</div>`;
