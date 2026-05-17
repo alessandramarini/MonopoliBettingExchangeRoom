@@ -14,17 +14,18 @@
     <style>
         :root {
             /* Colori Tabellone Classico Editrice Giochi (campionati fedelmente) */
-            --bg-board: #a4c2a8; /* Verde salvia centrale */
-            --border-color: #111;
+            --bg-board: #acc4b1; /* Verde salvia centrale esatto */
+            --border-color: #1a1a1a;
+            --cell-bg: #e8ecd3; /* Fondo caselle */
             
             /* Colori Proprietà Originali */
-            --brown: #6b3e26; --lightblue: #8bd2ec; --pink: #d81b60;
-            --orange: #f57c00; --red: #e53935; --yellow: #ffeb3b;
-            --green: #4caf50; --darkblue: #1e88e5;
+            --brown: #8e5033; --lightblue: #8ed6ef; --pink: #db2b6c;
+            --orange: #f5821c; --red: #e62c26; --yellow: #ffec19;
+            --green: #41ab5d; --darkblue: #1b73b8;
             
             /* Colori Carte Fedeli (senza bianco) */
-            --prob-color: #d6dfc2; /* Verde-giallino chiaro */
-            --impr-color: #fa9d5a; /* Arancione pastello */
+            --prob-color: #d1dac5; /* Verde-giallino chiaro */
+            --impr-color: #f79854; /* Arancione pastello */
             
             /* Colori Banconote */
             --c100: #65a5d1; --c1000: #7aba83; --c10000: #d8c4a9; --c50000: #e4808a;
@@ -69,53 +70,51 @@
         .box-mr-mono { font-size: clamp(30px, 6vw, 60px); filter: drop-shadow(1px 1px 0 #fff); }
         .box-dollar { color: #4da85d; font-size: clamp(40px, 8vw, 80px); font-weight: 900; font-family: 'Montserrat', sans-serif; line-height: 0.8;}
         .mini-board-mockup { width: 85%; height: 85%; border: 2px solid #111; background: var(--bg-board); display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 1px; padding: 1px;}
-        .mini-board-mockup div { background: #e8ecd3; border: 1px solid #111; }
+        .mini-board-mockup div { background: var(--cell-bg); border: 1px solid #111; }
         .click-to-start { position: absolute; bottom: 5vh; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #fff; font-size: 20px; animation: pulse 1.5s infinite; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
         @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1.05); } }
 
         #app-container { display: flex; align-items: center; justify-content: center; width: 100dvw; height: 100dvh; position: relative; }
 
-        /* --- TABELLONE DI GIOCO OTTIMIZZATO --- */
+        /* --- TABELLONE DI GIOCO FEDELE AL MILLIMETRO --- */
         #board-area {
             position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
             display: flex; align-items: center; justify-content: center;
             width: min(88dvw, 88dvh); height: min(88dvw, 88dvh);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.9), 0 0 0 clamp(3px, 1vmin, 8px) #111;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.9), 0 0 0 clamp(4px, 1.2vmin, 10px) var(--border-color); /* Bordo nero esterno netto */
             background-color: var(--border-color); border-radius: 2px;
             z-index: 10; contain: layout style paint;
         }
 
         #board {
             width: 100%; height: 100%; display: grid;
-            /* Proporzioni reali: angoli 16.25%, lati 67.5% diviso in 9 celle (7.5% l'una) */
-            grid-template-columns: 16.25% repeat(9, 1fr) 16.25%;
-            grid-template-rows: 16.25% repeat(9, 1fr) 16.25%;
-            gap: clamp(1px, 0.2vmin, 2px); /* Crea la riga nera perfetta tra le celle */
+            /* Proporzioni reali: angoli più ampi (circa 15.5%), 9 celle centrali */
+            grid-template-columns: 15.5% repeat(9, 1fr) 15.5%;
+            grid-template-rows: 15.5% repeat(9, 1fr) 15.5%;
+            gap: clamp(1px, 0.25vmin, 3px); /* La griglia nera tra le celle */
             background-color: var(--border-color); 
-            padding: clamp(1px, 0.2vmin, 2px);
         }
 
         .cell {
-            background-color: #e8ecd3;
+            background-color: var(--cell-bg);
             background-image: var(--paper-tex);
             position: relative; overflow: hidden; box-sizing: border-box;
-            container-type: size; /* Cruciale per le rotazioni interne precise */
+            container-type: size;
         }
 
         .cell-content {
             position: absolute; top: 50%; left: 50%;
             display: flex; flex-direction: column;
             align-items: center; justify-content: flex-start; text-align: center;
-            box-sizing: border-box;
+            box-sizing: border-box; padding: 2% 0;
         }
 
-        /* Dimensionamento Intelligente per adattarsi perfettamente alle celle */
+        /* Orientamenti e Dimensioni relative al container per una rotazione perfetta */
         .bottom-row .cell-content, .top-row .cell-content { width: 100cqw; height: 100cqh; }
-        /* Nelle colonne laterali le celle sono "larghe" nel grid, quindi invertiamo w e h del contenuto prima di ruotare! */
         .left-col .cell-content, .right-col .cell-content { width: 100cqh; height: 100cqw; }
-        .corner .cell-content { width: 100cqw; height: 100cqh; justify-content: center; }
+        .corner .cell-content { width: 100cqw; height: 100cqh; justify-content: center; padding: 0;}
 
-        /* Rotazioni Perfette (il top è sempre rivolto verso il centro del tabellone) */
+        /* Il Top punta SEMPRE al centro */
         .bottom-row .cell-content { transform: translate(-50%, -50%) rotate(0deg); }
         .top-row .cell-content { transform: translate(-50%, -50%) rotate(180deg); }
         .left-col .cell-content { transform: translate(-50%, -50%) rotate(90deg); }
@@ -126,26 +125,30 @@
         #cell-20 .cell-content { transform: translate(-50%, -50%) rotate(135deg); }
         #cell-30 .cell-content { transform: translate(-50%, -50%) rotate(-135deg); }
 
-        /* Striscia Colore che ora tocca millimetricamente il bordo interno (top) */
+        /* Striscia Colore a FILO con il bordo interno */
         .color-bar {
-            position: absolute; top: 0; left: 0; right: 0; height: 23%;
-            border-bottom: clamp(1px, 0.2vmin, 2px) solid #111; 
+            position: absolute; top: 0; left: 0; right: 0; height: 22%;
+            border-bottom: clamp(1px, 0.25vmin, 2px) solid var(--border-color); 
             z-index: 2;
         }
-        .has-color-bar { padding-top: 25%; }
+        .has-color-bar { padding-top: 24%; }
 
+        /* Tipografia rigorosa come foto (Sottile, condensata) */
         .property-name {
-            font-weight: 800; font-size: clamp(5px, 1.1vmin, 13px); line-height: 1.05;
+            font-weight: 700; font-size: clamp(4px, 1vmin, 12px); line-height: 1.1;
             text-transform: uppercase; margin: auto 0;
-            font-family: 'Helvetica Neue', Helvetica, sans-serif; letter-spacing: -0.02em;
-            word-wrap: break-word; text-wrap: balance;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: 0.02em;
             display: flex; align-items: center; justify-content: center; flex-grow: 1;
-            padding: 0 2%; z-index: 1;
+            padding: 0 4%; z-index: 1; color: #111;
         }
 
-        .property-price { font-size: clamp(4.5px, 0.9vmin, 11px); font-weight: bold; margin-bottom: 2%; flex-shrink: 0; }
-        .icon-large { font-size: clamp(12px, 3.5vmin, 40px); margin: auto; }
-        .svg-board-icon { width: clamp(18px, 4vmin, 45px); height: clamp(18px, 4vmin, 45px); margin: auto; filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3)); }
+        .property-price { 
+            font-size: clamp(3.5px, 0.8vmin, 10px); font-weight: 700; 
+            margin-bottom: 2%; flex-shrink: 0; color: #111; letter-spacing: 0.05em;
+        }
+        
+        .icon-large { margin: auto; display: flex; align-items: center; justify-content: center; flex-grow: 1; }
+        .svg-board-icon { width: clamp(18px, 4.5vmin, 55px); height: auto; max-height: clamp(18px, 4.5vmin, 55px); margin: auto; }
         
         /* Area Centrale Verde Salvia */
         #center-board {
@@ -157,27 +160,45 @@
         }
 
         /* Testo Centrale Sottile ed Esatto */
-        .center-text-group { text-align: center; z-index: 5; margin-top: 5vmin; }
+        .center-text-group { text-align: center; z-index: 5; margin-top: 2vmin; }
         .center-title { 
             font-family: 'Montserrat', sans-serif; 
-            font-size: clamp(30px, 9vmin, 100px); 
-            font-weight: 300; /* SOTTILE COME ORIGINALE */
+            font-size: clamp(30px, 10vmin, 120px); 
+            font-weight: 300; /* Sottile come da foto */
             letter-spacing: 0.12em; color: #111; 
         }
         .center-copyright {
-            font-size: clamp(5px, 1vmin, 12px); font-family: 'Helvetica Neue', sans-serif; 
-            font-weight: bold; color: #222; margin-top: 1vmin; line-height: 1.3; text-transform: uppercase;
+            font-size: clamp(3px, 0.8vmin, 10px); font-family: 'Helvetica Neue', sans-serif; 
+            font-weight: 700; color: #222; margin-top: 0.5vmin; line-height: 1.4; text-transform: uppercase;
         }
 
-        /* Postazioni Mazzi Tratteggiate inclinate */
+        /* --- MAZZI DI CARTE 3D NEL TABELLONE --- */
         .deck-slot {
-            position: absolute; width: 25vmin; height: 16vmin;
-            border: clamp(2px, 0.4vmin, 4px) dashed rgba(0,0,0,0.5);
+            position: absolute; width: 20vmin; height: 13vmin;
+            border: clamp(1px, 0.2vmin, 2px) dashed rgba(0,0,0,0.4);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
+            perspective: 500px;
         }
-        .deck-slot.probabilita { top: 12%; left: 12%; transform: rotate(-45deg); }
-        .deck-slot.imprevisti { bottom: 12%; right: 12%; transform: rotate(-45deg); }
-        .deck-slot-title { font-size: clamp(8px, 2vmin, 18px); font-weight: 900; font-family: 'Montserrat', sans-serif; color: rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 0.1em;}
+        .deck-slot.probabilita { top: 14%; left: 14%; transform: rotate(-45deg); }
+        .deck-slot.imprevisti { bottom: 14%; right: 14%; transform: rotate(-45deg); }
+        
+        .deck-stack {
+            position: absolute; width: 95%; height: 90%;
+            background-color: #fff; border-radius: 2px;
+            box-shadow: 
+                -1px 1px 0 #ddd, -2px 2px 0 #bbb, -3px 3px 0 #ddd, -4px 4px 0 #bbb,
+                -5px 5px 15px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(0,0,0,0.1);
+            transform: translateZ(10px); background-image: var(--paper-tex);
+        }
+        .deck-stack.bg-prob { background-color: var(--prob-color); }
+        .deck-stack.bg-impr { background-color: var(--impr-color); }
+        .deck-stack span { 
+            font-size: clamp(6px, 1.8vmin, 16px); font-weight: 800; font-family: 'Montserrat', sans-serif; 
+            color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 0.1em;
+            transform: rotate(180deg); /* Scritta rivolta verso l'esterno */
+        }
 
         /* ZONE GIOCATORI */
         .player-zone {
@@ -217,34 +238,32 @@
         .payment-zone .note-wrapper { position: relative; transition: margin 0.2s, transform 0.2s; }
         .payment-zone .note-wrapper:hover { margin-right: 25px; transform: translateY(-10px) scale(1.15) !important; z-index: 50; }
 
-        /* --- DADI NERI E ORO (PIÙ GRANDI) & PEDINE --- */
-        .dice-area { position: absolute; display: flex; gap: clamp(15px, 3vmin, 35px); z-index: 25; perspective: 1000px; }
+        /* --- DADI PIÙ GRANDI, NERI E ORO & PEDINE --- */
+        .dice-area { position: absolute; display: flex; gap: clamp(15px, 3.5vmin, 45px); z-index: 25; perspective: 1000px; }
         @keyframes dice-pulse { 0% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); } 100% { transform: scale(1.1) translateY(-1vmin); filter: drop-shadow(0 1vmin 3vmin rgba(255,215,0,0.9)); } }
         .dice-ready { animation: dice-pulse 1s infinite alternate ease-in-out; cursor: pointer; }
-        .die-3d { width: clamp(30px, 8vmin, 70px); height: clamp(30px, 8vmin, 70px); position: relative; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .die-3d { width: clamp(35px, 9vmin, 80px); height: clamp(35px, 9vmin, 80px); position: relative; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .die-face { 
             position: absolute; width: 100%; height: 100%; 
-            background: #111; /* Dadi Neri */
-            border: clamp(1px, 0.3vmin, 3px) solid #333; border-radius: 15%; 
-            display: grid; padding: 10%; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); 
-            box-shadow: inset 0 0 1.5vmin rgba(255,255,255,0.2), inset 0 0 4px #000; 
+            background: #111; border: clamp(1px, 0.3vmin, 3px) solid #222; border-radius: 18%; 
+            display: grid; padding: 12%; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); 
+            box-shadow: inset 0 0 1.5vmin rgba(255,255,255,0.2), inset 0 0 5px #000; 
         }
         .die-dot { 
-            background: radial-gradient(circle at 30% 30%, #fff7b0, #ffd700, #b8860b); /* Pallini Dorati */
-            border-radius: 50%; width: 100%; height: 100%; box-shadow: inset 0.1vmin 0.1vmin 0.4vmin rgba(0,0,0,0.9), 0 0.1vmin 0.2vmin rgba(255,255,255,0.3); 
+            background: radial-gradient(circle at 30% 30%, #fff7b0 0%, #ffd700 40%, #b8860b 100%); 
+            border-radius: 50%; width: 100%; height: 100%; box-shadow: inset 0.1vmin 0.1vmin 0.4vmin rgba(0,0,0,0.9), 0 0.1vmin 0.2vmin rgba(255,255,255,0.4); 
         }
         .dot-1 { grid-area: 1 / 1; } .dot-3 { grid-area: 1 / 3; } .dot-4 { grid-area: 2 / 1; } .dot-5 { grid-area: 2 / 2; } .dot-6 { grid-area: 2 / 3; } .dot-7 { grid-area: 3 / 1; } .dot-9 { grid-area: 3 / 3; }
         
-        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(30px, 8vmin, 70px) / 2)); } .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(30px, 8vmin, 70px) / 2)); }
-        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(30px, 8vmin, 70px) / 2)); } .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(30px, 8vmin, 70px) / 2)); }
-        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(30px, 8vmin, 70px) / 2)); } .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(30px, 8vmin, 70px) / 2)); }
+        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); } .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); }
+        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); } .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); }
+        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); } .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); }
         .anim-jump { animation: jump 1.2s ease-out forwards; }
         @keyframes jump { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-15vmin) scale(1.3) rotateX(360deg) rotateZ(180deg); } 70% { transform: translateY(-3vmin) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
 
         .token { position: absolute; z-index: 30; width: clamp(26px, 6vmin, 55px); height: clamp(26px, 6vmin, 55px); transition: all 0.4s linear; transform: translate(-50%, -50%); pointer-events: none; }
         .token-svg { width: 100%; height: 100%; filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.7)); }
         
-        /* Case posizionate esattamene sulla striscia colore */
         .house { width: clamp(6px, 1.5vmin, 16px); height: clamp(6px, 1.5vmin, 16px); background-color: #00a650; margin: 1px; box-shadow: inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); }
         .hotel { width: clamp(8px, 2vmin, 22px); height: clamp(8px, 2vmin, 22px); background-color: #ed1b24; margin: 1px; box-shadow: inset -3px -3px 0px rgba(0,0,0,0.3), inset 3px 3px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); }
         .buildings-container { display: flex; flex-wrap: wrap; justify-content: center; position: absolute; bottom: 2%; width: 100%; z-index: 3;}
@@ -254,11 +273,10 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100dvw; height: 100dvh; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 200; }
         .modal-box-wrapper { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; width: 100%; display: flex; justify-content: center; }
         
-        /* Box Modale Base (Proprietà, Setup, ecc) */
         .modal-box { background: #fdfbf7; background-image: var(--paper-tex); border: clamp(2px, 0.4vmin, 6px) solid #333; border-radius: 8px; width: 95vw; max-width: 480px; max-height: 95dvh; padding: clamp(15px, 4vw, 25px); box-shadow: 0 10px 30px rgba(0,0,0,0.9); color: #111; position: relative; text-align: center; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; }
         
-        /* Carte 3D Sfondo Pieno Esatto */
-        .modal-box.solid-card { border-radius: 8px; border: 1px solid rgba(0,0,0,0.2); box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 60px rgba(0,0,0,0.05); padding: 0; display: flex; flex-direction: column; overflow: hidden; background-image: var(--paper-tex); }
+        /* Carte 3D Sfondo Pieno Esatto (Senza bordo bianco) */
+        .modal-box.solid-card { border-radius: 4px; border: 1px solid rgba(0,0,0,0.2); box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 60px rgba(0,0,0,0.05); padding: 0; display: flex; flex-direction: column; overflow: hidden; background-image: var(--paper-tex); }
 
         .lang-selector { display: flex; gap: 5px; z-index: 10; margin-bottom: 15px; justify-content: center; }
         .lang-btn { background: #111; color: #fff; border: 1px solid #555; padding: 5px 10px; font-size: 12px; cursor: pointer; border-radius: 4px; font-weight: bold;}
@@ -349,25 +367,27 @@
     <div id="app-container">
         <div id="board-area">
             <div id="board">
-                <!-- Centro Tabellone Reale -->
+                <!-- Centro Tabellone -->
                 <div id="center-board">
-                    <!-- Mazzo Probabilità -->
+                    
+                    <!-- Mazzi di carte fisici 3D -->
                     <div class="deck-slot probabilita">
-                        <span class="deck-slot-title" data-i18n="chance_title"></span>
+                        <div class="deck-stack bg-prob">
+                            <span data-i18n="chance_title"></span>
+                        </div>
                     </div>
                     
-                    <!-- Titolo Sottile e Gigante -->
                     <div class="center-text-group">
                         <div class="center-title" data-i18n="monopoly"></div>
                         <div class="center-copyright" data-i18n="copyright"></div>
                     </div>
 
-                    <!-- Mazzo Imprevisti -->
                     <div class="deck-slot imprevisti">
-                        <span class="deck-slot-title" data-i18n="chest_title"></span>
+                        <div class="deck-stack bg-impr">
+                            <span data-i18n="chest_title"></span>
+                        </div>
                     </div>
                     
-                    <!-- Area Dadi -->
                     <div class="dice-area" id="dice-area" onclick="rollDice()">
                         <div class="die-wrapper" id="bounce1">
                             <div class="die-3d" id="die1" style="transform: rotateX(-20deg) rotateY(30deg);">
@@ -400,7 +420,6 @@
         <div class="modal-box-wrapper" style="transform: scale(1) rotate(0deg)">
             <div class="modal-box" style="max-width: 550px; position:relative;">
                 <div class="lang-selector">
-                    <!-- Ordine EN, ES, PT, IT -->
                     <button class="lang-btn" onclick="setLang('en')">EN</button>
                     <button class="lang-btn" onclick="setLang('es')">ES</button>
                     <button class="lang-btn" onclick="setLang('pt')">PT</button>
@@ -439,7 +458,7 @@
     </div>
 
     <script>
-        // DIZIONARIO TRADUZIONI (INCLUSA PT E ORDINE CORRETTO)
+        // DIZIONARIO TRADUZIONI CON BREAKS ORIGINALI
         const i18n = {
             'en': {
                 monopoly: "MONOPOLY", setup_desc: "Enter names and choose token", btn_add_player: "+ Player", btn_start: "START GAME", click_start: "CLICK TO START",
@@ -450,14 +469,14 @@
                 bankrupt_msg: "BANKRUPTCY FOR", val_msg: "Value", var_rent: "Rent varies based on ownership.", prop_of: "Property of", tap_notes: "Tap the notes", empty: "Empty", pay_req: "You must pay:",
                 buy_title: "Purchase", rent_title: "Rent", build_title: "Construction", tax_title: "Tax", go_msg: "Passed GO! Collected 20,000", go_jail_btn: "GO TO JAIL!",
                 props: [
-                    "GO - Collect 20,000", "Mediterranean Ave.", "Chance", "Baltic Ave.", "Income Tax (Pay 20,000)", "Reading Railroad",
-                    "Oriental Ave.", "Community Chest", "Vermont Ave.", "Connecticut Ave.", "Just Visiting / Jail",
-                    "St. Charles Place", "Electric Company", "States Ave.", "Virginia Ave.", "Pennsylvania Railroad",
-                    "St. James Place", "Chance", "Tennessee Ave.", "New York Ave.", "Free Parking",
-                    "Kentucky Ave.", "Community Chest", "Indiana Ave.", "Illinois Ave.", "B. & O. Railroad",
-                    "Atlantic Ave.", "Ventnor Ave.", "Water Works", "Marvin Gardens", "Go To Jail!",
-                    "Pacific Ave.", "North Carolina Ave.", "Chance", "Pennsylvania Ave.", "Short Line",
-                    "Community Chest", "Park Place", "Luxury Tax (Pay 10,000)", "Boardwalk"
+                    "", "MEDITERRANEAN<br>AVE.", "", "BALTIC<br>AVE.", "INCOME<br>TAX<br><span style='font-size: 0.6em'>PAY L. 20.000</span>", "READING<br>RAILROAD",
+                    "ORIENTAL<br>AVE.", "", "VERMONT<br>AVE.", "CONNECTICUT<br>AVE.", "",
+                    "ST. CHARLES<br>PLACE", "ELECTRIC<br>COMPANY", "STATES<br>AVE.", "VIRGINIA<br>AVE.", "PENNSYLVANIA<br>RAILROAD",
+                    "ST. JAMES<br>PLACE", "", "TENNESSEE<br>AVE.", "NEW YORK<br>AVE.", "",
+                    "KENTUCKY<br>AVE.", "", "INDIANA<br>AVE.", "ILLINOIS<br>AVE.", "B. & O.<br>RAILROAD",
+                    "ATLANTIC<br>AVE.", "VENTNOR<br>AVE.", "WATER<br>WORKS", "MARVIN<br>GARDENS", "",
+                    "PACIFIC<br>AVE.", "NORTH CAROLINA<br>AVE.", "", "PENNSYLVANIA<br>AVE.", "SHORT LINE<br>RAILROAD",
+                    "", "PARK<br>PLACE", "LUXURY<br>TAX<br><span style='font-size: 0.6em'>PAY L. 10.000</span>", "BOARDWALK"
                 ],
                 events: [
                     "Go directly to jail, do not pass GO", "Advance to Boardwalk", "Advance to Mediterranean Ave.", 
@@ -473,14 +492,14 @@
                 bankrupt_msg: "¡BANCARROTA PARA", val_msg: "Valor", var_rent: "El alquiler varía según propiedad.", prop_of: "Propiedad de", tap_notes: "Toca los billetes", empty: "Vacío", pay_req: "Debes pagar:",
                 buy_title: "Compra", rent_title: "Alquiler", build_title: "Construcción", tax_title: "Impuesto", go_msg: "¡Pasaste SALIDA! Cobras 20.000", go_jail_btn: "¡A LA CÁRCEL!",
                 props: [
-                    "SALIDA - Cobra 20.000", "Ronda de Valencia", "Suerte", "Plaza Lavapiés", "Impuesto Renta (Paga 20.000)", "Estación Goya",
-                    "Glorieta Cuatro Caminos", "Caja Comunidad", "Av. Reina Victoria", "Calle Bravo Murillo", "Visita / Cárcel",
-                    "Glorieta de Bilbao", "Cía. Electricidad", "Calle Alberto Aguilera", "Calle Fuencarral", "Estación Delicias",
-                    "Avenida Felipe II", "Suerte", "Calle Velázquez", "Calle Serrano", "Parking Gratuito",
-                    "Avenida de América", "Caja Comunidad", "Calle María de Molina", "Calle Cea Bermúdez", "Estación Mediodía",
-                    "Av. Reyes Católicos", "Calle Bailén", "Cía. de Aguas", "Plaza de España", "¡A la Cárcel!",
-                    "Puerta del Sol", "Calle Alcalá", "Suerte", "Gran Vía", "Estación Norte",
-                    "Caja Comunidad", "Paseo de la Castellana", "Impuesto Lujo (Paga 10.000)", "Paseo del Prado"
+                    "", "RONDA DE<br>VALENCIA", "", "PLAZA<br>LAVAPIÉS", "IMPUESTO<br>SOBRE LA RENTA<br><span style='font-size: 0.6em'>PAGA L. 20.000</span>", "ESTACIÓN<br>DE GOYA",
+                    "GLORIETA<br>CUATRO CAMINOS", "", "AVENIDA<br>REINA VICTORIA", "CALLE<br>BRAVO MURILLO", "",
+                    "GLORIETA<br>DE BILBAO", "CÍA. DE<br>ELECTRICIDAD", "CALLE<br>ALBERTO AGUILERA", "CALLE<br>FUENCARRAL", "ESTACIÓN<br>DE DELICIAS",
+                    "AVENIDA<br>FELIPE II", "", "CALLE<br>VELÁZQUEZ", "CALLE<br>SERRANO", "",
+                    "AVENIDA<br>DE AMÉRICA", "", "CALLE<br>MARÍA DE MOLINA", "CALLE<br>CEA BERMÚDEZ", "ESTACIÓN<br>MEDIODÍA",
+                    "AV. REYES<br>CATÓLICOS", "CALLE<br>BAILÉN", "CÍA.<br>DE AGUAS", "PLAZA<br>DE ESPAÑA", "",
+                    "PUERTA<br>DEL SOL", "CALLE<br>ALCALÁ", "", "GRAN<br>VÍA", "ESTACIÓN<br>NORTE",
+                    "", "PASEO DE LA<br>CASTELLANA", "IMPUESTO<br>DE LUJO<br><span style='font-size: 0.6em'>PAGA L. 10.000</span>", "PASEO<br>DEL PRADO"
                 ],
                 events: [
                     "Ve directamente a la cárcel sin pasar por SALIDA", "Avanza al Paseo del Prado", "Avanza a Ronda de Valencia", 
@@ -496,14 +515,14 @@
                 bankrupt_msg: "FALÊNCIA PARA", val_msg: "Valor", var_rent: "O aluguel varia de acordo com a propriedade.", prop_of: "Propriedade de", tap_notes: "Toque nas notas", empty: "Vazio", pay_req: "Você deve pagar:",
                 buy_title: "Compra", rent_title: "Aluguel", build_title: "Construção", tax_title: "Imposto", go_msg: "Passou por PARTIDA! Receba 20.000", go_jail_btn: "VÁ PARA A PRISÃO!",
                 props: [
-                    "PARTIDA - Receba 20.000", "Campo Grande", "Probabilidade", "Rua Maria Pia", "Imposto de Renda (Pague 20.000)", "Estação do Rossio",
-                    "Praça da Alegria", "Imprevistos", "Rua Júlio Dinis", "Rua Augusta", "Visita / Prisão",
-                    "Avenida da República", "Companhia de Eletricidade", "Rua de São Marcos", "Avenida Boavista", "Estação de Santa Apolónia",
-                    "Rua Mouzinho da Silveira", "Probabilidade", "Avenida dos Aliados", "Rua de Santa Catarina", "Estacionamento Livre",
-                    "Avenida Infante Santo", "Imprevistos", "Rua Ferreira Borges", "Avenida da Liberdade", "Estação de São Bento",
-                    "Rua Garrett", "Rua do Carmo", "Companhia de Águas", "Praça do Comércio", "Vá para a Prisão!",
-                    "Rua das Flores", "Avenida Fontes Pereira de Melo", "Probabilidade", "Rotunda da Boavista", "Estação do Oriente",
-                    "Imprevistos", "Avenida Clérigos", "Imposto de Luxo (Pague 10.000)", "Rossio"
+                    "", "CAMPO<br>GRANDE", "", "RUA<br>MARIA PIA", "IMPOSTO<br>DE RENDA<br><span style='font-size: 0.6em'>PAGUE L. 20.000</span>", "ESTAÇÃO<br>DO ROSSIO",
+                    "PRAÇA<br>DA ALEGRIA", "", "RUA<br>JÚLIO DINIS", "RUA<br>AUGUSTA", "",
+                    "AVENIDA<br>DA REPÚBLICA", "COMPANHIA<br>DE ELETRICIDADE", "RUA<br>DE SÃO MARCOS", "AVENIDA<br>BOAVISTA", "ESTAÇÃO<br>SANTA APOLÓNIA",
+                    "RUA MOUZINHO<br>DA SILVEIRA", "", "AVENIDA<br>DOS ALIADOS", "RUA DE<br>SANTA CATARINA", "",
+                    "AVENIDA<br>INFANTE SANTO", "", "RUA<br>FERREIRA BORGES", "AVENIDA<br>DA LIBERDADE", "ESTAÇÃO<br>DE SÃO BENTO",
+                    "RUA<br>GARRETT", "RUA<br>DO CARMO", "COMPANHIA<br>DE ÁGUAS", "PRAÇA<br>DO COMÉRCIO", "",
+                    "RUA<br>DAS FLORES", "AV. FONTES<br>PEREIRA DE MELO", "", "ROTUNDA<br>DA BOAVISTA", "ESTAÇÃO<br>DO ORIENTE",
+                    "", "AVENIDA<br>CLÉRIGOS", "IMPOSTO<br>DE LUXO<br><span style='font-size: 0.6em'>PAGUE L. 10.000</span>", "ROSSIO"
                 ],
                 events: [
                     "Vá diretamente para a prisão, sem passar pela PARTIDA", "Avance até ao Rossio", "Avance até ao Campo Grande", 
@@ -512,21 +531,21 @@
             },
             'it': {
                 monopoly: "MONÒPOLI", setup_desc: "Inserisci i nomi e scegli la pedina", btn_add_player: "+ Giocatore", btn_start: "INIZIA PARTITA", click_start: "CLICCA PER INIZIARE",
-                chance_title: "PROBABILITÀ", chest_title: "IMPREVISTI", player: "Gioc.", copyright: "MARCHIO REGISTRATO N. 107.242<br>COPYRIGHT © 1936, 1946, 1961 BY PARKER BROTHERS INC.<br>PRINTED IN ITALY",
+                chance_title: "PROBABILITÀ", chest_title: "IMPREVISTI", player: "Gioc.", copyright: "MARCHIO REGISTRATO N. 107.242<br>COPYRIGHT &copy; 1936, 1946, 1961 BY PARKER BROTHERS INC.<br>PRINTED IN ITALY",
                 prop_title: "Titolo di Proprietà", rent_base: "Rendita - Solo terreno", with_house: "Con", houses: "Case", hotel: "ALBERGO", mortgage: "Valore ipotecario", house_cost: "Costo Casa/Alb.",
                 buy_btn: "COMPRA", pass_btn: "PASSA", pay_btn: "PAGA AFFITTO", your_prop: "Tua Proprietà", build_btn: "COSTRUISCI", end_turn: "FINE TURNO", ok_btn: "OK",
                 tray: "IL TUO VASSOIO:", wallet: "IL TUO PORTAFOGLIO:", confirm_pay: "CONFERMA", cancel: "ANNULLA / BANCAROTTA", pay_recv: "PAGA E RICEVI RESTO", 
                 bankrupt_msg: "BANCAROTTA PER", val_msg: "Valore", var_rent: "Rendita variabile in base ai possedimenti.", prop_of: "Proprietà di", tap_notes: "Tocca le banconote", empty: "Vuoto", pay_req: "Devi versare:",
                 buy_title: "Acquisto", rent_title: "Affitto", build_title: "Costruzione", tax_title: "Tassa", go_msg: "Passaggio dal VIA! Ritirate 20.000", go_jail_btn: "IN PRIGIONE!",
                 props: [
-                    "VIA! - Ritirate 20.000", "Vicolo Corto", "Probabilità", "Vicolo Stretto", "Tassa Patrimoniale (Paga 20.000)", "Stazione Sud",
-                    "Bastioni Gran Sasso", "Imprevisti", "Viale Monterosa", "Viale Vesuvio", "Transito / Prigione",
-                    "Via Accademia", "Società Elettrica", "Corso Ateneo", "Piazza Università", "Stazione Ovest",
-                    "Via Verdi", "Probabilità", "Corso Raffaello", "Piazza Dante", "Parcheggio Gratuito",
-                    "Via Marco Polo", "Imprevisti", "Corso Magellano", "Largo Colombo", "Stazione Nord",
-                    "Viale Costantino", "Viale Traiano", "Società Acqua Potabile", "Piazza G. Cesare", "In Prigione!",
-                    "Via Roma", "Corso Impero", "Probabilità", "Largo Augusto", "Stazione Est",
-                    "Imprevisti", "Viale dei Giardini", "Tassa di Lusso (Paga 10.000)", "Parco della Vittoria"
+                    "", "VICOLO<br>CORTO", "", "VICOLO<br>STRETTO", "TASSA<br>PATRIMONIALE<br><span style='font-size: 0.6em'>PAGARE L. 20.000</span>", "STAZIONE SUD",
+                    "BASTIONI<br>GRAN SASSO", "", "VIALE<br>MONTEROSA", "VIALE<br>VESUVIO", "",
+                    "VIA<br>ACCADEMIA", "SOCIETA'<br>ELETTRICA", "CORSO<br>ATENEO", "PIAZZA<br>UNIVERSITÀ", "STAZIONE OVEST",
+                    "VIA<br>VERDI", "", "CORSO<br>RAFFAELLO", "PIAZZA<br>DANTE", "",
+                    "VIA<br>MARCO POLO", "", "CORSO<br>MAGELLANO", "LARGO<br>COLOMBO", "STAZIONE NORD",
+                    "VIALE<br>COSTANTINO", "VIALE<br>TRAIANO", "SOCIETA'<br>ACQUA POTABILE", "PIAZZA<br>G. CESARE", "",
+                    "VIA<br>ROMA", "CORSO<br>IMPERO", "", "LARGO<br>AUGUSTO", "STAZIONE EST",
+                    "", "VIALE<br>DEI GIARDINI", "TASSA<br>DI LUSSO<br><span style='font-size: 0.6em'>PAGARE L. 10.000</span>", "PARCO<br>DELLA VITTORIA"
                 ],
                 events: [
                     "Andate in prigione direttamente e senza passare dal VIA!", "Andate sino al Parco della Vittoria", "Ritornate al Vicolo Corto", 
@@ -535,23 +554,37 @@
             }
         };
 
-        let currentLang = 'en'; // Verrà sovrascritto dal detect
+        let currentLang = 'en';
         const t = (key) => i18n[currentLang][key] || key;
         const tProp = (index) => i18n[currentLang].props[index];
 
-        const C = { BROWN: '#6b3e26', LIGHTBLUE: '#8bd2ec', PINK: '#d81b60', ORANGE: '#f57c00', RED: '#e53935', YELLOW: '#ffeb3b', GREEN: '#4caf50', DARKBLUE: '#1e88e5' };
+        const C = { BROWN: '#8e5033', LIGHTBLUE: '#8ed6ef', PINK: '#db2b6c', ORANGE: '#f5821c', RED: '#e62c26', YELLOW: '#ffec19', GREEN: '#41ab5d', DARKBLUE: '#1b73b8' };
 
-        // SVG Corner e Icone (Adattati in base alla dimensione % del contenitore)
-        const svgTrain = `<svg viewBox="0 0 100 100" class="svg-board-icon"><path d="M 20 70 L 80 70 L 80 40 L 60 40 L 60 20 L 40 20 L 40 40 L 20 50 Z" fill="#111" stroke="#111" stroke-width="4"/><circle cx="30" cy="70" r="10" fill="#333" stroke="#111" stroke-width="3"/><circle cx="50" cy="70" r="10" fill="#333" stroke="#111" stroke-width="3"/><circle cx="70" cy="70" r="10" fill="#333" stroke="#111" stroke-width="3"/></svg>`;
-        const svgBulb = `<svg viewBox="0 0 100 100" class="svg-board-icon"><circle cx="50" cy="35" r="25" fill="#ffeb3b" stroke="#111" stroke-width="4"/><path d="M 35 50 L 65 50 L 60 75 L 40 75 Z" fill="#e8ecd3" stroke="#111" stroke-width="4"/><rect x="42" y="75" width="16" height="15" fill="#111" rx="3"/></svg>`;
-        const svgTap = `<svg viewBox="0 0 100 100" class="svg-board-icon"><path d="M 25 50 L 50 50 L 50 70 L 65 70 L 65 40 L 25 40 Z" fill="#8bd2ec" stroke="#111" stroke-width="4"/><rect x="15" y="35" width="10" height="20" fill="#ccc" stroke="#111" stroke-width="4"/><circle cx="60" cy="85" r="8" fill="#8bd2ec" stroke="#111" stroke-width="3"/></svg>`;
+        // ICONE SVG RIDISEGNATE FEDELI
+        const svgTrain = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 80%; height: 80%; margin-top:5%;"><path d="M 25 75 L 85 75 L 85 45 L 65 45 L 65 25 L 45 25 L 45 45 L 25 45 L 25 20 L 15 20 L 15 75 Z" fill="#111" stroke="#111" stroke-width="2"/><circle cx="35" cy="75" r="10" fill="#111"/><circle cx="55" cy="75" r="10" fill="#111"/><circle cx="75" cy="75" r="10" fill="#111"/></svg>`;
+        const svgBulb = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 50 15 C 25 15 25 50 40 65 L 40 80 L 60 80 L 60 65 C 75 50 75 15 50 15 Z" fill="#ffec19" stroke="#111" stroke-width="4"/><path d="M 45 35 L 55 35 M 40 50 L 60 50" stroke="#111" stroke-width="3"/><rect x="42" y="80" width="16" height="15" fill="#111" rx="2"/></svg>`;
+        const svgTap = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 20 40 L 40 40 L 40 60 L 60 60 L 60 30 L 20 30 Z" fill="#8ed6ef" stroke="#111" stroke-width="5"/><rect x="10" y="25" width="10" height="20" fill="#111"/><path d="M 55 60 C 55 80 65 90 60 90 C 55 90 65 80 65 60 Z" fill="#8ed6ef" stroke="#111" stroke-width="3"/></svg>`;
+        const svgRing = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%; margin-top:10%;"><circle cx="50" cy="60" r="25" fill="none" stroke="#ffec19" stroke-width="12"/><circle cx="50" cy="60" r="25" fill="none" stroke="#111" stroke-width="2"/><polygon points="35,35 65,35 50,15" fill="#8ed6ef" stroke="#111" stroke-width="4"/><polygon points="35,35 65,35 50,45" fill="#fff" stroke="#111" stroke-width="4"/></svg>`;
         
-        const svgGo = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 70%; height: 70%;"><path d="M 90 50 L 50 10 L 50 35 L 10 35 L 10 65 L 50 65 L 50 90 Z" fill="#e53935" stroke="#111" stroke-width="3"/><text x="45" y="55" font-family="Montserrat" font-weight="900" font-size="20" fill="#fff" text-anchor="middle" transform="rotate(-45 45 55)">VIA!</text></svg>`;
-        const svgJail = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 75%; height: 75%;"><circle cx="50" cy="50" r="40" fill="#8bd2ec" stroke="#111" stroke-width="3"/><rect x="35" y="30" width="30" height="40" fill="none" stroke="#fff" stroke-width="6"/><path d="M 40 30 L 40 70 M 50 30 L 50 70 M 60 30 L 60 70" stroke="#fff" stroke-width="4"/></svg>`;
-        const svgParking = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 75%; height: 75%;"><path d="M 10 60 L 20 40 L 40 40 L 50 30 L 70 30 L 80 40 L 90 40 L 90 60 Z" fill="#e53935" stroke="#111" stroke-width="3"/><circle cx="30" cy="65" r="10" fill="#111"/><circle cx="70" cy="65" r="10" fill="#111"/></svg>`;
-        const svgPoliceman = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 75%; height: 75%;"><circle cx="50" cy="40" r="20" fill="#ffd54f" stroke="#111" stroke-width="3"/><path d="M 20 25 L 80 25 L 70 10 L 30 10 Z" fill="#111"/><path d="M 40 60 L 60 60 L 70 90 L 30 90 Z" fill="#1e88e5" stroke="#111" stroke-width="3"/></svg>`;
-        const svgProb = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 50%; height: 50%;"><text x="50" y="75" font-size="80" font-family="Playfair Display" font-weight="bold" fill="#8bd2ec" stroke="#111" stroke-width="3" text-anchor="middle">?</text></svg>`;
-        const svgChest = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 55%; height: 55%;"><rect x="15" y="35" width="70" height="45" fill="#8bd2ec" stroke="#111" stroke-width="4"/><path d="M 15 35 Q 50 10 85 35" fill="none" stroke="#111" stroke-width="4"/><rect x="40" y="30" width="20" height="15" fill="#ffeb3b" stroke="#111" stroke-width="3"/></svg>`;
+        // ANGOLI FEDELI
+        const svgGo = `<svg viewBox="0 0 100 100" style="width:100%; height:100%;"><path d="M 90 50 L 50 10 L 50 35 L 10 35 L 10 65 L 50 65 L 50 90 Z" fill="#e62c26" stroke="#111" stroke-width="3" transform="translate(-5, 5)"/><text x="40" y="60" font-family="Montserrat" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" transform="rotate(-45 40 60)">VIA!</text><text x="45" y="25" font-family="Helvetica Neue" font-weight="bold" font-size="6" fill="#111" transform="rotate(-45 45 25)"><tspan x="45" dy="0">RITIRATE L. 20.000</tspan><tspan x="45" dy="8">AL PASSAGGIO</tspan></text></svg>`;
+        const svgJail = `<div style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div style="position:absolute; top:0; right:0; width:70%; height:70%; background-color:#f5821c; border-bottom: 2px solid #111; border-left: 2px solid #111;">
+                                <div style="width:100%; height:100%; display:flex; justify-content:space-evenly; align-items:center;">
+                                    <div style="width:15%; height:100%; background:#111;"></div><div style="width:15%; height:100%; background:#111;"></div><div style="width:15%; height:100%; background:#111;"></div>
+                                </div>
+                            </div>
+                            <div style="position:absolute; top: 35%; left: 8%; transform: rotate(90deg); font-family: 'Helvetica Neue'; font-weight: bold; font-size: clamp(4px, 1.2vmin, 12px); letter-spacing: 2px;">IN</div>
+                            <div style="position:absolute; bottom: 8%; left: 35%; font-family: 'Helvetica Neue'; font-weight: bold; font-size: clamp(4px, 1.2vmin, 12px); letter-spacing: 2px;">PRIGIONE</div>
+                            <div style="position:absolute; top: 10%; left: -10%; transform: rotate(45deg); font-family: 'Helvetica Neue'; font-weight: bold; font-size: clamp(4px, 1vmin, 10px);">TRANSITO</div>
+                         </div>`;
+        const svgParking = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; transform: rotate(45deg); font-family: 'Helvetica Neue'; font-weight: bold; font-size: clamp(6px, 1.5vmin, 16px); text-align:center; color:#111;"><span style="display:block;">PARCHEGGIO<br>GRATUITO</span></div>`;
+        const svgPoliceman = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 80%; height: 80%;"><path d="M 40 40 Q 50 10 60 40 L 80 40 L 80 50 L 60 50 L 60 90 L 40 90 L 40 50 L 20 50 L 20 40 Z" fill="#111"/><circle cx="50" cy="30" r="15" fill="#f5821c"/><path d="M 45 40 L 55 40 M 45 50 L 55 50" stroke="#fff" stroke-width="2"/><text x="15" y="80" font-family="Helvetica Neue" font-weight="bold" font-size="12" fill="#111" transform="rotate(-45 15 80)">IN PRIGIONE!</text></svg>`;
+        
+        // Punti di domanda e Scrigno come originali italiani
+        const svgProbBlue = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 50%; height: 50%;"><text x="50" y="80" font-size="90" font-family="'Times New Roman', serif" font-weight="bold" fill="#1b73b8" filter="drop-shadow(2px 2px 0px rgba(0,0,0,0.5))" text-anchor="middle">?</text></svg>`;
+        const svgProbRed = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 50%; height: 50%;"><text x="50" y="80" font-size="90" font-family="'Times New Roman', serif" font-weight="bold" fill="#e62c26" filter="drop-shadow(2px 2px 0px rgba(0,0,0,0.5))" text-anchor="middle">?</text></svg>`;
+        const svgChest = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 65%; height: 65%; margin-top:5%;"><path d="M 10 40 L 90 40 L 80 80 L 20 80 Z" fill="#1b73b8" stroke="#111" stroke-width="3"/><path d="M 10 40 Q 50 15 90 40" fill="#1b73b8" stroke="#111" stroke-width="3"/><rect x="42" y="35" width="16" height="10" fill="#ffec19" stroke="#111" stroke-width="2"/><circle cx="30" cy="60" r="5" fill="#ffec19"/><circle cx="50" cy="65" r="5" fill="#ffec19"/><circle cx="70" cy="60" r="5" fill="#ffec19"/></svg>`;
 
         const tokenSVGs = {
             'candelabro': `<svg viewBox="0 0 100 100" class="token-svg"><text x="50" y="80" font-size="75" text-anchor="middle">🕯️</text></svg>`,
@@ -562,7 +595,6 @@
         };
         const tokensLib = [{id: 'candelabro', name: 'Candelabro'}, {id: 'fungo', name: 'Fungo'}, {id: 'pera', name: 'Pera'}, {id: 'piantagrassa', name: 'Pianta Grassa'}, {id: 'mela', name: 'Mela'}];
 
-        // Generatore Banconote SVG
         function generateNoteSVG(val, colorHex) {
             const valStr = val.toLocaleString();
             return `
@@ -615,17 +647,17 @@
             return notes;
         }
 
-        // --- ORDINE ESATTO TABELLONE CLASSICO ---
+        // --- ORDINE ESATTO TABELLONE ITALIANO (ICONE INVERTITE) ---
         function getBoardData() {
             return [
                 { id: 0, type: 'corner', name: tProp(0), svg: svgGo },
                 { id: 1, type: 'property', name: tProp(1), color: C.BROWN, price: 6000, rent: [200, 1000, 3000, 9000, 16000, 25000], houseCost: 5000 },
-                { id: 2, type: 'chance', name: tProp(2), svg: svgProb },
+                { id: 2, type: 'chance', name: tProp(2), svg: svgChest }, /* In ITA Probabilità ha lo scrigno */
                 { id: 3, type: 'property', name: tProp(3), color: C.BROWN, price: 6000, rent: [400, 2000, 6000, 18000, 32000, 45000], houseCost: 5000 },
-                { id: 4, type: 'tax', name: tProp(4), cost: 20000, icon: "💰" },
+                { id: 4, type: 'tax', name: tProp(4), cost: 20000, icon: "" }, /* Niente icona, solo testo */
                 { id: 5, type: 'station', name: tProp(5), price: 20000, svg: svgTrain },
                 { id: 6, type: 'property', name: tProp(6), color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
-                { id: 7, type: 'chest', name: tProp(7), svg: svgChest },
+                { id: 7, type: 'chest', name: tProp(7), svg: svgProbRed }, /* In ITA Imprevisti ha il punto di domanda rosso qui */
                 { id: 8, type: 'property', name: tProp(8), color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
                 { id: 9, type: 'property', name: tProp(9), color: C.LIGHTBLUE, price: 12000, rent: [800, 4000, 10000, 30000, 45000, 60000], houseCost: 5000 },
                 { id: 10, type: 'corner', name: tProp(10), svg: svgJail },
@@ -635,12 +667,12 @@
                 { id: 14, type: 'property', name: tProp(14), color: C.PINK, price: 16000, rent: [1200, 6000, 18000, 50000, 70000, 90000], houseCost: 10000 },
                 { id: 15, type: 'station', name: tProp(15), price: 20000, svg: svgTrain },
                 { id: 16, type: 'property', name: tProp(16), color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
-                { id: 17, type: 'chance', name: tProp(17), svg: svgProb },
+                { id: 17, type: 'chance', name: tProp(17), svg: svgChest }, /* Probabilità = Scrigno */
                 { id: 18, type: 'property', name: tProp(18), color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
                 { id: 19, type: 'property', name: tProp(19), color: C.ORANGE, price: 20000, rent: [1600, 8000, 22000, 60000, 80000, 100000], houseCost: 10000 },
                 { id: 20, type: 'corner', name: tProp(20), svg: svgParking },
                 { id: 21, type: 'property', name: tProp(21), color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
-                { id: 22, type: 'chest', name: tProp(22), svg: svgChest },
+                { id: 22, type: 'chest', name: tProp(22), svg: svgProbBlue }, /* Imprevisti = Punto di domanda Blu qui */
                 { id: 23, type: 'property', name: tProp(23), color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
                 { id: 24, type: 'property', name: tProp(24), color: C.RED, price: 24000, rent: [2000, 10000, 30000, 75000, 92500, 110000], houseCost: 15000 },
                 { id: 25, type: 'station', name: tProp(25), price: 20000, svg: svgTrain },
@@ -651,12 +683,12 @@
                 { id: 30, type: 'corner', name: tProp(30), svg: svgPoliceman },
                 { id: 31, type: 'property', name: tProp(31), color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
                 { id: 32, type: 'property', name: tProp(32), color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
-                { id: 33, type: 'chance', name: tProp(33), svg: svgProb },
+                { id: 33, type: 'chance', name: tProp(33), svg: svgChest }, /* Probabilità = Scrigno */
                 { id: 34, type: 'property', name: tProp(34), color: C.GREEN, price: 32000, rent: [2800, 15000, 45000, 100000, 120000, 140000], houseCost: 20000 },
                 { id: 35, type: 'station', name: tProp(35), price: 20000, svg: svgTrain },
-                { id: 36, type: 'chest', name: tProp(36), svg: svgChest },
+                { id: 36, type: 'chest', name: tProp(36), svg: svgProbRed }, /* Imprevisti = Punto di domanda Rosso qui */
                 { id: 37, type: 'property', name: tProp(37), color: C.DARKBLUE, price: 35000, rent: [3500, 17500, 50000, 110000, 130000, 150000], houseCost: 20000 },
-                { id: 38, type: 'tax', name: tProp(38), cost: 10000, icon: "💍" },
+                { id: 38, type: 'tax', name: tProp(38), cost: 10000, svg: svgRing },
                 { id: 39, type: 'property', name: tProp(39), color: C.DARKBLUE, price: 40000, rent: [5000, 20000, 60000, 140000, 170000, 200000], houseCost: 20000 }
             ];
         }
@@ -681,7 +713,7 @@
             });
             document.querySelectorAll('[data-i18n]').forEach(el => { 
                 if(el.tagName === 'INPUT') el.value = t(el.getAttribute('data-i18n'));
-                else el.innerHTML = t(el.getAttribute('data-i18n')); // innerHTML for copyright <br>
+                else el.innerHTML = t(el.getAttribute('data-i18n')); 
             });
             document.getElementById('intro-click-text').innerText = t('click_start');
             
@@ -723,8 +755,10 @@
                              <div class="buildings-container" id="bld-${data.id}"></div>`;
                 } else if (data.type === 'corner') {
                     html += `${data.svg ? data.svg : `<div class="icon-large">${data.icon}</div>`}`;
+                } else if (data.type === 'tax') {
+                    html += `<div class="property-name" style="padding-top:15%">${data.name}</div>${data.svg ? data.svg : ``}`;
                 } else {
-                    html += `<div class="property-name" style="padding-top:5%">${data.name}</div>${data.svg ? data.svg : `<div class="icon-large">${data.icon}</div>`}`;
+                    html += `<div class="property-name" style="padding-top:2%">${data.name}</div>${data.svg ? data.svg : `<div class="icon-large">${data.icon}</div>`}`;
                     if(data.price || data.cost) html += `<div class="property-price">L. ${data.price || data.cost}</div>`;
                 }
                 html += `</div>`; cell.innerHTML = html; fragment.appendChild(cell);
@@ -861,7 +895,7 @@
                     <div class="card-property-original">
                         <div class="cpo-header" style="background-color: ${headerColor}; color: ${fontCol};">
                             <div class="cpo-subtitle">${cell.type === 'property' ? t('prop_title') : ''}</div>
-                            <div class="cpo-title">${cell.name}</div>
+                            <div class="cpo-title">${cell.name.replace(/<br>/g, ' ')}</div>
                         </div>
                         <div class="cpo-body">`;
                 
@@ -900,7 +934,6 @@
                 const events = i18n[currentLang].events;
                 const eventTxt = events[Math.floor(Math.random() * events.length)];
                 
-                // Design Carte 100% Fedele (Sfondo interamente colorato, font pulito)
                 html += `
                     <div class="flex flex-col items-center justify-center h-full text-[#111] px-6 py-10" style="min-height: 250px;">
                         <div class="font-black text-2xl md:text-3xl mb-8 font-['Montserrat'] uppercase tracking-widest text-center opacity-80 border-b-2 border-[#111] pb-3 w-full">${isProb ? t('chance_title') : t('chest_title')}</div>
@@ -910,13 +943,13 @@
                         <button class="btn bg-white bg-opacity-40 border-[#111] text-[#111] shadow-none hover:bg-opacity-60 w-full max-w-[200px]" onclick="resolveCard('${eventTxt}')">${t('ok_btn')}</button>
                     </div>`;
             } else if (cell.type === 'tax') {
-                html += `<h2 class="text-xl font-bold mb-3 text-red-600 font-['Montserrat']">${cell.name}</h2>
+                html += `<h2 class="text-xl font-bold mb-3 text-red-600 font-['Montserrat']">${cell.name.replace(/<br>/g, ' ')}</h2>
                          <button class="btn btn-pay" onclick="payBankActive(${cell.cost})">${t('pay_btn')} L. ${cell.cost}</button>`;
             } else if (cell.id === 30) {
                 html += `<h2 class="text-xl font-bold mb-3 text-red-600 font-['Montserrat']">${t('go_jail_btn')}</h2>
                          <button class="btn btn-pay" onclick="goToJail()">${t('ok_btn')}</button>`;
             } else {
-                html += `<h2 class="text-xl font-bold mb-3 font-['Montserrat']">${cell.name}</h2><button class="btn" onclick="endTurn()">${t('ok_btn')}</button>`;
+                html += `<h2 class="text-xl font-bold mb-3 font-['Montserrat']">${cell.name.replace(/<br>/g, ' ')}</h2><button class="btn" onclick="endTurn()">${t('ok_btn')}</button>`;
             }
             openModal(html, isCard, cardColor);
         }
