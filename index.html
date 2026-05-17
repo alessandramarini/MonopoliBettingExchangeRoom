@@ -178,20 +178,19 @@
         }
 
         #main-trade-btn {
-            padding: 12px 30px;
-            font-size: clamp(14px, 2vw, 18px);
-            border-radius: 40px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 0 2px rgba(255,255,255,0.4) inset;
-            border: 3px solid #fff;
-            letter-spacing: 1.5px;
-            animation: pulse-trade 2s infinite;
+            padding: 8px 18px;
+            font-size: clamp(10px, 1.5vw, 12px);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+            border: 1px solid #005a2c;
+            letter-spacing: 1px;
             text-transform: uppercase;
+            margin: 0;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
-        @keyframes pulse-trade {
-            0% { box-shadow: 0 0 0 0 rgba(0, 166, 80, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(0, 166, 80, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 166, 80, 0); }
+        #main-trade-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
         }
 
         .player-zone {
@@ -289,7 +288,7 @@
             .box-red-stripe { position: relative; transform: none; top: 0; height: auto; padding: 12px 0; margin: 10px 0; }
             
             #trade-btn-container {
-                bottom: 22vh; /* Positioned above the player zones grid on mobile */
+                bottom: 22vh; /* Sollevato per non coprire i box giocatori da mobile */
             }
         }
         @media (max-height: 700px) {
@@ -358,7 +357,7 @@
         <div id="pz-3" class="player-zone pz-right" style="display:none;" onclick="showPlayerProperties(3)"></div>
     </div>
 
-    <!-- Move Trade Button Here -->
+    <!-- Bottone Scambia / Vendi spostato fuori dal tabellone in centro -->
     <div id="trade-btn-container">
         <button id="main-trade-btn" class="btn btn-buy" onclick="openTradingPanel()" data-i18n="trade_btn">VENDI PROPRIETÀ</button>
     </div>
@@ -613,7 +612,7 @@
                 buy_title: "Compra", rent_title: "Aluguel", build_title: "Construção", tax_title: "Imposto", go_msg: "Passou por PARTIDA! Receba 20.000", go_jail_btn: "VÁ PARA A PRISÃO!", pay_tax: "PAGUE",
                 my_props: "Minhas Propriedades", build_not_allowed: "Você precisa do grupo de cores completo para construir.", how_to_play: "COMO JOGAR",
                 mortgage_btn: "Hipoteca", unmortgage_btn: "Resgatar Hipoteca", sell_building_btn: "Vender Edifício", mortgaged_label: "Hipotecado",
-                trade_btn: "VENDER PROPRIEDADE", trade_title: "Painel de Negociação", trade_with: "Negociar com:", give_cash: "Ofereces dinheiro:", receive_cash: "Pedes dinheiro:", send_offer: "Enviar Proposta",
+                trade_btn: "VENDER PROPRIEDADE", trade_title: "Painel de Negociação", trade_with: "Negociar com:", give_cash: "Ofereces dinheiro:", receive_cash: "Pides dinheiro:", send_offer: "Enviar Proposta",
                 jail_card_label: "Carta Livre da Prisão", accept: "Aceitar", reject: "Rejeitar", no_buildings_trade: "Não é possível negociar! Primeiro venda os edifícios ao banco.",
                 not_enough_cash_trade: "Fundos insuficientes para a troca!", trade_success: "Troca concluída com sucesso!", trade_propose_title: "Proposta de troca enviada!",
                 trade_received_from: "propôs uma troca:", trade_asks: "Pede:", trade_gives: "Oferece:", pay_jail: "Pagar L. 5.000 para sair", use_jail_card: "Usar Carta de Prisão", or_label: "OU",
