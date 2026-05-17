@@ -17,9 +17,15 @@
             --border-color: #1a1a1a;
             --cell-bg: #e8ecd3;
             
-            --brown: #8e5033; --lightblue: #8ed6ef; --pink: #db2b6c;
-            --orange: #f5821c; --red: #e62c26; --yellow: #ffec19;
-            --green: #41ab5d; --darkblue: #1b73b8;
+            /* Colori Classici Edizione Italiana */
+            --pink: #e85d95; 
+            --lightblue: #70c3e8; 
+            --orange: #f28522; 
+            --brown: #9b623b; 
+            --red: #e21a22; 
+            --yellow: #feed00;
+            --green: #3ab54a; 
+            --purple: #834c9c;
             
             --prob-color: #d1dac5;
             --impr-color: #f79854;
@@ -697,7 +703,7 @@
                     "VIA<br>ACCADEMIA", "SOCIETA'<br>ELETTRICA", "CORSO<br>ATENEO", "PIAZZA<br>UNIVERSITÀ", "STAZIONE OVEST",
                     "VIA<br>VERDI", "", "CORSO<br>RAFFAELLO", "PIAZZA<br>DANTE", "",
                     "VIA<br>MARCO POLO", "", "CORSO<br>MAGELLANO", "LARGO<br>COLOMBO", "STAZIONE NORD",
-                    "VIALE<br>COSTANTINO", "VIALE<br>TRAIANO", "SOCIETA'<br>ACQUA", "PIAZZA<br>G. CESARE", "",
+                    "VIALE<br>COSTANTINO", "VIALE<br>TRAIANO", "SOCIETA'<br>ACQUA POTABILE", "PIAZZA<br>GIULIO CESARE", "",
                     "VIA<br>ROMA", "CORSO<br>IMPERO", "", "LARGO<br>AUGUSTO", "STAZIONE EST",
                     "", "VIALE<br>DEI GIARDINI", "TASSA<br>DI LUSSO", "PARCO<br>DELLA VITTORIA"
                 ],
@@ -712,7 +718,7 @@
         const tf = (key, ...args) => { let str = t(key); args.forEach((a, i) => str = str.replace(`{${i}}`, a)); return str; };
         const tProp = (index) => i18n[currentLang].props[index];
 
-        const C = { BROWN: '#8e5033', LIGHTBLUE: '#8ed6ef', PINK: '#db2b6c', ORANGE: '#f5821c', RED: '#e62c26', YELLOW: '#ffec19', GREEN: '#41ab5d', DARKBLUE: '#1b73b8' };
+        const C = { PINK: '#e85d95', LIGHTBLUE: '#70c3e8', ORANGE: '#f28522', BROWN: '#9b623b', RED: '#e21a22', YELLOW: '#feed00', GREEN: '#3ab54a', PURPLE: '#834c9c' };
 
         const svgTrainStr = `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%;"><path d="M 25 75 L 85 75 L 85 45 L 65 45 L 65 25 L 45 25 L 45 45 L 25 45 L 25 20 L 15 20 L 15 75 Z" fill="#111" stroke="#111" stroke-width="2"/><circle cx="35" cy="75" r="10" fill="#111"/><circle cx="55" cy="75" r="10" fill="#111"/><circle cx="75" cy="75" r="10" fill="#111"/></svg>`;
         const svgBulbStr = `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%;"><path d="M 50 15 C 25 15 25 50 40 65 L 40 80 L 60 80 L 60 65 C 75 50 75 15 50 15 Z" fill="#ffec19" stroke="#111" stroke-width="4"/><path d="M 45 35 L 55 35 M 40 50 L 60 50" stroke="#111" stroke-width="3"/><rect x="42" y="80" width="16" height="15" fill="#111" rx="2"/></svg>`;
@@ -776,9 +782,9 @@
         function getBoardData() {
             return [
                 { id: 0, type: 'corner', name: tProp(0), svg: getSvgGo() },
-                { id: 1, type: 'property', name: tProp(1), color: C.BROWN, price: 6000, rent: [200, 1000, 3000, 9000, 16000, 25000], houseCost: 5000 },
+                { id: 1, type: 'property', name: tProp(1), color: C.PINK, price: 6000, rent: [200, 1000, 3000, 9000, 16000, 25000], houseCost: 5000 },
                 { id: 2, type: 'chance', name: t('chance_title'), svg: svgChest },
-                { id: 3, type: 'property', name: tProp(3), color: C.BROWN, price: 6000, rent: [400, 2000, 6000, 18000, 32000, 45000], houseCost: 5000 },
+                { id: 3, type: 'property', name: tProp(3), color: C.PINK, price: 6000, rent: [400, 2000, 6000, 18000, 32000, 45000], houseCost: 5000 },
                 { id: 4, type: 'tax', name: tProp(4), cost: 20000, icon: "" },
                 { id: 5, type: 'station', name: tProp(5), price: 20000, svg: svgTrain },
                 { id: 6, type: 'property', name: tProp(6), color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
@@ -786,15 +792,15 @@
                 { id: 8, type: 'property', name: tProp(8), color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
                 { id: 9, type: 'property', name: tProp(9), color: C.LIGHTBLUE, price: 12000, rent: [800, 4000, 10000, 30000, 45000, 60000], houseCost: 5000 },
                 { id: 10, type: 'corner', name: tProp(10), svg: svgJail },
-                { id: 11, type: 'property', name: tProp(11), color: C.PINK, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
+                { id: 11, type: 'property', name: tProp(11), color: C.ORANGE, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
                 { id: 12, type: 'utility', name: tProp(12), price: 15000, svg: svgBulb },
-                { id: 13, type: 'property', name: tProp(13), color: C.PINK, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
-                { id: 14, type: 'property', name: tProp(14), color: C.PINK, price: 16000, rent: [1200, 6000, 18000, 50000, 70000, 90000], houseCost: 10000 },
+                { id: 13, type: 'property', name: tProp(13), color: C.ORANGE, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
+                { id: 14, type: 'property', name: tProp(14), color: C.ORANGE, price: 16000, rent: [1200, 6000, 18000, 50000, 70000, 90000], houseCost: 10000 },
                 { id: 15, type: 'station', name: tProp(15), price: 20000, svg: svgTrain },
-                { id: 16, type: 'property', name: tProp(16), color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
+                { id: 16, type: 'property', name: tProp(16), color: C.BROWN, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
                 { id: 17, type: 'chance', name: t('chance_title'), svg: svgChest },
-                { id: 18, type: 'property', name: tProp(18), color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
-                { id: 19, type: 'property', name: tProp(19), color: C.ORANGE, price: 20000, rent: [1600, 8000, 22000, 60000, 80000, 100000], houseCost: 10000 },
+                { id: 18, type: 'property', name: tProp(18), color: C.BROWN, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
+                { id: 19, type: 'property', name: tProp(19), color: C.BROWN, price: 20000, rent: [1600, 8000, 22000, 60000, 80000, 100000], houseCost: 10000 },
                 { id: 20, type: 'corner', name: tProp(20), svg: svgParking },
                 { id: 21, type: 'property', name: tProp(21), color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
                 { id: 22, type: 'chest', name: t('chest_title'), svg: svgProbBlue },
@@ -812,9 +818,9 @@
                 { id: 34, type: 'property', name: tProp(34), color: C.GREEN, price: 32000, rent: [2800, 15000, 45000, 100000, 120000, 140000], houseCost: 20000 },
                 { id: 35, type: 'station', name: tProp(35), price: 20000, svg: svgTrain },
                 { id: 36, type: 'chest', name: t('chest_title'), svg: svgProbRed },
-                { id: 37, type: 'property', name: tProp(37), color: C.DARKBLUE, price: 35000, rent: [3500, 17500, 50000, 110000, 130000, 150000], houseCost: 20000 },
+                { id: 37, type: 'property', name: tProp(37), color: C.PURPLE, price: 35000, rent: [3500, 17500, 50000, 110000, 130000, 150000], houseCost: 20000 },
                 { id: 38, type: 'tax', name: tProp(38), cost: 10000, svg: svgRing },
-                { id: 39, type: 'property', name: tProp(39), color: C.DARKBLUE, price: 40000, rent: [5000, 20000, 60000, 140000, 170000, 200000], houseCost: 20000 }
+                { id: 39, type: 'property', name: tProp(39), color: C.PURPLE, price: 40000, rent: [5000, 20000, 60000, 140000, 170000, 200000], houseCost: 20000 }
             ];
         }
 
@@ -1178,7 +1184,7 @@
             }
 
             if (cell.type === 'property') {
-                const textColor = ['#ffec19', '#acc4b1', '#8ed6ef'].includes(cell.color) ? '#111' : '#fff';
+                const textColor = [C.YELLOW, C.LIGHTBLUE].includes(cell.color) ? '#111' : '#fff';
                 html += `
                     <div class="cpo-top-val">${tf('card_cost', cell.price.toLocaleString('it-IT'))}</div>
                     <div class="cpo-header" style="background-color: ${cell.color || '#333'}; color: ${textColor};">
