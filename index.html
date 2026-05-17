@@ -146,24 +146,26 @@
 
         /* UNIFORM TYPOGRAPHY & PERFECT FIT */
         .property-name {
-            font-weight: 700; 
-            font-size: clamp(5px, 10cqmin, 11px); /* cqmin garantisce identica proporzione, ridotto a 10 per non toccare i bordi */
+            font-weight: 800; 
+            font-size: clamp(5px, 8cqmin, 11px); /* Dimensioni identiche indipendentemente dall'orientamento e ben distanziate */
             line-height: 1.1;
             text-transform: uppercase; 
             margin: auto 0; 
             font-family: 'Montserrat', sans-serif; 
             letter-spacing: -0.01em;
             display: flex; align-items: center; justify-content: center; flex-grow: 1;
-            padding: 0 6%; z-index: 1; color: #111; 
+            padding: 2% 8%; /* Padding laterale ampio per NON toccare MAI i bordi */
+            z-index: 1; color: #111; 
             text-wrap: balance; word-wrap: break-word; text-align: center; 
             width: 100%; box-sizing: border-box; overflow: hidden;
         }
 
         .property-price { 
-            font-size: clamp(4px, 9cqmin, 10px); font-weight: 700; margin-bottom: 4%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; 
+            font-size: clamp(4px, 7.5cqmin, 9px); 
+            font-weight: 700; margin-bottom: 5%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; 
         }
         
-        .tax .property-name { padding-top: 10%; font-size: clamp(5px, 10cqmin, 11px); }
+        .tax .property-name { padding-top: 15%; font-size: clamp(5px, 8cqmin, 11px); }
         .icon-large { margin: auto; display: flex; align-items: center; justify-content: center; flex-grow: 1; width: 100%; }
         .svg-board-icon { width: 100%; height: auto; max-width: 55cqmin; max-height: 50cqmin; margin: auto; }
         
@@ -646,7 +648,7 @@
             'pt': {
                 monopoly: "MONOPÓLIO", setup_desc: "Insira os nomes e escolha o peão", btn_add_player: "+ Jogador", btn_start: "INICIAR JOGO", click_start: "CLIQUE PARA INICIAR", select_lang: "Selecione o Idioma",
                 chance_title: "PROBABILIDADE", chest_title: "IMPREVISTOS", player: "Jog.",
-                prop_title: "TÍTULO DE PROPRIEDADE", rent_base: "Aluguel - Só terreno", with_house: "Com", house_single: "Casa", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecário", house_cost: "Custo Casa/Hotel",
+                prop_title: "TÍTULO DE PROPRIEDADE", rent_base: "Aluguel - Só terreno", with_house: "Com", house_single: "Casa", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipário", house_cost: "Custo Casa/Hotel",
                 buy_btn: "COMPRAR", pass_btn: "PASSAR", pay_btn: "PAGAR ALUGUEL", your_prop: "Sua Propriedade", build_btn: "CONSTRUIR", end_turn: "FIM DE TURNO", ok_btn: "OK", close: "FECHAR",
                 tray: "SUA BANDEJA:", wallet: "SUA CARTEIRA:", confirm_pay: "CONFIRMAR", cancel: "CANCELAR", pay_recv: "PAGAR E RECEBER", 
                 bankrupt_msg: "FALÊNCIA PARA", val_msg: "Valor", var_rent: "O aluguel varia.", prop_of: "Propriedade de", tap_notes: "Toque nas notas", empty: "Vazio", pay_req: "Você deve pagar:",
