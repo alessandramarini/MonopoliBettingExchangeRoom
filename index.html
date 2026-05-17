@@ -253,16 +253,15 @@
         .anim-jump { animation: jump 1.2s ease-out forwards; }
         @keyframes jump { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-15vmin) scale(1.3) rotateX(360deg) rotateZ(180deg); } 70% { transform: translateY(-3vmin) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
 
-        .token { position: absolute; z-index: 30; width: clamp(24px, 5.5vmin, 50px); height: clamp(24px, 5.5vmin, 50px); transition: all 0.4s linear; transform: translate(-50%, -50%); pointer-events: none; }
+        /* PEDINE: Calibrate per poggiare la BASE al centro della casella */
+        .token { position: absolute; z-index: 30; width: clamp(24px, 5.5vmin, 50px); height: clamp(24px, 5.5vmin, 50px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); transform: translate(-50%, -80%); pointer-events: none; }
         .token-svg { width: 100%; height: 100%; filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.7)); }
         
-        /* CASETTE E ALBERGHI PERFETTAMENTE OTTIMIZZATI */
+        .house { width: clamp(5px, 1.2vmin, 14px); height: clamp(5px, 1.2vmin, 14px); background-color: #00a650; margin: 1px; box-shadow: inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); border-radius:1px;}
+        .hotel { width: clamp(7px, 1.6vmin, 18px); height: clamp(7px, 1.6vmin, 18px); background-color: #ed1b24; margin: 1px; box-shadow: inset -3px -3px 0px rgba(0,0,0,0.3), inset 3px 3px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); border-radius:2px;}
         .buildings-container { display: flex; flex-wrap: wrap; justify-content: center; position: absolute; bottom: 2%; width: 100%; z-index: 3; gap: 2px;}
         .has-color-bar .buildings-container { top: 1%; bottom: auto; height: 20%; align-items: flex-end; }
-        
-        .house { width: clamp(6px, 1.2vmin, 12px); height: clamp(6px, 1.2vmin, 12px); background-color: #00a650; box-shadow: inset -1px -1px 0px rgba(0,0,0,0.3), inset 1px 1px 0px rgba(255,255,255,0.4), 1px 1px 2px rgba(0,0,0,0.5); border-radius:1px;}
-        .hotel { width: clamp(8px, 1.6vmin, 16px); height: clamp(8px, 1.6vmin, 16px); background-color: #ed1b24; box-shadow: inset -1px -1px 0px rgba(0,0,0,0.3), inset 1px 1px 0px rgba(255,255,255,0.4), 1px 1px 2px rgba(0,0,0,0.5); border-radius:2px;}
-        
+
         /* --- MODALI OTTIMIZZATE (Zero Scroll Layout) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100dvw; height: 100dvh; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 200; }
         .modal-box-wrapper { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; width: 100%; display: flex; justify-content: center; }
@@ -338,7 +337,7 @@
             .click-to-start { bottom: 2vh; }
         }
 
-        /* Gestione Schermi Bassi Orizzontali (Anti-Scroll) */
+        /* Gestione Schermi Bassi Orizzontali */
         @media (max-height: 700px) {
             .modal-box { padding: 10px; max-height: 95dvh; }
             .card-property-original { padding: 8px; margin-bottom: 8px; }
@@ -509,7 +508,9 @@
             );
         }
 
-        // DIZIONARIO TRADUZIONI (Bancarotta tolta dal tasto Cancel)
+        // MOTORE DI GESTIONE EVENTI (CARTE) CON ID STRUTTURATI E LOGICA CORRETTA
+        // Ogni lingua ha il suo array di stringhe, che mappa perfettamente sulle stesse logiche fisse.
+        
         const i18n = {
             'en': {
                 monopoly: "MONOPOLY", setup_desc: "Enter names and choose token", btn_add_player: "+ Player", btn_start: "START GAME", click_start: "CLICK TO START",
@@ -530,8 +531,12 @@
                     "", "PARK<br>PLACE", "LUXURY<br>TAX", "BOARDWALK"
                 ],
                 events: [
-                    "Go directly to jail, do not pass GO", "Advance to Boardwalk", "Advance to Mediterranean Ave.", 
-                    "You inherit 10,000", "Income from shares, collect 15,000", "Speeding fine: pay 1,500"
+                    "Go directly to jail, do not pass GO", 
+                    "Advance to Boardwalk", 
+                    "Advance to Mediterranean Ave.", 
+                    "You inherit 10,000", 
+                    "Income from shares, collect 15,000", 
+                    "Speeding fine: pay 1,500"
                 ]
             },
             'es': {
@@ -553,8 +558,12 @@
                     "", "PASEO DE LA<br>CASTELLANA", "IMPUESTO<br>DE LUJO", "PASEO<br>DEL PRADO"
                 ],
                 events: [
-                    "Ve directamente a la cárcel sin pasar por SALIDA", "Avanza al Paseo del Prado", "Avanza a Ronda de Valencia", 
-                    "Heredas 10.000", "Ingresos por acciones, cobra 15.000", "Multa velocidad: paga 1.500"
+                    "Ve directamente a la cárcel sin pasar por SALIDA", 
+                    "Avanza al Paseo del Prado", 
+                    "Avanza a Ronda de Valencia", 
+                    "Heredas 10.000", 
+                    "Ingresos por acciones, cobra 15.000", 
+                    "Multa velocidad: paga 1.500"
                 ]
             },
             'pt': {
@@ -576,8 +585,12 @@
                     "", "AVENIDA<br>CLÉRIGOS", "IMPOSTO<br>DE LUXO", "ROSSIO"
                 ],
                 events: [
-                    "Vá diretamente para a prisão, sem passar pela PARTIDA", "Avance até ao Rossio", "Avance até ao Campo Grande", 
-                    "Você herda 10.000", "Rendimentos de ações, receba 15.000", "Multa de velocidade: pague 1.500"
+                    "Vá diretamente para a prisão, sem passar pela PARTIDA", 
+                    "Avance até ao Rossio", 
+                    "Avance até ao Campo Grande", 
+                    "Você herda 10.000", 
+                    "Rendimentos de ações, receba 15.000", 
+                    "Multa de velocidade: pague 1.500"
                 ]
             },
             'it': {
@@ -599,8 +612,12 @@
                     "", "VIALE<br>DEI GIARDINI", "TASSA<br>DI LUSSO", "PARCO<br>DELLA VITTORIA"
                 ],
                 events: [
-                    "Andate in prigione direttamente e senza passare dal VIA!", "Andate sino al Parco della Vittoria", "Ritornate al Vicolo Corto", 
-                    "Ereditate da un lontano parente 10.000", "Maturano le cedole di rendita, ritirate 15.000", "Multa per aver guidato senza patente: 1.500"
+                    "Andate in prigione direttamente e senza passare dal VIA!", 
+                    "Andate sino al Parco della Vittoria", 
+                    "Ritornate al Vicolo Corto", 
+                    "Ereditate da un lontano parente 10.000", 
+                    "Maturano le cedole di rendita, ritirate 15.000", 
+                    "Multa per aver guidato senza patente: 1.500"
                 ]
             }
         };
@@ -617,7 +634,7 @@
         const svgTap = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 20 40 L 40 40 L 40 60 L 60 60 L 60 30 L 20 30 Z" fill="#8ed6ef" stroke="#111" stroke-width="5"/><rect x="10" y="25" width="10" height="20" fill="#111"/><path d="M 55 60 C 55 80 65 90 60 90 C 55 90 65 80 65 60 Z" fill="#8ed6ef" stroke="#111" stroke-width="3"/></svg>`;
         const svgRing = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%; margin-top:10%;"><circle cx="50" cy="60" r="25" fill="none" stroke="#ffec19" stroke-width="12"/><circle cx="50" cy="60" r="25" fill="none" stroke="#111" stroke-width="2"/><polygon points="35,35 65,35 50,15" fill="#8ed6ef" stroke="#111" stroke-width="4"/><polygon points="35,35 65,35 50,45" fill="#fff" stroke="#111" stroke-width="4"/></svg>`;
         
-        // ANGOLI RIVISITATI SVG
+        // ANGOLI RIVISITATI SVG (RIPRODUZIONE MANIACALE DELLE PROPORZIONI, NO OVERFLOW)
         const svgGo = `<svg viewBox="0 0 100 100" style="width:100%; height:100%;">
             <path d="M 90 50 L 50 10 L 50 35 L 10 35 L 10 65 L 50 65 L 50 90 Z" fill="#e62c26" stroke="#111" stroke-width="3" transform="translate(-5, 5)"/>
             <text x="40" y="60" font-family="Montserrat, sans-serif" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" transform="rotate(-45 40 60)">VIA!</text>
@@ -633,9 +650,11 @@
             <rect x="61" y="0" width="4" height="70" fill="#111"/>
             <rect x="78" y="0" width="4" height="70" fill="#111"/>
             
+            <!-- Scritte TRANSITO esterne, sicure e ben distanziate per massima leggibilità -->
             <text x="13" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle" transform="rotate(-90 13 50)">TRANSITO</text>
             <text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle">TRANSITO</text>
             
+            <!-- Scritte IN e PRIGIONE interne alla cella arancione -->
             <text x="21" y="35" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle" transform="rotate(-90 21 35)">IN</text>
             <text x="65" y="80" font-family="Montserrat, sans-serif" font-weight="900" font-size="8.5" fill="#111" text-anchor="middle">PRIGIONE</text>
         </svg>`;
@@ -643,6 +662,7 @@
         const svgParking = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
             <g transform="rotate(45 50 50)">
                 <text x="50" y="24" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle">PARCHEGGIO</text>
+                <!-- Macchinina rossa vettoriale ben distanziata dai margini -->
                 <g transform="translate(50, 48) scale(0.5)">
                     <path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#e62c26" stroke="#111" stroke-width="4"/>
                     <rect x="-35" y="10" width="70" height="20" fill="#e62c26" stroke="#111" stroke-width="4" rx="4"/>
@@ -656,6 +676,7 @@
         const svgPoliceman = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
             <g transform="rotate(135 50 50)">
                 <text x="50" y="22" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">IN</text>
+                <!-- Poliziotto ridimensionato per non toccare i margini -->
                 <g transform="translate(50, 50) scale(0.55)">
                     <path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#111" stroke="#111" stroke-width="2"/>
                     <circle cx="0" cy="-25" r="18" fill="#f5821c" stroke="#111" stroke-width="3"/>
@@ -927,19 +948,46 @@
         function updateTokens() {
             if (gameState.players.length === 0) return;
             const parentRect = document.getElementById('board-area').getBoundingClientRect();
+            
+            // Calcolo posizioni multiple per evitare sovrapposizioni
+            const posCounts = {};
+            gameState.players.forEach(p => { if (p.balance >= 0) posCounts[p.pos] = (posCounts[p.pos] || 0) + 1; });
+            const currentPosIndex = {};
+
             gameState.players.forEach(p => {
                 if(p.balance < 0) return; // Nascondi token se in bancarotta
                 const cell = document.getElementById(`cell-${p.pos}`); if(!cell) return;
                 const rect = cell.getBoundingClientRect();
-                const offsetX = (p.id % 2 === 0 ? -6 : 6); const offsetY = (p.id > 2 ? -6 : 6);
+                
+                // Centro esatto della casella
+                const centerX = (rect.left - parentRect.left) + rect.width/2;
+                const centerY = (rect.top - parentRect.top) + rect.height/2;
+
+                currentPosIndex[p.pos] = (currentPosIndex[p.pos] || 0);
+                const indexOnCell = currentPosIndex[p.pos];
+                currentPosIndex[p.pos]++;
+                
+                const totalOnCell = posCounts[p.pos];
+                
+                // Disposizione circolare se più pedine sono sulla stessa casella
+                let offsetX = 0;
+                let offsetY = 0;
+                if (totalOnCell > 1) {
+                    const radius = rect.width * 0.25; 
+                    const angle = (indexOnCell / totalOnCell) * Math.PI * 2 + (Math.PI/4); // rotazione di 45 gradi
+                    offsetX = Math.cos(angle) * radius;
+                    offsetY = Math.sin(angle) * radius;
+                }
+
                 const tEl = document.getElementById(`token-${p.id}`);
-                tEl.style.left = `${(rect.left - parentRect.left) + rect.width/2 + offsetX}px`;
-                tEl.style.top = `${(rect.top - parentRect.top) + rect.height/2 + offsetY}px`;
+                tEl.style.left = `${centerX + offsetX}px`;
+                tEl.style.top = `${centerY + offsetY}px`;
             });
         }
         window.addEventListener('resize', () => setTimeout(updateTokens, 100));
 
         function orientBoard() {
+            // Rotazione disabilitata: l'interfaccia resta stabile e leggibile su PC e Mobile
             document.querySelectorAll('.player-zone').forEach((z, i) => z.classList.toggle('active', i === gameState.currentPlayerIdx));
         }
 
@@ -952,7 +1000,7 @@
             const p = gameState.players[gameState.currentPlayerIdx];
             if(p.inJail) {
                 p.jailTurns++;
-                if(p.jailTurns > 3) { p.inJail = false; p.jailTurns = 0; openPayment(5000, t('go_jail_btn'), () => { p.balance -= 5000; updateDashboard(); endTurn(); }, true); return; } 
+                if(p.jailTurns > 3) { p.inJail = false; p.jailTurns = 0; payBankActive(5000); return; } 
                 else { setTimeout(endTurn, 1000); return; }
             }
 
@@ -1026,7 +1074,8 @@
                 const isProb = cell.type === 'chance'; 
                 cardColor = isProb ? 'var(--prob-color)' : 'var(--impr-color)';
                 const events = i18n[currentLang].events;
-                const eventTxt = events[Math.floor(Math.random() * events.length)];
+                const evIndex = Math.floor(Math.random() * events.length);
+                const eventTxt = events[evIndex];
                 
                 html += `
                     <div class="flex flex-col items-center justify-center h-full text-[#111] px-4 py-6" style="flex: 1; min-height: 180px;">
@@ -1034,7 +1083,7 @@
                         <div class="text-base md:text-lg font-medium font-['Helvetica_Neue',sans-serif] text-center leading-relaxed w-full">"${eventTxt}"</div>
                     </div>
                     <div class="flex justify-center p-3 w-full bg-black bg-opacity-5">
-                        <button class="btn bg-white bg-opacity-40 border-[#111] text-[#111] shadow-none hover:bg-opacity-60 w-full max-w-[200px]" onclick="resolveCard('${escapeHTML(eventTxt)}')">${t('ok_btn')}</button>
+                        <button class="btn bg-white bg-opacity-40 border-[#111] text-[#111] shadow-none hover:bg-opacity-60 w-full max-w-[200px]" onclick="resolveCard(${evIndex})">${t('ok_btn')}</button>
                     </div>`;
             } else if (cell.type === 'tax') {
                 html += `<h2 class="text-lg md:text-xl font-bold mb-2 text-red-600 font-['Montserrat']">${cell.name.replace(/<br>/g, ' ')}</h2>
@@ -1083,15 +1132,33 @@
             else for(let i=0; i<lvl; i++) bld.innerHTML += `<div class="house"></div>`;
         }
         
-        function resolveCard(txt) {
-            closeModal(); const p = gameState.players[gameState.currentPlayerIdx];
-            if(txt.includes('10.000')) { receiveMoney(p, 10.000); endTurn(); }
-            else if(txt.includes('15.000')) { receiveMoney(p, 15000); endTurn(); }
-            else if(txt.includes('1.500')) payBankActive(1500);
-            else if(txt.includes('prigione') || txt.includes('jail') || txt.includes('cárcel') || txt.includes('prisão')) goToJail();
-            else { p.pos = 0; updateTokens(); endTurn(); }
+        // Logica rigorosa delle carte
+        function resolveCard(evIndex) {
+            closeModal(); 
+            const p = gameState.players[gameState.currentPlayerIdx];
+            switch(evIndex) {
+                case 0: goToJail(); break;
+                case 1: advanceTo(p, 39); break; // Parco della Vittoria / Boardwalk
+                case 2: advanceTo(p, 1); break;  // Vicolo Corto / Mediterranean
+                case 3: receiveMoney(p, 10000); endTurn(); break;
+                case 4: receiveMoney(p, 15000); endTurn(); break;
+                case 5: payBankActive(1500); break;
+                default: endTurn();
+            }
         }
         
+        // Funzione per l'avanzamento fisico dovuto ad Imprevisti/Probabilità
+        function advanceTo(p, targetPos) {
+            if (targetPos < p.pos && targetPos !== 10) { // Se passa dal VIA! (ma non sta andando in prigione)
+                p.balance += 20000;
+                showToast(t('go_msg'));
+                updateDashboard();
+            }
+            p.pos = targetPos;
+            updateTokens();
+            setTimeout(() => handleLanded(p), 600); // Rilancia handleLanded sulla nuova casella
+        }
+
         function payBankActive(amount) { 
             openPayment(amount, t('tax_title'), () => { 
                 gameState.players[gameState.currentPlayerIdx].balance -= amount; updateDashboard(); endTurn(); 
