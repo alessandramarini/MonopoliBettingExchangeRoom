@@ -13,24 +13,19 @@
     
     <style>
         :root {
-            /* Colori Tabellone Classico Editrice Giochi */
             --bg-board: #acc4b1;
             --border-color: #1a1a1a;
             --cell-bg: #e8ecd3;
             
-            /* Colori Proprietà */
             --brown: #8e5033; --lightblue: #8ed6ef; --pink: #db2b6c;
             --orange: #f5821c; --red: #e62c26; --yellow: #ffec19;
             --green: #41ab5d; --darkblue: #1b73b8;
             
-            /* Colori Carte Fedeli */
             --prob-color: #d1dac5;
             --impr-color: #f79854;
             
-            /* Banconote */
             --c100: #65a5d1; --c1000: #7aba83; --c10000: #d8c4a9; --c50000: #e4808a;
 
-            /* Texture realistiche */
             --paper-tex: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
             --table-bg: radial-gradient(circle at center, #2e4133 0%, #111a14 100%);
         }
@@ -42,7 +37,6 @@
             -webkit-user-select: none; -webkit-font-smoothing: antialiased;
         }
 
-        /* --- SCHERMATA INTRODUTTIVA (SCATOLA) --- */
         #intro-screen {
             position: fixed; inset: 0; z-index: 9999;
             background-color: #f4ede1; background-image: var(--paper-tex);
@@ -93,10 +87,8 @@
         .click-to-start { position: absolute; bottom: 4vh; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #111; font-size: clamp(14px, 4vw, 20px); letter-spacing: 2px; animation: pulse 1.5s infinite; background: rgba(255,255,255,0.7); padding: 10px 20px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         @keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
 
-        /* Contenitore Principale Gioco */
         #app-container { display: flex; align-items: center; justify-content: center; width: 100dvw; height: 100dvh; position: relative; }
 
-        /* --- TABELLONE DI GIOCO --- */
         #board-area {
             position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
             display: flex; align-items: center; justify-content: center;
@@ -174,10 +166,12 @@
         .deck-slot.probabilita { top: 16%; left: 16%; transform: rotate(-45deg); }
         .deck-slot.imprevisti { bottom: 16%; right: 16%; transform: rotate(-45deg); }
         
+        /* FIX: Scritte rimpicciolite per non toccare i bordi */
         .board-slot-text {
             position: absolute; font-family: 'Montserrat', sans-serif;
-            font-size: clamp(10px, 2.5vmin, 32px); font-weight: 900;
-            letter-spacing: 0.15em; color: #1a1a1a; white-space: nowrap; opacity: 0.9;
+            font-size: clamp(8px, 1.8vmin, 20px); 
+            font-weight: 900;
+            letter-spacing: 0.1em; color: #1a1a1a; white-space: nowrap; opacity: 0.9;
         }
         
         .deck-stack {
@@ -189,7 +183,6 @@
         .deck-stack.bg-prob { background-color: var(--prob-color); }
         .deck-stack.bg-impr { background-color: var(--impr-color); }
 
-        /* ZONE GIOCATORI - OTTIMIZZATE SENZA ROTAZIONE */
         .player-zone {
             position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center;
             background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.8)); padding: 1vmin; border-radius: 12px;
@@ -199,19 +192,23 @@
             background: linear-gradient(135deg, rgba(40,0,0,0.85), rgba(150,0,0,0.95)); border-color: #ed1b24;
             box-shadow: 0 0 25px rgba(237, 27, 36, 0.7), inset 0 0 15px rgba(0,0,0,0.8);
         }
-        .player-zone.bankrupt {
-            opacity: 0.3; filter: grayscale(100%); pointer-events: none;
-        }
+        .player-zone.bankrupt { opacity: 0.3; filter: grayscale(100%); pointer-events: none; }
         
         .pz-bottom { bottom: 1vmin; left: 50%; transform: translateX(-50%); width: clamp(220px, 32vw, 420px); }
         .pz-left   { left: 1vmin; top: 50%; transform: translateY(-50%); width: clamp(160px, 15vw, 220px); }
         .pz-top    { top: 1vmin; left: 50%; transform: translateX(-50%); width: clamp(220px, 32vw, 420px); }
         .pz-right  { right: 1vmin; top: 50%; transform: translateY(-50%); width: clamp(160px, 15vw, 220px); }
 
-        .pz-info { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; color: #fff; font-family: 'Montserrat', sans-serif; }
-        .pz-name { font-weight: 800; font-size: clamp(11px, 1.8vmin, 18px); text-shadow: 1px 1px 2px #000; }
-        .pz-token { width: clamp(20px, 3.2vmin, 32px); height: clamp(20px, 3.2vmin, 32px); filter: drop-shadow(1px 2px 2px #000); }
-        .pz-balance { font-family: 'Oswald', sans-serif; font-size: clamp(12px, 2vmin, 22px); color: #00e676; text-shadow: 1px 1px 2px #000; }
+        /* FIX: Area info cliccabile per aprire il portfolio */
+        .pz-info { 
+            display: flex; align-items: center; gap: 10px; margin-bottom: 5px; color: #fff; font-family: 'Montserrat', sans-serif; 
+            cursor: pointer; transition: transform 0.2s; padding: 4px; border-radius: 8px;
+        }
+        .pz-info:hover { transform: scale(1.05); background: rgba(255,255,255,0.1); }
+        
+        .pz-name { font-weight: 800; font-size: clamp(11px, 1.8vmin, 18px); text-shadow: 1px 1px 2px #000; pointer-events: none;}
+        .pz-token { width: clamp(20px, 3.2vmin, 32px); height: clamp(20px, 3.2vmin, 32px); filter: drop-shadow(1px 2px 2px #000); pointer-events: none;}
+        .pz-balance { font-family: 'Oswald', sans-serif; font-size: clamp(12px, 2vmin, 22px); color: #00e676; text-shadow: 1px 1px 2px #000; pointer-events: none;}
 
         .note-wrapper {
             width: clamp(55px, 11vmin, 100px); aspect-ratio: 1.85 / 1;
@@ -228,7 +225,6 @@
             justify-content: center; align-items: center; margin-bottom: 10px; width: 100%; flex-shrink: 0;
         }
 
-        /* --- DADI PROPORZIONATI E REALISTICI --- */
         .dice-area { position: absolute; display: flex; gap: clamp(10px, 2.5vmin, 20px); z-index: 25; perspective: 1000px; }
         @keyframes dice-pulse { 0% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); } 100% { transform: scale(1.1) translateY(-1vmin); filter: drop-shadow(0 1vmin 3vmin rgba(255,215,0,0.9)); } }
         .dice-ready { animation: dice-pulse 1s infinite alternate ease-in-out; cursor: pointer; }
@@ -253,7 +249,6 @@
         .anim-jump { animation: jump 1.2s ease-out forwards; }
         @keyframes jump { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-15vmin) scale(1.3) rotateX(360deg) rotateZ(180deg); } 70% { transform: translateY(-3vmin) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
 
-        /* PEDINE: Calibrate per poggiare la BASE al centro della casella */
         .token { position: absolute; z-index: 30; width: clamp(24px, 5.5vmin, 50px); height: clamp(24px, 5.5vmin, 50px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); transform: translate(-50%, -80%); pointer-events: none; }
         .token-svg { width: 100%; height: 100%; filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.7)); }
         
@@ -262,7 +257,6 @@
         .buildings-container { display: flex; flex-wrap: wrap; justify-content: center; position: absolute; bottom: 2%; width: 100%; z-index: 3; gap: 2px;}
         .has-color-bar .buildings-container { top: 1%; bottom: auto; height: 20%; align-items: flex-end; }
 
-        /* --- MODALI OTTIMIZZATE (Zero Scroll Layout) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100dvw; height: 100dvh; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 200; }
         .modal-box-wrapper { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; width: 100%; display: flex; justify-content: center; }
         
@@ -276,6 +270,18 @@
         }
         
         .modal-box.solid-card { border-radius: 8px; border: 1px solid rgba(0,0,0,0.2); padding: 0; width: 85vw; max-width: 350px; }
+        
+        /* FIX: CSS per l'effetto di rotazione carta 3D */
+        .flip-container { background-color: transparent; width: 100%; max-width: 320px; aspect-ratio: 5/7.2; perspective: 1000px; margin: 0 auto; }
+        .flip-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
+        .flip-inner.is-flipped { transform: rotateY(180deg); }
+        .flip-front, .flip-back { 
+            position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; 
+            border-radius: 8px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+            background: #fdfbf7; background-image: var(--paper-tex); border: 1px solid #ccc; 
+            display: flex; flex-direction: column; box-sizing: border-box;
+        }
+        .flip-back { transform: rotateY(180deg); padding: 20px; justify-content: center; align-items: center;}
 
         .lang-selector { display: flex; gap: 6px; z-index: 10; margin-bottom: 10px; justify-content: center; flex-shrink: 0; }
         .lang-btn { background: #333; color: #fff; border: none; padding: 6px 14px; font-size: 13px; cursor: pointer; border-radius: 20px; font-weight: bold; transition: all 0.2s;}
@@ -295,9 +301,10 @@
         .btn-buy:active { box-shadow: 0 0 0 #007336; }
         .btn-pay { background: linear-gradient(to bottom, #ff3b44, #ed1b24); color: white; box-shadow: 0 4px 0 #b00f17, 0 8px 15px rgba(237,27,36,0.3); }
         .btn-pay:active { box-shadow: 0 0 0 #b00f17; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
         .btn-inline { width: auto; flex: 1 1 auto; min-width: 120px; }
 
-        .card-property-original { background: #fff; background-image: var(--paper-tex); border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); padding: clamp(8px, 2vw, 12px); margin-bottom: 10px; box-sizing: border-box; width: 100%; flex-shrink: 0;}
+        .card-property-original { background: transparent; padding: clamp(8px, 2vw, 12px); box-sizing: border-box; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start;}
         .cpo-header { border: 2px solid #111; padding: 6px 4px; margin-bottom: 10px; border-radius: 4px; }
         .cpo-subtitle { font-size: clamp(7px, 1.5vw, 0.6rem); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
         .cpo-title { font-size: clamp(14px, 3.5vw, 1.3rem); font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; line-height:1.1;}
@@ -337,7 +344,6 @@
             .click-to-start { bottom: 2vh; }
         }
 
-        /* Gestione Schermi Bassi Orizzontali */
         @media (max-height: 700px) {
             .modal-box { padding: 10px; max-height: 95dvh; }
             .card-property-original { padding: 8px; margin-bottom: 8px; }
@@ -357,7 +363,6 @@
 </head>
 <body>
 
-    <!-- SCHERMATA INTRODUTTIVA (SCATOLA) RIVISTA A LAYOUT FLUIDO -->
     <div id="intro-screen" onclick="hideIntro()">
         <div class="box-replica">
             <div class="box-top-row">
@@ -406,7 +411,6 @@
                 <!-- Centro Tabellone -->
                 <div id="center-board">
                     
-                    <!-- Mazzi di carte fisici 3D con Scritta sul Tabellone -->
                     <div class="deck-slot probabilita">
                         <span class="board-slot-text" style="top: 110%;" data-i18n="chance_title"></span>
                         <div class="deck-stack bg-prob"></div>
@@ -475,7 +479,7 @@
         </div>
     </div>
 
-    <div id="modal-payment" class="modal-overlay">
+    <div id="modal-payment" class="modal-overlay" style="z-index: 300;">
         <div class="modal-box-wrapper" id="payment-wrapper">
             <div class="modal-box" style="max-width: 450px;">
                 <h2 id="pay-title" class="text-xl font-bold mb-2 font-['Montserrat'] uppercase text-red-600"></h2>
@@ -485,7 +489,6 @@
                 <div class="text-left font-bold text-sm text-gray-500 mb-1" data-i18n="wallet"></div>
                 <div id="pay-wallet" class="payment-zone" style="background: rgba(0,166,80,0.05); border-color: #00a650;"></div>
                 <div class="flex gap-2 mt-2">
-                    <!-- Tasto Annulla Nascondibile tramite JS a seconda dell'obbligatorietà del pagamento -->
                     <button id="btn-cancel-pay" class="btn" onclick="cancelPayment()" data-i18n="cancel"></button>
                     <button id="btn-confirm-pay" class="btn btn-buy" disabled onclick="confirmPayment()" data-i18n="confirm_pay"></button>
                 </div>
@@ -494,22 +497,12 @@
     </div>
 
     <script>
-        // Sicurezza XSS (Sanitizzazione Input Utente)
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/[&<>'"]/g, 
-                tag => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag])
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag])
             );
         }
-
-        // MOTORE DI GESTIONE EVENTI (CARTE) CON ID STRUTTURATI E LOGICA CORRETTA
-        // Ogni lingua ha il suo array di stringhe, che mappa perfettamente sulle stesse logiche fisse.
         
         const i18n = {
             'en': {
@@ -520,6 +513,12 @@
                 tray: "YOUR TRAY:", wallet: "YOUR WALLET:", confirm_pay: "CONFIRM", cancel: "CANCEL", pay_recv: "PAY & GET CHANGE", 
                 bankrupt_msg: "BANKRUPTCY FOR", val_msg: "Value", var_rent: "Rent varies based on ownership.", prop_of: "Property of", tap_notes: "Tap the notes", empty: "Empty", pay_req: "You must pay:",
                 buy_title: "Purchase", rent_title: "Rent", build_title: "Construction", tax_title: "Tax", go_msg: "Passed GO! Collected 20,000", go_jail_btn: "GO TO JAIL!", pay_tax: "PAY",
+                
+                // Nuove chiavi per visualizzazione carte
+                props_of: "Properties of", no_props: "No properties owned.", flip_hint: "👆 Tap card to flip", 
+                monopoly_req: "Original Rules: You must own all properties of this color to build.", curr_level: "Current Level", 
+                back_btn: "BACK TO PROPERTIES", build_btn_card: "BUILD", cannot_build: "CANNOT BUILD",
+                
                 props: [
                     "", "MEDITERRANEAN<br>AVE.", "", "BALTIC<br>AVE.", "INCOME<br>TAX", "READING<br>RAILROAD",
                     "ORIENTAL<br>AVE.", "", "VERMONT<br>AVE.", "CONNECTICUT<br>AVE.", "",
@@ -530,14 +529,7 @@
                     "PACIFIC<br>AVE.", "NORTH CAROLINA<br>AVE.", "", "PENNSYLVANIA<br>AVE.", "SHORT LINE<br>RAILROAD",
                     "", "PARK<br>PLACE", "LUXURY<br>TAX", "BOARDWALK"
                 ],
-                events: [
-                    "Go directly to jail, do not pass GO", 
-                    "Advance to Boardwalk", 
-                    "Advance to Mediterranean Ave.", 
-                    "You inherit 10,000", 
-                    "Income from shares, collect 15,000", 
-                    "Speeding fine: pay 1,500"
-                ]
+                events: ["Go directly to jail, do not pass GO", "Advance to Boardwalk", "Advance to Mediterranean Ave.", "You inherit 10,000", "Income from shares, collect 15,000", "Speeding fine: pay 1,500"]
             },
             'es': {
                 monopoly: "MONOPOLY", setup_desc: "Ingresa nombres y ficha", btn_add_player: "+ Jugador", btn_start: "EMPEZAR", click_start: "CLIC PARA EMPEZAR",
@@ -547,6 +539,11 @@
                 tray: "TU BANDEJA:", wallet: "TU CARTERA:", confirm_pay: "CONFIRMAR", cancel: "CANCELAR", pay_recv: "PAGAR Y CAMBIO", 
                 bankrupt_msg: "¡BANCARROTA PARA", val_msg: "Valor", var_rent: "El alquiler varía según propiedad.", prop_of: "Propiedad de", tap_notes: "Toca los billetes", empty: "Vacío", pay_req: "Debes pagar:",
                 buy_title: "Compra", rent_title: "Alquiler", build_title: "Construcción", tax_title: "Impuesto", go_msg: "¡Pasaste SALIDA! Cobras 20.000", go_jail_btn: "¡A LA CÁRCEL!", pay_tax: "PAGA",
+                
+                props_of: "Propiedades de", no_props: "Sin propiedades.", flip_hint: "👆 Toca la carta para girar", 
+                monopoly_req: "Reglas originales: Debes poseer todo este color para construir.", curr_level: "Nivel actual", 
+                back_btn: "VOLVER", build_btn_card: "CONSTRUIR", cannot_build: "NO SE PUEDE CONSTRUIR",
+                
                 props: [
                     "", "RONDA DE<br>VALENCIA", "", "PLAZA<br>LAVAPIÉS", "IMPUESTO<br>SOBRE LA RENTA", "ESTACIÓN<br>DE GOYA",
                     "GLORIETA<br>CUATRO CAMINOS", "", "AVENIDA<br>REINA VICTORIA", "CALLE<br>BRAVO MURILLO", "",
@@ -557,14 +554,7 @@
                     "PUERTA<br>DEL SOL", "CALLE<br>ALCALÁ", "", "GRAN<br>VÍA", "ESTACIÓN<br>NORTE",
                     "", "PASEO DE LA<br>CASTELLANA", "IMPUESTO<br>DE LUJO", "PASEO<br>DEL PRADO"
                 ],
-                events: [
-                    "Ve directamente a la cárcel sin pasar por SALIDA", 
-                    "Avanza al Paseo del Prado", 
-                    "Avanza a Ronda de Valencia", 
-                    "Heredas 10.000", 
-                    "Ingresos por acciones, cobra 15.000", 
-                    "Multa velocidad: paga 1.500"
-                ]
+                events: ["Ve directamente a la cárcel sin pasar por SALIDA", "Avanza al Paseo del Prado", "Avanza a Ronda de Valencia", "Heredas 10.000", "Ingresos por acciones, cobra 15.000", "Multa velocidad: paga 1.500"]
             },
             'pt': {
                 monopoly: "MONOPÓLIO", setup_desc: "Insira os nomes e escolha o peão", btn_add_player: "+ Jogador", btn_start: "INICIAR JOGO", click_start: "CLIQUE PARA INICIAR",
@@ -574,6 +564,11 @@
                 tray: "SUA BANDEJA:", wallet: "SUA CARTEIRA:", confirm_pay: "CONFIRMAR", cancel: "CANCELAR", pay_recv: "PAGAR E RECEBER", 
                 bankrupt_msg: "FALÊNCIA PARA", val_msg: "Valor", var_rent: "O aluguel varia de acordo com a propriedade.", prop_of: "Propriedade de", tap_notes: "Toque nas notas", empty: "Vazio", pay_req: "Você deve pagar:",
                 buy_title: "Compra", rent_title: "Aluguel", build_title: "Construção", tax_title: "Imposto", go_msg: "Passou por PARTIDA! Receba 20.000", go_jail_btn: "VÁ PARA A PRISÃO!", pay_tax: "PAGUE",
+                
+                props_of: "Propriedades de", no_props: "Nenhuma propriedade.", flip_hint: "👆 Toque na carta para virar", 
+                monopoly_req: "Regras Originais: Você deve possuir todas as cores para construir.", curr_level: "Nível atual", 
+                back_btn: "VOLTAR", build_btn_card: "CONSTRUIR", cannot_build: "NÃO PODE CONSTRUIR",
+                
                 props: [
                     "", "CAMPO<br>GRANDE", "", "RUA<br>MARIA PIA", "IMPOSTO<br>DE RENDA", "ESTAÇÃO<br>DO ROSSIO",
                     "PRAÇA<br>DA ALEGRIA", "", "RUA<br>JÚLIO DINIS", "RUA<br>AUGUSTA", "",
@@ -584,14 +579,7 @@
                     "RUA<br>DAS FLORES", "AV. FONTES<br>PEREIRA DE MELO", "", "ROTUNDA<br>DA BOAVISTA", "ESTAÇÃO<br>DO ORIENTE",
                     "", "AVENIDA<br>CLÉRIGOS", "IMPOSTO<br>DE LUXO", "ROSSIO"
                 ],
-                events: [
-                    "Vá diretamente para a prisão, sem passar pela PARTIDA", 
-                    "Avance até ao Rossio", 
-                    "Avance até ao Campo Grande", 
-                    "Você herda 10.000", 
-                    "Rendimentos de ações, receba 15.000", 
-                    "Multa de velocidade: pague 1.500"
-                ]
+                events: ["Vá diretamente para a prisão, sem passar pela PARTIDA", "Avance até ao Rossio", "Avance até ao Campo Grande", "Você herda 10.000", "Rendimentos de ações, receba 15.000", "Multa de velocidade: pague 1.500"]
             },
             'it': {
                 monopoly: "MONÒPOLI", setup_desc: "Inserisci i nomi e scegli la pedina", btn_add_player: "+ Giocatore", btn_start: "INIZIA PARTITA", click_start: "CLICCA PER INIZIARE",
@@ -601,6 +589,11 @@
                 tray: "IL TUO VASSOIO:", wallet: "IL TUO PORTAFOGLIO:", confirm_pay: "CONFERMA", cancel: "ANNULLA", pay_recv: "PAGA E RICEVI RESTO", 
                 bankrupt_msg: "BANCAROTTA PER", val_msg: "Valore", var_rent: "Rendita variabile in base ai possedimenti.", prop_of: "Proprietà di", tap_notes: "Tocca le banconote", empty: "Vuoto", pay_req: "Devi versare:",
                 buy_title: "Acquisto", rent_title: "Affitto", build_title: "Costruzione", tax_title: "Tassa", go_msg: "Passaggio dal VIA! Ritirate 20.000", go_jail_btn: "IN PRIGIONE!", pay_tax: "PAGARE",
+                
+                props_of: "Proprietà di", no_props: "Nessuna proprietà acquistata.", flip_hint: "👆 Tocca la carta per leggerla dietro", 
+                monopoly_req: "Regole Originali: Puoi costruire solo se possiedi tutti i terreni di questo colore.", curr_level: "Livello attuale", 
+                back_btn: "TORNA ALLE PROPRIETÀ", build_btn_card: "COSTRUISCI", cannot_build: "COSTRUZIONE NON DISP.",
+                
                 props: [
                     "", "VICOLO<br>CORTO", "", "VICOLO<br>STRETTO", "TASSA<br>PATRIMONIALE", "STAZIONE SUD",
                     "BASTIONI<br>GRAN SASSO", "", "VIALE<br>MONTEROSA", "VIALE<br>VESUVIO", "",
@@ -611,14 +604,7 @@
                     "VIA<br>ROMA", "CORSO<br>IMPERO", "", "LARGO<br>AUGUSTO", "STAZIONE EST",
                     "", "VIALE<br>DEI GIARDINI", "TASSA<br>DI LUSSO", "PARCO<br>DELLA VITTORIA"
                 ],
-                events: [
-                    "Andate in prigione direttamente e senza passare dal VIA!", 
-                    "Andate sino al Parco della Vittoria", 
-                    "Ritornate al Vicolo Corto", 
-                    "Ereditate da un lontano parente 10.000", 
-                    "Maturano le cedole di rendita, ritirate 15.000", 
-                    "Multa per aver guidato senza patente: 1.500"
-                ]
+                events: ["Andate in prigione direttamente e senza passare dal VIA!", "Andate sino al Parco della Vittoria", "Ritornate al Vicolo Corto", "Ereditate da un lontano parente 10.000", "Maturano le cedole di rendita, ritirate 15.000", "Multa per aver guidato senza patente: 1.500"]
             }
         };
 
@@ -628,64 +614,15 @@
 
         const C = { BROWN: '#8e5033', LIGHTBLUE: '#8ed6ef', PINK: '#db2b6c', ORANGE: '#f5821c', RED: '#e62c26', YELLOW: '#ffec19', GREEN: '#41ab5d', DARKBLUE: '#1b73b8' };
 
-        // ICONE SVG FEDELI AL TABELLONE ITALIANO ORIGINALE
         const svgTrain = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 80%; height: 80%; margin-top:5%;"><path d="M 25 75 L 85 75 L 85 45 L 65 45 L 65 25 L 45 25 L 45 45 L 25 45 L 25 20 L 15 20 L 15 75 Z" fill="#111" stroke="#111" stroke-width="2"/><circle cx="35" cy="75" r="10" fill="#111"/><circle cx="55" cy="75" r="10" fill="#111"/><circle cx="75" cy="75" r="10" fill="#111"/></svg>`;
         const svgBulb = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 50 15 C 25 15 25 50 40 65 L 40 80 L 60 80 L 60 65 C 75 50 75 15 50 15 Z" fill="#ffec19" stroke="#111" stroke-width="4"/><path d="M 45 35 L 55 35 M 40 50 L 60 50" stroke="#111" stroke-width="3"/><rect x="42" y="80" width="16" height="15" fill="#111" rx="2"/></svg>`;
         const svgTap = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 20 40 L 40 40 L 40 60 L 60 60 L 60 30 L 20 30 Z" fill="#8ed6ef" stroke="#111" stroke-width="5"/><rect x="10" y="25" width="10" height="20" fill="#111"/><path d="M 55 60 C 55 80 65 90 60 90 C 55 90 65 80 65 60 Z" fill="#8ed6ef" stroke="#111" stroke-width="3"/></svg>`;
         const svgRing = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%; margin-top:10%;"><circle cx="50" cy="60" r="25" fill="none" stroke="#ffec19" stroke-width="12"/><circle cx="50" cy="60" r="25" fill="none" stroke="#111" stroke-width="2"/><polygon points="35,35 65,35 50,15" fill="#8ed6ef" stroke="#111" stroke-width="4"/><polygon points="35,35 65,35 50,45" fill="#fff" stroke="#111" stroke-width="4"/></svg>`;
         
-        // ANGOLI RIVISITATI SVG (RIPRODUZIONE MANIACALE DELLE PROPORZIONI, NO OVERFLOW)
-        const svgGo = `<svg viewBox="0 0 100 100" style="width:100%; height:100%;">
-            <path d="M 90 50 L 50 10 L 50 35 L 10 35 L 10 65 L 50 65 L 50 90 Z" fill="#e62c26" stroke="#111" stroke-width="3" transform="translate(-5, 5)"/>
-            <text x="40" y="60" font-family="Montserrat, sans-serif" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" transform="rotate(-45 40 60)">VIA!</text>
-            <text x="45" y="25" font-family="'Helvetica Neue', sans-serif" font-weight="bold" font-size="6" fill="#111" transform="rotate(-45 45 25)">
-                <tspan x="45" dy="0">RITIRATE L. 20.000</tspan>
-                <tspan x="45" dy="8">AL PASSAGGIO</tspan>
-            </text>
-        </svg>`;
-        
-        const svgJail = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
-            <rect x="30" y="0" width="70" height="70" fill="#f5821c" stroke="#111" stroke-width="2"/>
-            <rect x="44" y="0" width="4" height="70" fill="#111"/>
-            <rect x="61" y="0" width="4" height="70" fill="#111"/>
-            <rect x="78" y="0" width="4" height="70" fill="#111"/>
-            
-            <!-- Scritte TRANSITO esterne, sicure e ben distanziate per massima leggibilità -->
-            <text x="13" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle" transform="rotate(-90 13 50)">TRANSITO</text>
-            <text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle">TRANSITO</text>
-            
-            <!-- Scritte IN e PRIGIONE interne alla cella arancione -->
-            <text x="21" y="35" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle" transform="rotate(-90 21 35)">IN</text>
-            <text x="65" y="80" font-family="Montserrat, sans-serif" font-weight="900" font-size="8.5" fill="#111" text-anchor="middle">PRIGIONE</text>
-        </svg>`;
-        
-        const svgParking = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
-            <g transform="rotate(45 50 50)">
-                <text x="50" y="24" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle">PARCHEGGIO</text>
-                <!-- Macchinina rossa vettoriale ben distanziata dai margini -->
-                <g transform="translate(50, 48) scale(0.5)">
-                    <path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#e62c26" stroke="#111" stroke-width="4"/>
-                    <rect x="-35" y="10" width="70" height="20" fill="#e62c26" stroke="#111" stroke-width="4" rx="4"/>
-                    <circle cx="-18" cy="28" r="10" fill="#111" stroke="#fff" stroke-width="2"/>
-                    <circle cx="18" cy="28" r="10" fill="#111" stroke="#fff" stroke-width="2"/>
-                </g>
-                <text x="50" y="85" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle">GRATUITO</text>
-            </g>
-        </svg>`;
-        
-        const svgPoliceman = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
-            <g transform="rotate(135 50 50)">
-                <text x="50" y="22" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">IN</text>
-                <!-- Poliziotto ridimensionato per non toccare i margini -->
-                <g transform="translate(50, 50) scale(0.55)">
-                    <path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#111" stroke="#111" stroke-width="2"/>
-                    <circle cx="0" cy="-25" r="18" fill="#f5821c" stroke="#111" stroke-width="3"/>
-                    <path d="M -10 -20 L -25 -15" stroke="#111" stroke-width="3"/>
-                    <rect x="-35" y="10" width="70" height="20" fill="#1e88e5" stroke="#111" stroke-width="4" rx="4"/>
-                </g>
-                <text x="50" y="86" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">PRIGIONE!</text>
-            </g>
-        </svg>`;
+        const svgGo = `<svg viewBox="0 0 100 100" style="width:100%; height:100%;"><path d="M 90 50 L 50 10 L 50 35 L 10 35 L 10 65 L 50 65 L 50 90 Z" fill="#e62c26" stroke="#111" stroke-width="3" transform="translate(-5, 5)"/><text x="40" y="60" font-family="Montserrat, sans-serif" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" transform="rotate(-45 40 60)">VIA!</text><text x="45" y="25" font-family="'Helvetica Neue', sans-serif" font-weight="bold" font-size="6" fill="#111" transform="rotate(-45 45 25)"><tspan x="45" dy="0">RITIRATE L. 20.000</tspan><tspan x="45" dy="8">AL PASSAGGIO</tspan></text></svg>`;
+        const svgJail = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);"><rect x="30" y="0" width="70" height="70" fill="#f5821c" stroke="#111" stroke-width="2"/><rect x="44" y="0" width="4" height="70" fill="#111"/><rect x="61" y="0" width="4" height="70" fill="#111"/><rect x="78" y="0" width="4" height="70" fill="#111"/><text x="13" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle" transform="rotate(-90 13 50)">TRANSITO</text><text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle">TRANSITO</text><text x="21" y="35" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle" transform="rotate(-90 21 35)">IN</text><text x="65" y="80" font-family="Montserrat, sans-serif" font-weight="900" font-size="8.5" fill="#111" text-anchor="middle">PRIGIONE</text></svg>`;
+        const svgParking = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);"><g transform="rotate(45 50 50)"><text x="50" y="24" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle">PARCHEGGIO</text><g transform="translate(50, 48) scale(0.5)"><path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#e62c26" stroke="#111" stroke-width="4"/><rect x="-35" y="10" width="70" height="20" fill="#e62c26" stroke="#111" stroke-width="4" rx="4"/><circle cx="-18" cy="28" r="10" fill="#111" stroke="#fff" stroke-width="2"/><circle cx="18" cy="28" r="10" fill="#111" stroke="#fff" stroke-width="2"/></g><text x="50" y="85" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle">GRATUITO</text></g></svg>`;
+        const svgPoliceman = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);"><g transform="rotate(135 50 50)"><text x="50" y="22" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">IN</text><g transform="translate(50, 50) scale(0.55)"><path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#111" stroke="#111" stroke-width="2"/><circle cx="0" cy="-25" r="18" fill="#f5821c" stroke="#111" stroke-width="3"/><path d="M -10 -20 L -25 -15" stroke="#111" stroke-width="3"/><rect x="-35" y="10" width="70" height="20" fill="#1e88e5" stroke="#111" stroke-width="4" rx="4"/></g><text x="50" y="86" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">PRIGIONE!</text></g></svg>`;
         
         const svgProbBlue = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 50%; height: 50%;"><text x="50" y="80" font-size="90" font-family="'Times New Roman', serif" font-weight="bold" fill="#1b73b8" filter="drop-shadow(2px 2px 0px rgba(0,0,0,0.5))" text-anchor="middle">?</text></svg>`;
         const svgProbRed = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 50%; height: 50%;"><text x="50" y="80" font-size="90" font-family="'Times New Roman', serif" font-weight="bold" fill="#e62c26" filter="drop-shadow(2px 2px 0px rgba(0,0,0,0.5))" text-anchor="middle">?</text></svg>`;
@@ -934,8 +871,9 @@
                 if(notes.length > 8) notesHtml += `<div style="position:absolute; right:-20px; top:20px; color:white; font-weight:bold;">+${notes.length-8}</div>`;
                 notesHtml += '</div>';
 
+                // FIX: Aggiunto onclick sulla zona info per aprire le proprietà del giocatore
                 zone.innerHTML = `
-                    <div class="pz-info">
+                    <div class="pz-info" onclick="viewPlayerProperties(${p.id})">
                         <div class="pz-token">${tokenSVGs[p.emoji]}</div>
                         <div class="pz-name">${p.name}</div>
                         <div class="pz-balance">L. ${p.balance.toLocaleString('it-IT')}</div>
@@ -945,21 +883,135 @@
             });
         }
 
+        
+        // Verifica regola Monopolio originale per la costruzione
+        function hasMonopoly(playerId, color) {
+            if(!color) return false;
+            const bd = getBoardData();
+            const group = bd.filter(c => c.color === color);
+            const owned = group.filter(c => gameState.properties[c.id].ownerId === playerId);
+            return group.length > 0 && group.length === owned.length;
+        }
+
+        function viewPlayerProperties(playerId) {
+            const p = gameState.players.find(x => x.id === playerId);
+            const ownedIds = Object.keys(gameState.properties).filter(id => gameState.properties[id].ownerId === p.id);
+            const bd = getBoardData();
+
+            let html = `<h2 class="text-xl md:text-2xl font-bold mb-4 font-['Montserrat'] uppercase" style="color: #111;">${t('props_of')} ${p.name}</h2>`;
+
+            if(ownedIds.length === 0) {
+                html += `<p class="text-gray-600 mb-6">${t('no_props')}</p>`;
+            } else {
+                html += `<div class="flex flex-wrap gap-3 justify-center max-h-[60vh] overflow-y-auto pb-4 p-2">`;
+                ownedIds.forEach(id => {
+                    const cell = bd.find(c => c.id == id);
+                    const color = cell.color || '#333';
+                    html += `<div onclick="viewPropertyCard(${id}, ${p.id})" class="cursor-pointer border border-gray-300 rounded shadow-md hover:scale-105 transition-transform bg-[#fdfbf7] flex flex-col overflow-hidden w-28 md:w-32 aspect-[5/6] hover:shadow-lg">
+                                <div style="background-color: ${color}; height: 22%; width: 100%; border-bottom: 2px solid #111;"></div>
+                                <div class="text-[10px] md:text-xs font-bold mt-2 px-1 leading-tight text-center font-['Montserrat'] uppercase flex-grow flex items-center justify-center text-[#111]">${cell.name.replace(/<br>/g, ' ')}</div>
+                             </div>`;
+                });
+                html += `</div>`;
+            }
+            html += `<button class="btn mt-4" onclick="closeModal()">${t('ok_btn')}</button>`;
+            openModal(html, false);
+        }
+
+        // Funzione per generare il codice HTML interno di una carta (usato sia per l'acquisto che per il portfolio)
+        function getCardInnerHtml(cell) {
+            const headerColor = cell.color || '#333';
+            let inner = `<div class="card-property-original">
+                            <div class="cpo-header" style="background-color: ${headerColor}; color: #fff;">
+                                <div class="cpo-subtitle">${cell.type === 'property' ? t('prop_title') : ''}</div>
+                                <div class="cpo-title">${cell.name.replace(/<br>/g, ' ')}</div>
+                            </div>
+                            <div class="cpo-body">`;
+            if(cell.type === 'property') {
+                inner += `  <div class="cpo-row mb-1"><span>${t('rent_base')}</span> <span>L. ${cell.rent[0]}</span></div>
+                            ${[1,2,3,4].map(i => `<div class="cpo-row mb-1"><span>${t('with_house')} ${i} ${t('houses')}</span> <span>L. ${cell.rent[i]}</span></div>`).join('')}
+                            <div class="cpo-row mt-2" style="font-size: 0.95rem;"><span>${t('with_house')} ${t('hotel')}</span> <span>L. ${cell.rent[5]}</span></div>
+                            <div class="cpo-divider"></div>
+                            <div class="cpo-footer">${t('mortgage')} L. ${cell.price / 2}<br>${t('house_cost')} L. ${cell.houseCost}</div>`;
+            } else {
+                inner += `  <div class="text-center font-bold text-lg mb-2 mt-4">${t('val_msg')} L. ${cell.price}</div>
+                            <div class="text-center italic text-xs text-gray-700">${t('var_rent')}</div>`;
+            }
+            inner += `</div></div>`;
+            return inner;
+        }
+
+        function viewPropertyCard(cellId, playerId) {
+            const cell = getBoardData().find(c => c.id == cellId);
+            const propState = gameState.properties[cellId];
+            const isCurrentTurnOwner = (gameState.currentPlayerIdx === gameState.players.findIndex(x => x.id === playerId));
+            const monopolyOwned = hasMonopoly(playerId, cell.color);
+            const canBuild = isCurrentTurnOwner && cell.type === 'property' && propState.level < 5 && monopolyOwned;
+
+            let frontHtml = getCardInnerHtml(cell);
+            
+            // Retro della carta: regole di costruzione
+            let backHtml = `
+                <h3 class="font-black text-xl mb-3 font-['Montserrat'] uppercase text-gray-800 border-b-2 border-gray-300 pb-2 w-full">${cell.name.replace(/<br>/g, ' ')}</h3>
+                <p class="text-xs md:text-sm text-gray-700 text-left mb-4 italic leading-relaxed border-l-4 border-red-500 pl-2 bg-red-50 py-2 w-full">${t('monopoly_req')}</p>
+                <div class="w-full text-left font-bold text-sm mb-4 bg-gray-100 p-2 rounded">
+                    ${t('curr_level')}: <span class="text-red-600">${propState.level} ${propState.level === 5 ? '(Hotel)' : '(Case)'}</span><br>
+                    <span class="text-xs text-gray-500">Monopolio: ${monopolyOwned ? '✅ SI' : '❌ NO'}</span>
+                </div>
+                
+                <div class="flex flex-col gap-2 w-full mt-auto">
+                    ${canBuild ? `<button class="btn btn-buy w-full shadow-lg" onclick="buildHouseFromCard(event, ${cellId}, ${playerId})">${t('build_btn_card')} (L. ${cell.houseCost})</button>` : 
+                               `<button class="btn w-full" disabled>${t('cannot_build')}</button>`}
+                    <button class="btn w-full bg-gray-200" onclick="event.stopPropagation(); viewPlayerProperties(${playerId})">${t('back_btn')}</button>
+                </div>
+            `;
+
+            let html = `
+                <div class="flip-container" onclick="this.querySelector('.flip-inner').classList.toggle('is-flipped')">
+                    <div class="flip-inner">
+                        <div class="flip-front p-1">${frontHtml}</div>
+                        <div class="flip-back">${backHtml}</div>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-4 animate-pulse font-bold">${t('flip_hint')}</p>
+            `;
+
+            openModal(html, true, 'transparent', true);
+        }
+
+        // Funzione per costruire direttamente dal retro della carta
+        function buildHouseFromCard(event, cellId, playerId) {
+            event.stopPropagation(); // Evita che il click giri la carta
+            const p = gameState.players.find(x => x.id === playerId);
+            const cell = getBoardData().find(c => c.id === cellId);
+
+            if(p.balance < cell.houseCost) {
+                showToast(`⚠️ ${t('bankrupt_msg')} (Fondi Insufficienti)`);
+                return;
+            }
+
+            openPayment(cell.houseCost, `${t('build_title')} - ${cell.name.replace(/<br>/g, ' ')}`, () => {
+                p.balance -= cell.houseCost;
+                gameState.properties[cellId].level++;
+                renderBuildings(cellId);
+                updateDashboard();
+                viewPropertyCard(cellId, playerId); // Ricarica la carta per aggiornare il livello
+            }, false);
+        }
+
         function updateTokens() {
             if (gameState.players.length === 0) return;
             const parentRect = document.getElementById('board-area').getBoundingClientRect();
             
-            // Calcolo posizioni multiple per evitare sovrapposizioni
             const posCounts = {};
             gameState.players.forEach(p => { if (p.balance >= 0) posCounts[p.pos] = (posCounts[p.pos] || 0) + 1; });
             const currentPosIndex = {};
 
             gameState.players.forEach(p => {
-                if(p.balance < 0) return; // Nascondi token se in bancarotta
+                if(p.balance < 0) return; 
                 const cell = document.getElementById(`cell-${p.pos}`); if(!cell) return;
                 const rect = cell.getBoundingClientRect();
                 
-                // Centro esatto della casella
                 const centerX = (rect.left - parentRect.left) + rect.width/2;
                 const centerY = (rect.top - parentRect.top) + rect.height/2;
 
@@ -969,12 +1021,10 @@
                 
                 const totalOnCell = posCounts[p.pos];
                 
-                // Disposizione circolare se più pedine sono sulla stessa casella
-                let offsetX = 0;
-                let offsetY = 0;
+                let offsetX = 0; let offsetY = 0;
                 if (totalOnCell > 1) {
                     const radius = rect.width * 0.25; 
-                    const angle = (indexOnCell / totalOnCell) * Math.PI * 2 + (Math.PI/4); // rotazione di 45 gradi
+                    const angle = (indexOnCell / totalOnCell) * Math.PI * 2 + (Math.PI/4);
                     offsetX = Math.cos(angle) * radius;
                     offsetY = Math.sin(angle) * radius;
                 }
@@ -987,11 +1037,11 @@
         window.addEventListener('resize', () => setTimeout(updateTokens, 100));
 
         function orientBoard() {
-            // Rotazione disabilitata: l'interfaccia resta stabile e leggibile su PC e Mobile
             document.querySelectorAll('.player-zone').forEach((z, i) => z.classList.toggle('active', i === gameState.currentPlayerIdx));
         }
 
         const diceRots = { 1: {x: 0, y: 0}, 2: {x: 0, y: 90}, 3: {x: -90, y: 0}, 4: {x: 90, y: 0}, 5: {x: 0, y: -90}, 6: {x: 180, y: 0} };
+        
         function rollDice() {
             const diceArea = document.getElementById('dice-area');
             if(!diceArea.classList.contains('dice-ready') || gameState.isMoving) return;
@@ -1031,27 +1081,9 @@
             
             if (cell.type === 'property' || cell.type === 'station' || cell.type === 'utility') {
                 const propState = gameState.properties[cell.id];
-                const headerColor = cell.color || '#333'; const fontCol = '#fff';
                 
-                html += `
-                    <div class="card-property-original">
-                        <div class="cpo-header" style="background-color: ${headerColor}; color: ${fontCol};">
-                            <div class="cpo-subtitle">${cell.type === 'property' ? t('prop_title') : ''}</div>
-                            <div class="cpo-title">${cell.name.replace(/<br>/g, ' ')}</div>
-                        </div>
-                        <div class="cpo-body">`;
-                
-                if(cell.type === 'property') {
-                    html += `
-                        <div class="cpo-row mb-1"><span>${t('rent_base')}</span> <span>L. ${cell.rent[0]}</span></div>
-                        ${[1,2,3,4].map(i => `<div class="cpo-row mb-1"><span>${t('with_house')} ${i} ${t('houses')}</span> <span>L. ${cell.rent[i]}</span></div>`).join('')}
-                        <div class="cpo-row mt-2" style="font-size: 0.95rem;"><span>${t('with_house')} ${t('hotel')}</span> <span>L. ${cell.rent[5]}</span></div>
-                        <div class="cpo-divider"></div>
-                        <div class="cpo-footer">${t('mortgage')} L. ${cell.price / 2}<br>${t('house_cost')} L. ${cell.houseCost}</div>`;
-                } else {
-                    html += `<div class="text-center font-bold text-lg mb-2">${t('val_msg')} L. ${cell.price}</div><div class="text-center italic text-xs">${t('var_rent')}</div>`;
-                }
-                html += `</div></div>`;
+                // Usa la funzione per generare il fronte della carta
+                html += getCardInnerHtml(cell);
 
                 if (!propState.ownerId) {
                     html += `<div class="flex gap-2 w-full mt-2">
@@ -1063,9 +1095,12 @@
                     html += `<p class="mb-2 text-red-600 font-bold text-lg">${t('prop_of')} ${owner.name}</p>
                              <button class="btn btn-pay" onclick="payRent(${cell.id}, ${rent})">${t('pay_btn')} L. ${rent}</button>`;
                 } else if (cell.type === 'property' && propState.level < 5) {
+                    const canBuild = hasMonopoly(player.id, cell.color);
                     html += `<p class="mb-2 text-green-600 font-bold">${t('your_prop')}</p>
                              <div class="flex gap-2 w-full mt-2">
-                                <button class="btn btn-buy btn-inline" onclick="buildHouse(${cell.id})">${t('build_btn')} L. ${cell.houseCost}</button>
+                                <button class="btn btn-buy btn-inline" onclick="${canBuild ? `buildHouse(${cell.id})` : `showToast('${t('monopoly_req')}')`}">
+                                    ${t('build_btn')} L. ${cell.houseCost}
+                                </button>
                                 <button class="btn btn-inline" onclick="endTurn()">${t('end_turn')}</button>
                              </div>`;
                 } else { html += `<button class="btn" onclick="endTurn()">${t('end_turn')}</button>`; }
@@ -1110,20 +1145,20 @@
                 p.balance -= cell.price; gameState.properties[cellId].ownerId = p.id;
                 document.getElementById(`cell-${cellId}`).style.border = `2px solid ${['#ed1b24','#00a650','#0054a6','#f57c00'][p.id%4]}`;
                 updateDashboard(); endTurn();
-            }, false); // opzionale
+            }, false); 
         }
         function payRent(cellId, amount) {
             const p = gameState.players[gameState.currentPlayerIdx]; const ownerId = gameState.properties[cellId].ownerId;
             const cell = getBoardData().find(c => c.id === cellId);
             openPayment(amount, `${t('rent_title')} - ${cell.name.replace(/<br>/g, ' ')}`, () => {
                 p.balance -= amount; gameState.players.find(x => x.id === ownerId).balance += amount; updateDashboard(); endTurn();
-            }, true); // Obbligatorio
+            }, true); 
         }
         function buildHouse(cellId) {
             const p = gameState.players[gameState.currentPlayerIdx]; const cell = getBoardData().find(c => c.id === cellId);
             openPayment(cell.houseCost, `${t('build_title')} - ${cell.name.replace(/<br>/g, ' ')}`, () => {
                 p.balance -= cell.houseCost; gameState.properties[cellId].level++; renderBuildings(cellId); updateDashboard(); endTurn();
-            }, false); // opzionale
+            }, false); 
         }
         function renderBuildings(cellId) {
             const bld = document.getElementById(`bld-${cellId}`); if(!bld) return;
@@ -1132,14 +1167,13 @@
             else for(let i=0; i<lvl; i++) bld.innerHTML += `<div class="house"></div>`;
         }
         
-        // Logica rigorosa delle carte
         function resolveCard(evIndex) {
             closeModal(); 
             const p = gameState.players[gameState.currentPlayerIdx];
             switch(evIndex) {
                 case 0: goToJail(); break;
-                case 1: advanceTo(p, 39); break; // Parco della Vittoria / Boardwalk
-                case 2: advanceTo(p, 1); break;  // Vicolo Corto / Mediterranean
+                case 1: advanceTo(p, 39); break;
+                case 2: advanceTo(p, 1); break;  
                 case 3: receiveMoney(p, 10000); endTurn(); break;
                 case 4: receiveMoney(p, 15000); endTurn(); break;
                 case 5: payBankActive(1500); break;
@@ -1147,22 +1181,20 @@
             }
         }
         
-        // Funzione per l'avanzamento fisico dovuto ad Imprevisti/Probabilità
         function advanceTo(p, targetPos) {
-            if (targetPos < p.pos && targetPos !== 10) { // Se passa dal VIA! (ma non sta andando in prigione)
+            if (targetPos < p.pos && targetPos !== 10) { 
                 p.balance += 20000;
                 showToast(t('go_msg'));
                 updateDashboard();
             }
-            p.pos = targetPos;
-            updateTokens();
-            setTimeout(() => handleLanded(p), 600); // Rilancia handleLanded sulla nuova casella
+            p.pos = targetPos; updateTokens();
+            setTimeout(() => handleLanded(p), 600); 
         }
 
         function payBankActive(amount) { 
             openPayment(amount, t('tax_title'), () => { 
                 gameState.players[gameState.currentPlayerIdx].balance -= amount; updateDashboard(); endTurn(); 
-            }, true); // Obbligatorio
+            }, true); 
         }
         
         function receiveMoney(player, amount) { player.balance += amount; updateDashboard(); }
@@ -1173,14 +1205,14 @@
         function openPayment(amount, reason, callback, isMandatory = false) {
             const p = gameState.players[gameState.currentPlayerIdx];
             
-            // Logica Bancarotta
             if (p.balance < amount) { 
                 showToast(`⚠️ ${t('bankrupt_msg')} ${p.name}!`); 
-                p.balance = -1; // Flag Bancarotta
+                p.balance = -1; 
                 endTurn(); 
                 return; 
             }
 
+            // Chiudi eventuali modali aperte (come la flip card)
             closeModal();
             const pw = document.getElementById('payment-wrapper');
             if(pw) pw.style.transform = `scale(1) rotate(0deg)`;
@@ -1188,7 +1220,11 @@
             currentPayment = { amount: amount, callback: callback, traySum: 0, wallet: getNotesArray(p.balance), tray: [], isMandatory: isMandatory };
             document.getElementById('pay-title').innerText = reason; 
             renderPaymentUI();
-            document.getElementById('modal-payment').style.display = 'flex';
+            
+            // Ritardo di sicurezza per evitare glitch CSS tra la chiusura di action-modal e l'apertura di payment-modal
+            setTimeout(() => {
+                document.getElementById('modal-payment').style.display = 'flex';
+            }, 50);
         }
 
         function renderPaymentUI() {
@@ -1217,7 +1253,6 @@
                 sumEl.className = "float-right text-red-600 font-bold text-lg"; btnConfirm.disabled = true; btnConfirm.innerText = t('confirm_pay');
             }
 
-            // Nascondi "Annulla" se il pagamento è obbligatorio
             if(currentPayment.isMandatory) {
                 btnCancel.style.display = 'none';
             } else {
@@ -1227,19 +1262,35 @@
 
         function moveNoteToTray(index) { const val = currentPayment.wallet.splice(index, 1)[0]; currentPayment.tray.push(val); currentPayment.traySum += val; renderPaymentUI(); }
         function moveNoteToWallet(index) { const val = currentPayment.tray.splice(index, 1)[0]; currentPayment.wallet.push(val); currentPayment.traySum -= val; renderPaymentUI(); }
-        function confirmPayment() { if (currentPayment.traySum >= currentPayment.amount) { document.getElementById('modal-payment').style.display = 'none'; currentPayment.callback(); } }
+        
+        function confirmPayment() { 
+            if (currentPayment.traySum >= currentPayment.amount) { 
+                document.getElementById('modal-payment').style.display = 'none'; 
+                if (currentPayment.callback) currentPayment.callback(); 
+            } 
+        }
         function cancelPayment() { document.getElementById('modal-payment').style.display = 'none'; endTurn(); }
 
-        function openModal(html, isCard = false, bgColor = '') { 
+        function openModal(html, isCard = false, bgColor = '', isFlip = false) { 
             const content = document.getElementById('action-content');
             content.innerHTML = html;
             
-            if (isCard) {
+            if (isFlip) {
+                // Per le carte che ruotano 3D, togliamo sfondo e ombre del contenitore
                 content.className = 'modal-box solid-card';
-                content.style.backgroundColor = bgColor;
+                content.style.backgroundColor = 'transparent';
+                content.style.boxShadow = 'none';
+                content.style.border = 'none';
+            } else if (isCard) {
+                content.className = 'modal-box solid-card';
+                content.style.backgroundColor = bgColor || '#fdfbf7';
+                content.style.boxShadow = '';
+                content.style.border = '';
             } else {
                 content.className = 'modal-box';
                 content.style.backgroundColor = '#fdfbf7';
+                content.style.boxShadow = '';
+                content.style.border = '';
             }
             
             document.getElementById('modal-action').style.display = 'flex'; 
@@ -1249,7 +1300,6 @@
         function endTurn() {
             closeModal(); gameState.isMoving = false;
             
-            // Gestione del fallimento (Rilascia Proprietà e Nasconde UI giocatore)
             const currP = gameState.players[gameState.currentPlayerIdx];
             if(currP.balance < 0) {
                 Object.keys(gameState.properties).forEach(k => {
@@ -1267,7 +1317,6 @@
                 if(pzEl) pzEl.classList.add('bankrupt');
             }
 
-            // Passa al prossimo giocatore attivo
             let nextIdx = (gameState.currentPlayerIdx + 1) % gameState.players.length;
             let loops = 0;
             while(gameState.players[nextIdx].balance < 0 && loops < gameState.players.length) {
@@ -1275,7 +1324,6 @@
                 loops++;
             }
             
-            // Se tutti gli altri sono in bancarotta, dichiara il vincitore e ferma i dadi
             if (loops >= gameState.players.length - 1) {
                 showToast(`🏆 HA VINTO ${gameState.players[nextIdx].name.toUpperCase()}! 🏆`);
                 orientBoard(); updateDashboard();
