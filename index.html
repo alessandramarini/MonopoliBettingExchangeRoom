@@ -246,10 +246,11 @@
         .token { position: absolute; z-index: 30; width: clamp(24px, 5.5vmin, 50px); height: clamp(24px, 5.5vmin, 50px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); transform: translate(-50%, -80%); pointer-events: none; }
         .token-svg { width: 100%; height: 100%; filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.7)); }
         
-        .house { width: clamp(5px, 1.2vmin, 14px); height: clamp(5px, 1.2vmin, 14px); background-color: #00a650; margin: 1px; box-shadow: inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); border-radius:1px;}
-        .hotel { width: clamp(7px, 1.6vmin, 18px); height: clamp(7px, 1.6vmin, 18px); background-color: #ed1b24; margin: 1px; box-shadow: inset -3px -3px 0px rgba(0,0,0,0.3), inset 3px 3px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); border-radius:2px;}
-        .buildings-container { display: flex; flex-wrap: wrap; justify-content: center; position: absolute; bottom: 2%; width: 100%; z-index: 3; gap: 2px;}
-        .has-color-bar .buildings-container { top: 1%; bottom: auto; height: 20%; align-items: flex-end; }
+        /* Grafica 3D migliorata per Case e Alberghi */
+        .house { width: clamp(6px, 1.4vmin, 16px); height: clamp(6px, 1.4vmin, 16px); background-color: #00c660; margin: 1px; box-shadow: inset -2px -2px 0px rgba(0,115,54,0.8), inset 2px 2px 0px rgba(255,255,255,0.6), 2px 3px 4px rgba(0,0,0,0.7); border-radius: 2px 2px 0 0; position: relative; z-index: 10;}
+        .hotel { width: clamp(8px, 1.8vmin, 20px); height: clamp(8px, 1.8vmin, 20px); background-color: #ff3b44; margin: 1px; box-shadow: inset -2px -2px 0px rgba(176,15,23,0.8), inset 2px 2px 0px rgba(255,255,255,0.6), 2px 3px 4px rgba(0,0,0,0.7); border-radius: 3px 3px 0 0; position: relative; z-index: 10;}
+        .buildings-container { display: flex; flex-wrap: wrap; justify-content: center; position: absolute; bottom: 2%; width: 100%; z-index: 3; gap: 1px;}
+        .has-color-bar .buildings-container { top: -2%; bottom: auto; height: 24%; align-items: flex-end; }
 
         /* --- STREAMING_CHUNK:Styling Modals & Cards --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100dvw; height: 100dvh; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 200; }
@@ -269,6 +270,7 @@
         /* CSS per l'effetto di rotazione carta 3D */
         .flip-container { background-color: transparent; width: 100%; max-width: 320px; aspect-ratio: 5/7.2; perspective: 1000px; margin: 0 auto; position: relative; z-index: 210;}
         .flip-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
+        .flip-inner:hover { filter: brightness(1.05); }
         .flip-inner.is-flipped { transform: rotateY(180deg); }
         .flip-front, .flip-back { 
             position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; 
@@ -503,7 +505,7 @@
                 buy_title: "Purchase", rent_title: "Rent", build_title: "Construction", tax_title: "Tax", pay_tax: "PAY",
                 go_msg: "Passed GO! Collected 20,000", go_jail_btn: "GO TO JAIL!", winner: "WON THE GAME!", insuff_funds: "Insufficient funds!",
                 
-                props_of: "Properties of", no_props: "No properties owned.", flip_hint: "👆 Tap card to flip", 
+                props_of: "Properties of", no_props: "No properties owned.", flip_hint: "👆 Tap card to flip", click_card_hint: "Click a card to view details, flip it, and build.",
                 monopoly_req: "Original Rules: You must own all properties of this color group to build.", curr_level: "Current Level", 
                 back_btn: "BACK TO PROPERTIES", build_btn_card: "BUILD", cannot_build: "CANNOT BUILD", max_level: "MAX LEVEL", monopoly_yes: "YES", monopoly_no: "NO",
                 
@@ -534,7 +536,7 @@
                 buy_title: "Compra", rent_title: "Alquiler", build_title: "Construcción", tax_title: "Impuesto", pay_tax: "PAGA",
                 go_msg: "¡Pasaste SALIDA! Cobras 20.000", go_jail_btn: "¡A LA CÁRCEL!", winner: "¡HA GANADO!", insuff_funds: "¡Fondos insuficientes!",
                 
-                props_of: "Propiedades de", no_props: "Sin propiedades.", flip_hint: "👆 Toca la carta para girar", 
+                props_of: "Propiedades de", no_props: "Sin propiedades.", flip_hint: "👆 Toca la carta para girar", click_card_hint: "Haz clic en una carta para ver detalles, girarla y construir.",
                 monopoly_req: "Reglas Originales: Debes poseer todo este grupo de color para construir.", curr_level: "Nivel actual", 
                 back_btn: "VOLVER", build_btn_card: "CONSTRUIR", cannot_build: "NO SE PUEDE", max_level: "NIVEL MÁXIMO", monopoly_yes: "SÍ", monopoly_no: "NO",
                 
@@ -565,8 +567,8 @@
                 buy_title: "Compra", rent_title: "Aluguel", build_title: "Construção", tax_title: "Imposto", pay_tax: "PAGUE",
                 go_msg: "Passou por PARTIDA! Receba 20.000", go_jail_btn: "VÁ PARA A PRISÃO!", winner: "VENCEU O JOGO!", insuff_funds: "Fundos insuficientes!",
                 
-                props_of: "Propriedades de", no_props: "Nenhuma propriedade.", flip_hint: "👆 Toque na carta para virar", 
-                monopoly_req: "Regras Originais: Você deve possuir todas as cores do grupo para construir.", curr_level: "Nível atual", 
+                props_of: "Propriedades de", no_props: "Nenhuma propriedade.", flip_hint: "👆 Toque na carta para virar", click_card_hint: "Clique numa carta para ver os detalhes, virar e construir.",
+                monopoly_req: "Reglas Originais: Você deve possuir todas as cores do grupo para construir.", curr_level: "Nível atual", 
                 back_btn: "VOLTAR", build_btn_card: "CONSTRUIR", cannot_build: "NÃO PODE", max_level: "NÍVEL MÁX", monopoly_yes: "SIM", monopoly_no: "NÃO",
                 
                 go_main: "PARTIDA", go_sub1: "RECEBA 20.000", go_sub2: "AO PASSAR",
@@ -596,7 +598,7 @@
                 buy_title: "Acquisto", rent_title: "Affitto", build_title: "Costruzione", tax_title: "Tassa", pay_tax: "PAGARE",
                 go_msg: "Passaggio dal VIA! Ritirate 20.000", go_jail_btn: "IN PRIGIONE!", winner: "HA VINTO LA PARTITA!", insuff_funds: "Fondi insufficienti!",
                 
-                props_of: "Proprietà di", no_props: "Nessuna proprietà acquistata.", flip_hint: "👆 Tocca la carta per leggerla dietro", 
+                props_of: "Proprietà di", no_props: "Nessuna proprietà acquistata.", flip_hint: "👆 Tocca la carta per leggerla dietro", click_card_hint: "Clicca su una carta per i dettagli, girarla e costruire.",
                 monopoly_req: "Regole Originali: Puoi costruire solo se possiedi tutti i terreni di questo colore.", curr_level: "Livello attuale", 
                 back_btn: "TORNA ALLE PROPRIETÀ", build_btn_card: "COSTRUISCI", cannot_build: "NON DISPONIBILE", max_level: "LIVELLO MASSIMO", monopoly_yes: "SÌ", monopoly_no: "NO",
                 
@@ -751,10 +753,12 @@
             });
             document.getElementById('intro-click-text').innerText = t('click_start');
             
+            // Correzione bug: Rigenera le caselle del tabellone ad ogni cambio lingua e al primo caricamento
             const board = document.getElementById('board');
-            if (board && board.children.length > 1) { 
+            if (board) { 
                 document.querySelectorAll('.cell').forEach(c => c.remove());
-                initBoard(); updateTokens();
+                initBoard(); 
+                if(gameState.players.length > 0) updateTokens();
             }
         }
 
@@ -914,17 +918,20 @@
             const ownedIds = Object.keys(gameState.properties).filter(id => gameState.properties[id].ownerId === p.id);
             const bd = getBoardData();
 
-            let html = `<h2 class="text-xl md:text-2xl font-bold mb-4 font-['Montserrat'] uppercase" style="color: #111;">${t('props_of')} ${p.name}</h2>`;
+            let html = `<h2 class="text-xl md:text-2xl font-bold mb-2 font-['Montserrat'] uppercase" style="color: #111;">${t('props_of')} ${p.name}</h2>`;
 
             if(ownedIds.length === 0) {
                 html += `<p class="text-gray-600 mb-6">${t('no_props')}</p>`;
             } else {
-                html += `<div class="flex flex-wrap gap-3 justify-center max-h-[60vh] overflow-y-auto pb-4 p-2 w-full">`;
+                html += `<p class="text-xs md:text-sm text-red-600 mb-4 animate-pulse font-bold text-center bg-red-50 p-2 rounded border border-red-100">👆 ${t('click_card_hint')}</p>
+                         <div class="flex flex-wrap gap-3 justify-center max-h-[55vh] overflow-y-auto pb-4 p-2 w-full">`;
                 ownedIds.forEach(id => {
                     const cell = bd.find(c => c.id == id); const color = cell.color || '#333';
-                    html += `<div onclick="viewPropertyCard(${id}, ${p.id})" class="cursor-pointer border border-gray-300 rounded shadow-md hover:scale-105 transition-transform bg-[#fdfbf7] flex flex-col overflow-hidden w-24 md:w-32 aspect-[5/6] hover:shadow-lg">
-                                <div style="background-color: ${color}; height: 22%; width: 100%; border-bottom: 2px solid #111;"></div>
+                    const priceTag = cell.price ? `L. ${cell.price.toLocaleString('it-IT')}` : '';
+                    html += `<div onclick="viewPropertyCard(${id}, ${p.id})" class="cursor-pointer border-2 border-gray-300 rounded-md shadow-md hover:scale-110 transition-all duration-200 bg-[#fdfbf7] flex flex-col overflow-hidden w-24 md:w-32 aspect-[5/7] hover:shadow-xl hover:border-red-500 relative group">
+                                <div style="background-color: ${color}; height: 25%; width: 100%; border-bottom: 2px solid #111;"></div>
                                 <div class="text-[9px] md:text-xs font-bold mt-2 px-1 leading-tight text-center font-['Montserrat'] uppercase flex-grow flex items-center justify-center text-[#111]">${cell.name.replace(/<br>/g, ' ')}</div>
+                                <div class="text-[8px] md:text-[10px] font-bold pb-2 text-center text-gray-500 w-full">${priceTag}</div>
                              </div>`;
                 });
                 html += `</div>`;
