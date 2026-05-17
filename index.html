@@ -80,11 +80,16 @@
         .click-to-start { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #111; font-size: clamp(13px, 3.5vw, 18px); letter-spacing: 2px; animation: pulse 1.5s infinite; background: rgba(255,255,255,0.95); padding: 12px 30px; border-radius: 30px; box-shadow: 0 5px 18px rgba(0,0,0,0.2); cursor: pointer; border: 2px solid #ddd; }
         @keyframes pulse { 0%, 100% { transform: scale(0.97); } 50% { transform: scale(1.03); } }
 
-        #app-container { display: flex; align-items: center; justify-content: center; width: 100dvw; height: 100dvh; position: relative; }
+        /* DYNAMIC APP CONTAINER - Desktop first */
+        #app-container { 
+            display: flex; align-items: center; justify-content: center; 
+            width: 100dvw; height: 100dvh; position: relative; 
+        }
+        
         #board-area {
-            position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%);
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
             display: flex; align-items: center; justify-content: center;
-            width: min(72dvw, 72dvh); height: min(72dvw, 72dvh);
+            width: min(64dvw, 64dvh); height: min(64dvw, 64dvh);
             box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 0 clamp(4px, 1.2vmin, 10px) var(--border-color);
             background-color: var(--border-color); border-radius: 4px;
             z-index: 10; contain: layout style paint;
@@ -100,25 +105,16 @@
         .cell { background-color: var(--cell-bg); background-image: var(--paper-tex); position: relative; overflow: hidden; box-sizing: border-box; container-type: size; }
         
         .cell.mortgaged::after {
-            content: "";
-            position: absolute;
-            inset: 0;
+            content: ""; position: absolute; inset: 0;
             background: repeating-linear-gradient(45deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 8px, rgba(0,0,0,0.2) 8px, rgba(0,0,0,0.2) 16px);
-            z-index: 4;
-            pointer-events: none;
+            z-index: 4; pointer-events: none;
         }
         .mortgaged-banner {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(-25deg);
-            background: #ed1b24; color: white;
-            font-family: 'Oswald', sans-serif;
-            font-size: clamp(5px, 1.2vmin, 11px);
-            padding: 1px 6px; border-radius: 3px;
-            z-index: 6; font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            pointer-events: none;
-            text-transform: uppercase;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg);
+            background: #ed1b24; color: white; font-family: 'Oswald', sans-serif;
+            font-size: clamp(5px, 1.2vmin, 11px); padding: 1px 6px; border-radius: 3px;
+            z-index: 6; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            pointer-events: none; text-transform: uppercase;
         }
 
         .cell-content { position: absolute; top: 50%; left: 50%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; box-sizing: border-box; padding: 2% 0; }
@@ -152,88 +148,58 @@
             background-color: var(--bg-board); background-image: var(--paper-tex);
             position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
             overflow: hidden; box-shadow: inset 0 0 8vmin rgba(0,0,0,0.15);
+            container-type: inline-size; /* For responsive center text */
         }
 
         .center-text-group {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
             z-index: 5; width: 100%; display: flex; justify-content: center; align-items: center; pointer-events: none;
         }
+        
         .center-title {
-            font-family: 'Montserrat', sans-serif; font-size: clamp(22px, 6.5vmin, 75px); font-weight: 900; letter-spacing: 0.15em;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: 0.15em;
             color: #fff; background: linear-gradient(to bottom, #e0252b, #c21920);
-            padding: 1.5vmin 4vmin; border: clamp(2px, 0.4vmin, 6px) solid #fff;
-            box-shadow: 0 1.5vmin 4vmin rgba(0,0,0,0.5), 0 0 0 clamp(2px, 0.4vmin, 5px) #1a1a1a;
-            border-radius: 1vmin; text-shadow: 0.3vmin 0.3vmin 0 rgba(0,0,0,0.6);
             line-height: 1.1; margin: 0; text-transform: uppercase;
+            font-size: 11.5cqw; padding: 1.5cqw 3cqw; border: 0.8cqw solid #fff;
+            border-radius: 1.5cqw; box-shadow: 0 1.5cqw 4cqw rgba(0,0,0,0.5), 0 0 0 0.5cqw #1a1a1a;
+            text-shadow: 0.4cqw 0.4cqw 0 rgba(0,0,0,0.6); white-space: nowrap;
         }
 
-        .deck-slot { position: absolute; width: 18vmin; height: 11vmin; border: clamp(2px, 0.4vmin, 4px) dashed rgba(0,0,0,0.4); display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .deck-slot { position: absolute; width: 20cqw; height: 12cqw; border: 0.5cqw dashed rgba(0,0,0,0.4); display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .deck-slot.probabilita { top: 16%; left: 16%; transform: rotate(-45deg); }
         .deck-slot.imprevisti { bottom: 16%; right: 16%; transform: rotate(-45deg); }
         
-        .board-slot-text { position: absolute; font-family: 'Montserrat', sans-serif; font-size: clamp(8px, 2vmin, 26px); font-weight: 900; letter-spacing: 0.1em; color: #1a1a1a; white-space: nowrap; opacity: 0.9; }
+        .board-slot-text { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 3cqw; font-weight: 900; letter-spacing: 0.1em; color: #1a1a1a; white-space: nowrap; opacity: 0.9; }
         
         .deck-stack { position: absolute; width: 95%; height: 90%; background-color: #fff; border-radius: 2px; box-shadow: -1px 1px 0 #ddd, -2px 2px 0 #bbb, -3px 3px 0 #ddd, -4px 4px 0 #bbb, -5px 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0,0,0,0.1); background-image: var(--paper-tex); }
         .deck-stack.bg-prob { background-color: var(--prob-color); }
         .deck-stack.bg-impr { background-color: var(--impr-color); }
 
-        #trade-btn-container {
-            position: fixed;
-            z-index: 60;
-            display: none;
-        }
-
-        /* Mobile Trade Button (Bottom Center) */
-        @media (max-width: 768px) {
-            #trade-btn-container {
-                left: 50%;
-                bottom: calc(16vh + 45px); /* Positioned cleanly above the bottom player zone */
-                transform: translateX(-50%);
-            }
-        }
-        
-        /* Desktop Trade Button (Top Right) */
-        @media (min-width: 769px) {
-            #trade-btn-container {
-                right: 3vw;
-                top: 3vw;
-                transform: none;
-            }
-        }
+        #trade-btn-container { position: fixed; z-index: 60; display: none; }
 
         #main-trade-btn {
-            padding: 10px 24px;
-            font-size: clamp(10px, 1.5vw, 13px);
-            border-radius: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
-            border: 1px solid #005a2c;
-            letter-spacing: 1.5px;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin: 0;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: linear-gradient(to bottom, #00c660, #00a650); 
-            color: white;
-            cursor: pointer;
+            padding: 10px 24px; font-size: clamp(10px, 1.5vw, 13px); border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3); border: 1px solid #005a2c;
+            letter-spacing: 1.5px; font-weight: 900; text-transform: uppercase; margin: 0;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: linear-gradient(to bottom, #00c660, #00a650); 
+            color: white; cursor: pointer;
         }
-        #main-trade-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
-        }
+        #main-trade-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4); }
 
         .player-zone {
-            position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: absolute; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center;
             background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.8)); padding: 1vmin; border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease; backdrop-filter: blur(8px); cursor: pointer;
         }
-        .player-zone:hover { border-color: #fff; transform: scale(1.05); }
-        .player-zone.active { background: linear-gradient(135deg, rgba(40,0,0,0.85), rgba(150,0,0,0.95)); border-color: #ed1b24; box-shadow: 0 0 25px rgba(237, 27, 36, 0.7), inset 0 0 15px rgba(0,0,0,0.8); }
+        .player-zone:hover { border-color: #fff; transform: scale(1.05); z-index: 40; }
+        .player-zone.active { background: linear-gradient(135deg, rgba(40,0,0,0.85), rgba(150,0,0,0.95)); border-color: #ed1b24; box-shadow: 0 0 25px rgba(237, 27, 36, 0.7), inset 0 0 15px rgba(0,0,0,0.8); z-index: 35; }
         .player-zone.bankrupt { opacity: 0.3; filter: grayscale(100%); pointer-events: none; }
         
-        .pz-bottom { bottom: 1vmin; left: 50%; transform: translateX(-50%); width: clamp(220px, 32vw, 420px); }
-        .pz-left   { left: 1vmin; top: 50%; transform: translateY(-50%); width: clamp(160px, 15vw, 220px); }
-        .pz-top    { top: 1vmin; left: 50%; transform: translateX(-50%); width: clamp(220px, 32vw, 420px); }
-        .pz-right  { right: 1vmin; top: 50%; transform: translateY(-50%); width: clamp(160px, 15vw, 220px); }
+        /* Desktop placement - safe margins around min(64vw, 64vh) */
+        .pz-bottom { bottom: 1.5vh; left: 50%; transform: translateX(-50%); width: clamp(220px, 32vw, 420px); }
+        .pz-left   { left: 1.5vw; top: 50%; transform: translateY(-50%); width: clamp(160px, 15vw, 220px); }
+        .pz-top    { top: 1.5vh; left: 50%; transform: translateX(-50%); width: clamp(220px, 32vw, 420px); }
+        .pz-right  { right: 1.5vw; top: 50%; transform: translateY(-50%); width: clamp(160px, 15vw, 220px); }
 
         .pz-info { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; color: #fff; font-family: 'Montserrat', sans-serif; }
         .pz-name { font-weight: 800; font-size: clamp(11px, 1.8vmin, 18px); text-shadow: 1px 1px 2px #000; }
@@ -307,10 +273,17 @@
         @keyframes slideDown { from { transform: translateY(-30px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-        @media (max-width: 768px) {
-            #board-area { width: 95vw; height: 95vw; top: 40%; }
-            .player-zone { position: static !important; transform: none !important; width: 45% !important; max-width: 45% !important; padding: 4px; border-radius: 6px; }
-            #player-zones { position: absolute; bottom: 0; left: 0; width: 100%; display: flex; flex-wrap: wrap; justify-content: space-around; align-items: flex-end; gap: 4px; padding: 6px; box-sizing: border-box; z-index: 20; background: linear-gradient(to top, rgba(0,0,0,0.9) 20%, transparent); }
+        /* Media Queries for Desktop and Mobile Harmony */
+        @media (min-width: 801px) {
+            #trade-btn-container { right: 2.5vw; top: 2.5vw; transform: none; }
+        }
+
+        @media (max-width: 800px) {
+            #app-container { flex-direction: column; justify-content: flex-start; padding-top: 2vh; overflow-y: auto;}
+            #board-area { position: relative; top: 0; left: 0; transform: none; width: 95vw; height: 95vw; margin: 0 auto; flex-shrink: 0;}
+            #player-zones { position: relative; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 12px; margin-top: auto; }
+            .player-zone { position: relative !important; transform: none !important; width: 100% !important; max-width: none !important; left: auto !important; right: auto !important; top: auto !important; bottom: auto !important;}
+            #trade-btn-container { right: 10px; top: 10px; left: auto; bottom: auto; transform: none; }
             .note-stack { display: none; }
             .modal-box { width: 96vw; padding: 15px 10px; }
             .payment-zone { gap: -15px; padding: 8px; min-height: 50px;}
@@ -323,7 +296,9 @@
             .box-blue-sq { width: 50%; padding: 10px 0; border-radius: 4px; }
             .box-red-stripe { position: relative; transform: none; top: 0; height: auto; padding: 12px 0; margin: 10px 0; }
         }
-        @media (max-height: 700px) {
+
+        @media (max-height: 700px) and (orientation: landscape) {
+            #board-area { width: min(85dvw, 85dvh); height: min(85dvw, 85dvh); }
             .modal-box { padding: 10px; max-height: 95dvh; }
             .card-property-original { padding: 8px; margin-bottom: 8px; }
             .cpo-header { padding: 4px; margin-bottom: 8px; }
@@ -381,13 +356,7 @@
     </div>
 
     <div id="toast-container"></div>
-    <div id="player-zones">
-        <div id="pz-0" class="player-zone pz-bottom" style="display:none;" onclick="showPlayerProperties(0)"></div>
-        <div id="pz-1" class="player-zone pz-left" style="display:none;" onclick="showPlayerProperties(1)"></div>
-        <div id="pz-2" class="player-zone pz-top" style="display:none;" onclick="showPlayerProperties(2)"></div>
-        <div id="pz-3" class="player-zone pz-right" style="display:none;" onclick="showPlayerProperties(3)"></div>
-    </div>
-
+    
     <div id="trade-btn-container">
         <button id="main-trade-btn" onclick="openTradingPanel()" data-i18n="trade_btn">SELL PROPERTY</button>
     </div>
@@ -432,6 +401,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div id="player-zones">
+            <div id="pz-0" class="player-zone pz-bottom" style="display:none;" onclick="showPlayerProperties(0)"></div>
+            <div id="pz-1" class="player-zone pz-left" style="display:none;" onclick="showPlayerProperties(1)"></div>
+            <div id="pz-2" class="player-zone pz-top" style="display:none;" onclick="showPlayerProperties(2)"></div>
+            <div id="pz-3" class="player-zone pz-right" style="display:none;" onclick="showPlayerProperties(3)"></div>
         </div>
     </div>
 
