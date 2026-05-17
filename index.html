@@ -110,7 +110,11 @@
             gap: clamp(1px, 0.25vmin, 3px); background-color: var(--border-color); 
         }
 
-        .cell { background-color: var(--cell-bg); background-image: var(--paper-tex); position: relative; overflow: hidden; box-sizing: border-box; container-type: size; transition: box-shadow 0.3s ease; }
+        .cell { 
+            background-color: var(--cell-bg); background-image: var(--paper-tex); 
+            position: relative; overflow: hidden; box-sizing: border-box; 
+            container-type: size; transition: box-shadow 0.3s ease; 
+        }
         
         .cell.mortgaged::after {
             content: ""; position: absolute; inset: 0;
@@ -141,15 +145,15 @@
         .has-color-bar { padding-top: 24%; }
 
         .property-name {
-            font-weight: 700; font-size: clamp(4px, 1.1vmin, 12px); line-height: 1.1;
+            font-weight: 700; font-size: min(15cqw, 14px); line-height: 1.1;
             text-transform: uppercase; margin: auto 0; font-family: 'Montserrat', sans-serif; letter-spacing: -0.02em;
             display: flex; align-items: center; justify-content: center; flex-grow: 1;
-            padding: 0 4%; z-index: 1; color: #111; text-wrap: balance; word-wrap: break-word; text-align: center;
+            padding: 0 4%; z-index: 1; color: #111; text-wrap: balance; word-wrap: break-word; text-align: center; width: 100%;
         }
 
-        .property-price { font-size: clamp(3.5px, 0.8vmin, 10px); font-weight: 700; margin-bottom: 3%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; }
-        .icon-large { margin: auto; display: flex; align-items: center; justify-content: center; flex-grow: 1; }
-        .svg-board-icon { width: clamp(18px, 4.5vmin, 55px); height: auto; max-height: clamp(18px, 4.5vmin, 55px); margin: auto; }
+        .property-price { font-size: min(11cqw, 11px); font-weight: 700; margin-bottom: 3%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; }
+        .icon-large { margin: auto; display: flex; align-items: center; justify-content: center; flex-grow: 1; width: 100%; }
+        .svg-board-icon { width: 100%; height: auto; max-width: 60cqw; max-height: 55cqh; margin: auto; }
         
         #center-board {
             grid-column: 2 / span 9; grid-row: 2 / span 9;
@@ -189,7 +193,7 @@
             display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
             background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
             padding-bottom: env(safe-area-inset-bottom, 5px);
-            pointer-events: none; /* Let clicks pass through empty spaces to the board if needed */
+            pointer-events: none;
         }
 
         #trade-btn-container { pointer-events: auto; margin-bottom: 8px; display: none; }
@@ -542,7 +546,7 @@
             'en': {
                 monopoly: "MONOPOLY", setup_desc: "Enter names and choose token", btn_add_player: "+ Player", btn_start: "START GAME", click_start: "CLICK TO START", select_lang: "Select Language",
                 chance_title: "CHANCE", chest_title: "COMMUNITY CHEST", player: "Player",
-                prop_title: "CONTRATTO", rent_base: "Rent - Site only", with_house: "With", house_single: "House", houses: "Houses", hotel: "HOTEL", mortgage: "Mortgage Value", house_cost: "House/Hotel Cost",
+                prop_title: "TITLE DEED", rent_base: "Rent - Site only", with_house: "With", house_single: "House", houses: "Houses", hotel: "HOTEL", mortgage: "Mortgage Value", house_cost: "House/Hotel Cost",
                 buy_btn: "BUY", pass_btn: "PASS", pay_btn: "PAY RENT", your_prop: "Your Property", build_btn: "BUILD", end_turn: "END TURN", ok_btn: "OK", close: "CLOSE",
                 tray: "YOUR TRAY:", wallet: "YOUR WALLET:", confirm_pay: "CONFIRM", cancel: "CANCEL", pay_recv: "PAY & GET CHANGE", 
                 bankrupt_msg: "BANKRUPTCY FOR", val_msg: "Value", var_rent: "Rent varies based on ownership.", prop_of: "Property of", tap_notes: "Tap the notes", empty: "Empty", pay_req: "You must pay:",
@@ -568,6 +572,7 @@
                 rent_1_utility: "If 1 Utility is owned, rent is 400x amount shown on dice.", rent_2_utility: "If 2 Utilities are owned, rent is 1000x amount shown on dice.", utility_title: "Utility", station_title: "Station",
                 card_cost: "TITLE DEED VALUE L. {0}", rent_double_rule: "If a player owns ALL the Lots of any Color-Group, the rent is Doubled on Unimproved Lots in that group.",
                 house_cost_each: "Houses cost", hotel_cost_plus: "Hotels, L. {0} plus 4 houses",
+                go_text: "GO", parking_1: "FREE", parking_2: "PARKING", jail_in: "IN", jail_jail: "JAIL", jail_transit_1: "JUST", jail_transit_2: "VISITING", goto_1: "GO TO", goto_2: "JAIL",
                 props: [
                     "", "MEDITERRANEAN<br>AVE.", "", "BALTIC<br>AVE.", "INCOME<br>TAX", "READING<br>RAILROAD",
                     "ORIENTAL<br>AVE.", "", "VERMONT<br>AVE.", "CONNECTICUT<br>AVE.", "",
@@ -585,7 +590,7 @@
             'es': {
                 monopoly: "MONOPOLY", setup_desc: "Ingresa nombres y ficha", btn_add_player: "+ Jugador", btn_start: "EMPEZAR", click_start: "CLIC PARA EMPEZAR", select_lang: "Seleccionar Idioma",
                 chance_title: "SUERTE", chest_title: "CAJA DE COMUNIDAD", player: "Jug.",
-                prop_title: "CONTRATTO", rent_base: "Alquiler - Solo solar", with_house: "Con", house_single: "Casa", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecario", house_cost: "Coste Casa/Hotel",
+                prop_title: "TÍTULO DE PROPIEDAD", rent_base: "Alquiler - Solo solar", with_house: "Con", house_single: "Casa", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecario", house_cost: "Coste Casa/Hotel",
                 buy_btn: "COMPRAR", pass_btn: "PASAR", pay_btn: "PAGAR ALQUILER", your_prop: "Tu Propiedad", build_btn: "CONSTRUIR", end_turn: "FIN DE TURNO", ok_btn: "OK", close: "CERRAR",
                 tray: "TU BANDEJA:", wallet: "TU CARTERA:", confirm_pay: "CONFIRMAR", cancel: "CANCELAR", pay_recv: "PAGAR Y CAMBIO", 
                 bankrupt_msg: "¡BANCARROTA PARA", val_msg: "Valor", var_rent: "El alquiler varía.", prop_of: "Propiedad de", tap_notes: "Toca los billetes", empty: "Vacío", pay_req: "Debes pagar:",
@@ -611,6 +616,7 @@
                 rent_1_utility: "Si posee 1 servicio, alquiler es 400x los dados.", rent_2_utility: "Si posee ambos, alquiler es 1000x los dados.", utility_title: "Servicio Público", station_title: "Estación",
                 card_cost: "VALOR DEL TÍTULO L. {0}", rent_double_rule: "Si un jugador posee todos los solares de un Grupo de Color, el alquiler de los solares sin edificar se duplica.",
                 house_cost_each: "Coste de cada Casa", hotel_cost_plus: "Coste de un Hotel L. {0} más 4 casas",
+                go_text: "SALIDA", parking_1: "PARKING", parking_2: "GRATUITO", jail_in: "EN LA", jail_jail: "CÁRCEL", jail_transit_1: "SÓLO", jail_transit_2: "VISITAS", goto_1: "VE A LA", goto_2: "CÁRCEL",
                 props: [
                     "", "RONDA DE<br>VALENCIA", "", "PLAZA<br>LAVAPIÉS", "IMPUESTO<br>RENTA", "ESTACIÓN<br>DE GOYA",
                     "GLORIETA<br>CUATRO CAMINOS", "", "AVENIDA<br>REINA VICTORIA", "CALLE<br>BRAVO MURILLO", "",
@@ -628,7 +634,7 @@
             'pt': {
                 monopoly: "MONOPÓLIO", setup_desc: "Insira os nomes e escolha o peão", btn_add_player: "+ Jogador", btn_start: "INICIAR JOGO", click_start: "CLIQUE PARA INICIAR", select_lang: "Selecione o Idioma",
                 chance_title: "PROBABILIDADE", chest_title: "IMPREVISTOS", player: "Jog.",
-                prop_title: "CONTRATTO", rent_base: "Aluguel - Só terreno", with_house: "Com", house_single: "Casa", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecário", house_cost: "Custo Casa/Hotel",
+                prop_title: "TÍTULO DE PROPRIEDADE", rent_base: "Aluguel - Só terreno", with_house: "Com", house_single: "Casa", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecário", house_cost: "Custo Casa/Hotel",
                 buy_btn: "COMPRAR", pass_btn: "PASSAR", pay_btn: "PAGAR ALUGUEL", your_prop: "Sua Propriedade", build_btn: "CONSTRUIR", end_turn: "FIM DE TURNO", ok_btn: "OK", close: "FECHAR",
                 tray: "SUA BANDEJA:", wallet: "SUA CARTEIRA:", confirm_pay: "CONFIRMAR", cancel: "CANCELAR", pay_recv: "PAGAR E RECEBER", 
                 bankrupt_msg: "FALÊNCIA PARA", val_msg: "Valor", var_rent: "O aluguel varia.", prop_of: "Propriedade de", tap_notes: "Toque nas notas", empty: "Vazio", pay_req: "Você deve pagar:",
@@ -654,6 +660,7 @@
                 rent_1_utility: "Com 1 serviço, aluguel é 400x os dados.", rent_2_utility: "Com ambos, aluguel é 1000x os dados.", utility_title: "Serviço", station_title: "Estação",
                 card_cost: "VALOR DO TÍTULO L. {0}", rent_double_rule: "Se um jogador possui todos os terrenos de um Grupo de Cor, o aluguel dos terrenos sem edifícios é duplicado.",
                 house_cost_each: "Custo de cada Casa", hotel_cost_plus: "Custo de um Hotel L. {0} mais 4 casas",
+                go_text: "PARTIDA", parking_1: "ESTACIONAMENTO", parking_2: "LIVRE", jail_in: "NA", jail_jail: "PRISÃO", jail_transit_1: "SÓ", jail_transit_2: "VISITAS", goto_1: "VÁ PARA A", goto_2: "PRISÃO",
                 props: [
                     "", "CAMPO<br>GRANDE", "", "RUA<br>MARIA PIA", "IMPOSTO<br>DE RENDA", "ESTAÇÃO<br>DO ROSSIO",
                     "PRAÇA<br>DA ALEGRIA", "", "RUA<br>JÚLIO DINIS", "RUA<br>AUGUSTA", "",
@@ -697,6 +704,7 @@
                 rent_1_utility: "Se si possiede 1 società, la rendita è 400x il lancio dei dadi.", rent_2_utility: "Se si possiedono entrambe, la rendita è 1000x il dadi.", utility_title: "Società", station_title: "Stazione",
                 card_cost: "Questo contratto vale L. {0}", rent_double_rule: "Se un giocatore possiede tutti i terreni dello stesso Gruppo di colore, la rendita del solo terreno viene raddoppiata.",
                 house_cost_each: "Costo di ogni Casa", hotel_cost_plus: "Costo di un Albergo L. {0} più 4 Case",
+                go_text: "VIA!", parking_1: "POSTEGGIO", parking_2: "GRATUITO", jail_in: "IN", jail_jail: "PRIGIONE", jail_transit_1: "TRANSITO", jail_transit_2: "TRANSITO", goto_1: "IN", goto_2: "PRIGIONE",
                 props: [
                     "", "VICOLO<br>CORTO", "", "VICOLO<br>STRETTO", "TASSA<br>PATRIMONIALE", "STAZIONE SUD",
                     "BASTIONI<br>GRAN SASSO", "", "VIALE<br>MONTEROSA", "VIALE<br>VESUVIO", "",
@@ -730,14 +738,60 @@
         const svgRing = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%; margin-top:10%;"><circle cx="50" cy="60" r="25" fill="none" stroke="#ffec19" stroke-width="12"/><circle cx="50" cy="60" r="25" fill="none" stroke="#111" stroke-width="2"/><polygon points="35,35 65,35 50,15" fill="#8ed6ef" stroke="#111" stroke-width="4"/><polygon points="35,35 65,35 50,45" fill="#fff" stroke="#111" stroke-width="4"/></svg>`;
         
         const getSvgGo = () => {
-            const texts = { 'en': 'GO', 'es': 'SALIDA', 'pt': 'PARTIDA', 'it': 'VIA!' };
+            const txt = t('go_text');
             return `<svg viewBox="0 0 100 100" style="width:100%; height:100%;">
-            <path d="M 90 50 L 50 10 L 50 35 L 10 35 L 10 65 L 50 65 L 50 90 Z" fill="#e62c26" stroke="#111" stroke-width="3" transform="translate(-5, 5)"/>
-            <text x="40" y="60" font-family="Montserrat, sans-serif" font-weight="900" font-size="20" fill="#fff" text-anchor="middle" transform="rotate(-45 40 60)">${texts[currentLang]}</text>
-        </svg>`; };
-        const svgJail = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);"><rect x="30" y="0" width="70" height="70" fill="#f5821c" stroke="#111" stroke-width="2"/><rect x="44" y="0" width="4" height="70" fill="#111"/><rect x="61" y="0" width="4" height="70" fill="#111"/><rect x="78" y="0" width="4" height="70" fill="#111"/><text x="13" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle" transform="rotate(-90 13 50)">TRANSITO</text><text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle">TRANSITO</text></svg>`;
-        const svgParking = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);"><g transform="rotate(45 50 50)"><g transform="translate(50, 48) scale(0.5)"><path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#e62c26" stroke="#111" stroke-width="4"/><rect x="-35" y="10" width="70" height="20" fill="#e62c26" stroke="#111" stroke-width="4" rx="4"/><circle cx="-18" cy="28" r="10" fill="#111" stroke="#fff" stroke-width="2"/><circle cx="18" cy="28" r="10" fill="#111" stroke="#fff" stroke-width="2"/></g></g></svg>`;
-        const svgPoliceman = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);"><g transform="rotate(135 50 50)"><g transform="translate(50, 50) scale(0.55)"><path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#111" stroke="#111" stroke-width="2"/><circle cx="0" cy="-25" r="18" fill="#f5821c" stroke="#111" stroke-width="3"/><path d="M -10 -20 L -25 -15" stroke="#111" stroke-width="3"/><rect x="-35" y="10" width="70" height="20" fill="#1e88e5" stroke="#111" stroke-width="4" rx="4"/></g></g></svg>`;
+                <g transform="rotate(-45 50 50)">
+                    <text x="50" y="55" font-family="Montserrat, sans-serif" font-weight="900" font-size="34" fill="#e21a22" text-anchor="middle" letter-spacing="2">${txt}</text>
+                    <path d="M 85 70 L 25 70 L 25 65 L 10 75 L 25 85 L 25 80 L 85 80 Z" fill="#e21a22"/>
+                </g>
+            </svg>`;
+        };
+
+        const getSvgJail = () => {
+            const txtIn = t('jail_in');
+            const txtJail = t('jail_jail');
+            const txtTransit1 = t('jail_transit_1');
+            const txtTransit2 = t('jail_transit_2');
+            return `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
+                <rect x="30" y="0" width="70" height="70" fill="#f5821c" stroke="#111" stroke-width="2"/>
+                <rect x="44" y="0" width="4" height="70" fill="#111"/>
+                <rect x="61" y="0" width="4" height="70" fill="#111"/>
+                <rect x="78" y="0" width="4" height="70" fill="#111"/>
+                <text x="65" y="25" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#111" text-anchor="middle">${txtIn}</text>
+                <text x="65" y="45" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#111" text-anchor="middle">${txtJail}</text>
+                <text x="15" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle" transform="rotate(-90 15 50)">${txtTransit1}</text>
+                <text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle">${txtTransit2}</text>
+            </svg>`;
+        };
+
+        const getSvgParking = () => {
+            const txt1 = t('parking_1');
+            const txt2 = t('parking_2');
+            return `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
+                <g transform="rotate(45 50 50)">
+                    <text x="50" y="22" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle">${txt1}</text>
+                    <circle cx="50" cy="50" r="20" fill="#1b73b8" stroke="#111" stroke-width="2"/>
+                    <text x="50" y="62" font-family="Montserrat, sans-serif" font-weight="900" font-size="32" fill="#fff" text-anchor="middle">P</text>
+                    <text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle">${txt2}</text>
+                </g>
+            </svg>`;
+        };
+
+        const getSvgPoliceman = () => {
+            const txt1 = t('goto_1');
+            const txt2 = t('goto_2');
+            return `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
+                <g transform="rotate(135 50 50)">
+                    <text x="50" y="25" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#111" text-anchor="middle">${txt1}</text>
+                    <!-- Cappello da Poliziotto stilizzato -->
+                    <path d="M 25 60 Q 50 30 75 60 L 85 65 L 15 65 Z" fill="#1b73b8" stroke="#111" stroke-width="2"/>
+                    <rect x="30" y="50" width="40" height="10" fill="#111"/>
+                    <circle cx="50" cy="45" r="5" fill="#ffec19"/>
+                    <text x="50" y="85" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#111" text-anchor="middle">${txt2}</text>
+                </g>
+            </svg>`;
+        };
+
         const svgProbBlue = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 50%; height: 50%;"><text x="50" y="80" font-size="90" font-family="'Times New Roman', serif" font-weight="bold" fill="#1b73b8" filter="drop-shadow(2px 2px 0px rgba(0,0,0,0.5))" text-anchor="middle">?</text></svg>`;
         const svgProbRed = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 50%; height: 50%;"><text x="50" y="80" font-size="90" font-family="'Times New Roman', serif" font-weight="bold" fill="#e62c26" filter="drop-shadow(2px 2px 0px rgba(0,0,0,0.5))" text-anchor="middle">?</text></svg>`;
         const svgChest = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 65%; height: 65%; margin-top:5%;"><path d="M 10 40 L 90 40 L 80 80 L 20 80 Z" fill="#1b73b8" stroke="#111" stroke-width="3"/><path d="M 10 40 Q 50 15 90 40" fill="#1b73b8" stroke="#111" stroke-width="3"/><rect x="42" y="35" width="16" height="10" fill="#ffec19" stroke="#111" stroke-width="2"/><circle cx="30" cy="60" r="5" fill="#ffec19"/><circle cx="50" cy="65" r="5" fill="#ffec19"/><circle cx="70" cy="60" r="5" fill="#ffec19"/></svg>`;
@@ -791,7 +845,7 @@
                 { id: 7, type: 'chest', name: t('chest_title'), svg: svgProbRed },
                 { id: 8, type: 'property', name: tProp(8), color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
                 { id: 9, type: 'property', name: tProp(9), color: C.LIGHTBLUE, price: 12000, rent: [800, 4000, 10000, 30000, 45000, 60000], houseCost: 5000 },
-                { id: 10, type: 'corner', name: tProp(10), svg: svgJail },
+                { id: 10, type: 'corner', name: tProp(10), svg: getSvgJail() },
                 { id: 11, type: 'property', name: tProp(11), color: C.ORANGE, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
                 { id: 12, type: 'utility', name: tProp(12), price: 15000, svg: svgBulb },
                 { id: 13, type: 'property', name: tProp(13), color: C.ORANGE, price: 14000, rent: [1000, 5000, 15000, 45000, 62500, 75000], houseCost: 10000 },
@@ -801,7 +855,7 @@
                 { id: 17, type: 'chance', name: t('chance_title'), svg: svgChest },
                 { id: 18, type: 'property', name: tProp(18), color: C.BROWN, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
                 { id: 19, type: 'property', name: tProp(19), color: C.BROWN, price: 20000, rent: [1600, 8000, 22000, 60000, 80000, 100000], houseCost: 10000 },
-                { id: 20, type: 'corner', name: tProp(20), svg: svgParking },
+                { id: 20, type: 'corner', name: tProp(20), svg: getSvgParking() },
                 { id: 21, type: 'property', name: tProp(21), color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
                 { id: 22, type: 'chest', name: t('chest_title'), svg: svgProbBlue },
                 { id: 23, type: 'property', name: tProp(23), color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
@@ -811,7 +865,7 @@
                 { id: 27, type: 'property', name: tProp(27), color: C.YELLOW, price: 26000, rent: [2200, 11000, 33000, 80000, 97500, 115000], houseCost: 15000 },
                 { id: 28, type: 'utility', name: tProp(28), price: 15000, svg: svgTap },
                 { id: 29, type: 'property', name: tProp(29), color: C.YELLOW, price: 28000, rent: [2400, 12000, 36000, 85000, 102500, 120000], houseCost: 15000 },
-                { id: 30, type: 'corner', name: tProp(30), svg: svgPoliceman },
+                { id: 30, type: 'corner', name: tProp(30), svg: getSvgPoliceman() },
                 { id: 31, type: 'property', name: tProp(31), color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
                 { id: 32, type: 'property', name: tProp(32), color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
                 { id: 33, type: 'chance', name: t('chance_title'), svg: svgChest },
@@ -847,9 +901,9 @@
                 else el.innerHTML = t(el.getAttribute('data-i18n')); 
             });
             const board = document.getElementById('board');
-            if (board && board.children.length > 1) { 
-                document.querySelectorAll('.cell').forEach(c => c.remove());
-                initBoard(); updateTokens();
+            if (board && board.children.length > 0) { 
+                initBoard();
+                setTimeout(updateTokens, 100);
             }
             
             const btn = document.getElementById('main-trade-btn');
@@ -863,7 +917,7 @@
                     <p><b>2. ${t('rules_move')}</b> ${t('rules_move_desc')}</p>
                     <p><b>3. ${t('rules_mortgage')}</b> ${t('rules_mortgage_desc')}</p>
                     <p><b>4. ${t('rules_trades')}</b> ${t('rules_trades_desc')}</p>
-                    <p><b>5. 💵 Payments:</b> ${currentLang === 'it' ? 'Tocca le banconote per versare.' : currentLang === 'es' ? 'Toca tus billetes para pagar.' : currentLang === 'pt' ? 'Toque nas notas para pagar.' : 'Tap your banknotes to complete transactions.'}</p>
+                    <p><b>5. 💵 Payments:</b> ${currentLang === 'it' ? 'Tocca le banconote per versare o ricevere il resto.' : currentLang === 'es' ? 'Toca tus billetes para pagar.' : currentLang === 'pt' ? 'Toque nas notas para pagar.' : 'Tap your banknotes to complete transactions.'}</p>
                 </div>`;
             document.getElementById('instructions-content').innerHTML = desc;
             document.getElementById('modal-instructions').style.display = 'flex';
@@ -906,10 +960,10 @@
                 } else if (data.type === 'corner') {
                     html += `${data.svg ? data.svg : `<div class="icon-large">${data.icon}</div>`}`;
                 } else if (data.type === 'tax') {
-                    html += `<div class="property-name" style="padding-top:15%; font-size: clamp(4px, 0.9vmin, 11px);">${data.name}</div>${data.svg ? data.svg : ``}`;
-                    if(data.cost) html += `<div class="property-price" style="font-size: clamp(3.5px, 0.75vmin, 9.5px);">${t('pay_tax')}<br>L. ${data.cost.toLocaleString('it-IT')}</div>`;
+                    html += `<div class="property-name" style="padding-top:15%;">${data.name}</div>${data.svg ? data.svg : ``}`;
+                    if(data.cost) html += `<div class="property-price">${t('pay_tax')}<br>L. ${data.cost.toLocaleString('it-IT')}</div>`;
                 } else {
-                    html += `<div class="property-name" style="padding-top:5%; height:30%; font-size: clamp(4px, 0.85vmin, 10px);">${data.name}</div>
+                    html += `<div class="property-name" style="padding-top:5%; height:30%;">${data.name}</div>
                              <div class="icon-large" style="display:flex; align-items:center; justify-content:center; flex-grow:1; width:100%; height:55%;">${data.svg ? data.svg : `<div class="icon-large">${data.icon}</div>`}</div>`;
                     if(data.price) html += `<div class="property-price">L. ${data.price}</div>`;
                 }
