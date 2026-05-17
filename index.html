@@ -167,6 +167,33 @@
         .deck-stack.bg-prob { background-color: var(--prob-color); }
         .deck-stack.bg-impr { background-color: var(--impr-color); }
 
+        #trade-btn-container {
+            position: absolute;
+            left: 50%;
+            bottom: 12vh;
+            transform: translateX(-50%);
+            z-index: 60;
+            display: none;
+            width: max-content;
+        }
+
+        #main-trade-btn {
+            padding: 12px 30px;
+            font-size: clamp(14px, 2vw, 18px);
+            border-radius: 40px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 0 2px rgba(255,255,255,0.4) inset;
+            border: 3px solid #fff;
+            letter-spacing: 1.5px;
+            animation: pulse-trade 2s infinite;
+            text-transform: uppercase;
+        }
+
+        @keyframes pulse-trade {
+            0% { box-shadow: 0 0 0 0 rgba(0, 166, 80, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 166, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 166, 80, 0); }
+        }
+
         .player-zone {
             position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center;
             background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.8)); padding: 1vmin; border-radius: 12px;
@@ -260,6 +287,10 @@
             .box-bottom-row { flex-direction: column-reverse; gap: 15px; align-items: center; padding: 2% 4%; }
             .box-blue-sq { width: 50%; padding: 10px 0; border-radius: 4px; }
             .box-red-stripe { position: relative; transform: none; top: 0; height: auto; padding: 12px 0; margin: 10px 0; }
+            
+            #trade-btn-container {
+                bottom: 22vh; /* Positioned above the player zones grid on mobile */
+            }
         }
         @media (max-height: 700px) {
             .modal-box { padding: 10px; max-height: 95dvh; }
@@ -319,11 +350,17 @@
     </div>
 
     <div id="toast-container"></div>
+    
     <div id="player-zones">
         <div id="pz-0" class="player-zone pz-bottom" style="display:none;" onclick="showPlayerProperties(0)"></div>
         <div id="pz-1" class="player-zone pz-left" style="display:none;" onclick="showPlayerProperties(1)"></div>
         <div id="pz-2" class="player-zone pz-top" style="display:none;" onclick="showPlayerProperties(2)"></div>
         <div id="pz-3" class="player-zone pz-right" style="display:none;" onclick="showPlayerProperties(3)"></div>
+    </div>
+
+    <!-- Move Trade Button Here -->
+    <div id="trade-btn-container">
+        <button id="main-trade-btn" class="btn btn-buy" onclick="openTradingPanel()" data-i18n="trade_btn">VENDI PROPRIETÀ</button>
     </div>
 
     <div id="app-container">
@@ -336,7 +373,6 @@
                     </div>
                     <div class="center-text-group">
                         <div class="center-title" data-i18n="monopoly">MONOPOLY</div>
-                        <button id="main-trade-btn" class="btn btn-buy shadow-lg px-4 py-2 mt-4 text-xs tracking-wider" onclick="openTradingPanel()" data-i18n="trade_btn" style="display: none; max-width: 150px; margin: 10px auto 0;">SCAMBIA / TRADE</button>
                     </div>
                     <div class="deck-slot imprevisti">
                         <span class="board-slot-text" style="bottom: 110%;" data-i18n="chest_title">COMMUNITY CHEST</span>
@@ -501,7 +537,7 @@
                 buy_title: "Purchase", rent_title: "Rent", build_title: "Construction", tax_title: "Tax", go_msg: "Passed GO! Collected 20,000", go_jail_btn: "GO TO JAIL!", pay_tax: "PAY",
                 my_props: "My Properties", build_not_allowed: "You need the full color set to build.", how_to_play: "HOW TO PLAY",
                 mortgage_btn: "Mortgage Property", unmortgage_btn: "Unmortgage", sell_building_btn: "Sell Building", mortgaged_label: "Mortgaged",
-                trade_btn: "Trade / Scambia", trade_title: "Trading Panel", trade_with: "Trade Partner:", give_cash: "You pay cash:", receive_cash: "You ask cash:", send_offer: "Send Proposal",
+                trade_btn: "SELL PROPERTY", trade_title: "Trading Panel", trade_with: "Trade Partner:", give_cash: "You pay cash:", receive_cash: "You ask cash:", send_offer: "Send Proposal",
                 jail_card_label: "Get Out of Jail Card", accept: "Accept Offer", reject: "Reject", no_buildings_trade: "Cannot trade! First sell houses of this color back to Bank.",
                 not_enough_cash_trade: "Insufficient funds to complete deal!", trade_success: "Trade Completed successfully!", trade_propose_title: "Trade Proposal Offered!",
                 trade_received_from: "proposed a deal:", trade_asks: "He asks:", trade_gives: "He offers:", pay_jail: "Pay L. 5.000 to get out", use_jail_card: "Use Free Jail Card", or_label: "OR",
@@ -539,7 +575,7 @@
                 buy_title: "Compra", rent_title: "Alquiler", build_title: "Construcción", tax_title: "Impuesto", go_msg: "¡Pasaste SALIDA! Cobras 20.000", go_jail_btn: "¡A LA CÁRCEL!", pay_tax: "PAGA",
                 my_props: "Mis Propiedades", build_not_allowed: "Necesitas el grupo de color completo para construir.", how_to_play: "CÓMO JUGAR",
                 mortgage_btn: "Hipotecar", unmortgage_btn: "Redimir Hipoteca", sell_building_btn: "Vender Edificio", mortgaged_label: "Hipotecado",
-                trade_btn: "Intercambio", trade_title: "Negociaciones", trade_with: "Negociar con:", give_cash: "Ofreces dinero:", receive_cash: "Pides dinero:", send_offer: "Enviar Propuesta",
+                trade_btn: "VENDER PROPIEDAD", trade_title: "Negociaciones", trade_with: "Negociar con:", give_cash: "Ofreces dinero:", receive_cash: "Pides dinero:", send_offer: "Enviar Propuesta",
                 jail_card_label: "Carta Libre de Cárcel", accept: "Aceptar", reject: "Rechazar", no_buildings_trade: "No se puede intercambiar! Vende los edificios al banco primero.",
                 not_enough_cash_trade: "¡Fondos insuficientes para el intercambio!", trade_success: "¡Intercambio completado con éxito!", trade_propose_title: "¡Propuesta de intercambio enviada!",
                 trade_received_from: "propuso un trato:", trade_asks: "Pide:", trade_gives: "Ofrece:", pay_jail: "Pagar L. 5.000 para salir", use_jail_card: "Usar Carta de Cárcel", or_label: "O",
@@ -577,12 +613,12 @@
                 buy_title: "Compra", rent_title: "Aluguel", build_title: "Construção", tax_title: "Imposto", go_msg: "Passou por PARTIDA! Receba 20.000", go_jail_btn: "VÁ PARA A PRISÃO!", pay_tax: "PAGUE",
                 my_props: "Minhas Propriedades", build_not_allowed: "Você precisa do grupo de cores completo para construir.", how_to_play: "COMO JOGAR",
                 mortgage_btn: "Hipoteca", unmortgage_btn: "Resgatar Hipoteca", sell_building_btn: "Vender Edifício", mortgaged_label: "Hipotecado",
-                trade_btn: "Negociar", trade_title: "Painel de Negociação", trade_with: "Negociar com:", give_cash: "Ofereces dinheiro:", receive_cash: "Pedes dinheiro:", send_offer: "Enviar Proposta",
+                trade_btn: "VENDER PROPRIEDADE", trade_title: "Painel de Negociação", trade_with: "Negociar com:", give_cash: "Ofereces dinheiro:", receive_cash: "Pedes dinheiro:", send_offer: "Enviar Proposta",
                 jail_card_label: "Carta Livre da Prisão", accept: "Aceitar", reject: "Rejeitar", no_buildings_trade: "Não é possível negociar! Primeiro venda os edifícios ao banco.",
                 not_enough_cash_trade: "Fundos insuficientes para a troca!", trade_success: "Troca concluída com sucesso!", trade_propose_title: "Proposta de troca enviada!",
                 trade_received_from: "propôs uma troca:", trade_asks: "Pede:", trade_gives: "Oferece:", pay_jail: "Pagar L. 5.000 para sair", use_jail_card: "Usar Carta de Prisão", or_label: "OU",
                 rules_goal: "🎯 Objetivo", rules_goal_desc: "Leve os oponentes à falência comprando e urbanizando propriedades.",
-                rules_move: "🎲 Mover e Prisão", rules_move_desc: "Toque nos dados no centro. Para sair da prisão pague L. 5.000, tire um duplo ou use uma carta livre.",
+                rules_move: "🎲 Movimento e Prisão", rules_move_desc: "Toque nos dados no centro. Para sair da prisão pague L. 5.000, tire um duplo ou use uma carta livre.",
                 rules_mortgage: "🏚️ Hipotecas e Banco", rules_mortgage_desc: "Hipoteque propriedades por 50% do valor. Não é possível vender terrenos ao banco. As casas são vendidas ao banco por metade do preço de forma uniforme.",
                 rules_trades: "🤝 Negociações", rules_trades_desc: "Negocie a qualquer momento entre turnos (propriedades, dinheiro, cartas). O grupo de cores deve estar livre de casas antes de trocar.",
                 props: [
@@ -615,7 +651,7 @@
                 buy_title: "Acquisto", rent_title: "Affitto", build_title: "Costruzione", tax_title: "Tassa", go_msg: "Passaggio dal VIA! Ritirate 20.000", go_jail_btn: "IN PRIGIONE!", pay_tax: "PAGARE",
                 my_props: "Le Mie Proprietà", build_not_allowed: "Devi possedere tutti i terreni di questo colore per costruire.", how_to_play: "COME GIOCARE",
                 mortgage_btn: "Ipoteca Terreno", unmortgage_btn: "Riscatta Ipoteca", sell_building_btn: "Vendi Edificio", mortgaged_label: "Ipotecato",
-                trade_btn: "Scambia / Trade", trade_title: "Trattativa di Scambio", trade_with: "Partner di Scambio:", give_cash: "Denaro che offri:", receive_cash: "Denaro che richiedi:", send_offer: "Proponi Scambio",
+                trade_btn: "VENDI PROPRIETÀ", trade_title: "Trattativa di Scambio", trade_with: "Partner di Scambio:", give_cash: "Denaro che offri:", receive_cash: "Denaro che richiedi:", send_offer: "Proponi Scambio",
                 jail_card_label: "Carta Uscita Gratis", accept: "Accetta Accordo", reject: "Rifiuta", no_buildings_trade: "Impossibile scambiare! Devi prima smantellare le case di questo colore alla Banca.",
                 not_enough_cash_trade: "Fondi insufficienti per completare l'accordo!", trade_success: "Scambio concluso con successo!", trade_propose_title: "Proposta di scambio inviata!",
                 trade_received_from: "ti offre un accordo:", trade_asks: "Richiede da te:", trade_gives: "Ti offre in cambio:", pay_jail: "Paga L. 5.000 alla Banca", use_jail_card: "Usa Carta Uscita Gratis", or_label: "OPPURE",
@@ -788,7 +824,7 @@
                     <p><b>1. 🎯 Scopo del Gioco:</b> Manda in bancarotta gli avversari acquistando terreni, stazioni e società, e sviluppandoli costruendo case e alberghi.</p>
                     <p><b>2. 🎲 Movimento:</b> Tocca i dadi al centro per lanciarli. In prigione puoi pagare L. 5.000, cercare un doppio o usare una carta speciale.</p>
                     <p><b>3. 🏚️ Ipoteca & Smantellamento:</b> Ipotechi terreni liberi al 50% del valore. I contratti non si vendono alla banca, ma puoi svincolarli (costo + 10%) o venderli ad altri. Case/Alberghi si vendono solo alla Banca a metà prezzo in modo uniforme.</p>
-                    <p><b>4. 🤝 Trattative tra Giocatori:</b> Puoi scambiare denaro, contratti e carte prigione in qualsiasi momento tra i turni (pulsante <b>SCAMBIA / TRADE</b>). Non puoi scambiare colori che hanno ancora edifici sopra.</p>
+                    <p><b>4. 🤝 Trattative tra Giocatori:</b> Puoi scambiare denaro, contratti e carte prigione in qualsiasi momento tra i turni (pulsante <b>VENDI PROPRIETÀ</b>). Non puoi scambiare colori che hanno ancora edifici sopra.</p>
                     <p><b>5. 💵 Pagamenti:</b> Tocca le banconote nel tuo portafoglio per spostarle sul vassoio e confermare il versamento.</p>
                 </div>`;
             } else if (currentLang === 'es') {
@@ -797,7 +833,7 @@
                     <p><b>1. 🎯 Objetivo:</b> Lleva a la bancarrota a tus rivales comprando solares, estaciones y servicios públicos, y edificando casas y hoteles.</p>
                     <p><b>2. 🎲 Movimiento:</b> Toca los dados para lanzar. En prisión, puedes pagar L. 5.000, sacar dobles o usar la carta libre.</p>
                     <p><b>3. 🏚️ Hipotecas y Edificios:</b> Hipoteca solares libres por el 50% de su valor. Los solares no se devuelven al banco. Vende casas al banco a mitad de precio de forma uniforme antes de hipotecar.</p>
-                    <p><b>4. 🤝 Negociaciones:</b> Intercambia propiedades, efectivo y cartas libre de cárcel con tus rivales entre turnos (botón <b>SCAMBIA / TRADE</b>). Los grupos con casas no se pueden negociar.</p>
+                    <p><b>4. 🤝 Negociaciones:</b> Intercambia propiedades, efectivo y cartas libre de cárcel con tus rivales entre turnos (botón <b>VENDER PROPIEDAD</b>). Los grupos con casas no se pueden negociar.</p>
                     <p><b>5. 💵 Pagos:</b> Toca tus billetes para moverlos a la bandeja de pago y confirmar la transacción.</p>
                 </div>`;
             } else if (currentLang === 'pt') {
@@ -806,7 +842,7 @@
                     <p><b>1. 🎯 Objetivo:</b> Leve os adversários à falência comprando propriedades, estações e serviços públicos, e construindo casas e hotéis.</p>
                     <p><b>2. 🎲 Movimento:</b> Toque nos dados para rolar. Na prisão, pode pagar L. 5.000, tirar um duplo ou usar a carta livre.</p>
                     <p><b>3. 🏚️ Hipotecas e Prédios:</b> Hipoteque terrenos por 50% do valor. Não é possível vender terrenos ao banco. As casas devem ser vendidas ao banco por metade do preço de forma uniforme.</p>
-                    <p><b>4. 🤝 Negociações:</b> Negocie propriedades, dinheiro e cartas livres entre turnos (botão <b>SCAMBIA / TRADE</b>). Grupos com edifícios não podem ser negociados.</p>
+                    <p><b>4. 🤝 Negociações:</b> Negocie propriedades, dinheiro e cartas livres entre turnos (botão <b>VENDER PROPRIEDADE</b>). Grupos com edifícios não podem ser negociados.</p>
                     <p><b>5. 💵 Pagamentos:</b> Toque nas notas para movê-las para a bandeja e confirmar o pagamento.</p>
                 </div>`;
             } else {
@@ -815,7 +851,7 @@
                     <p><b>1. 🎯 Goal:</b> Bankrupt your opponents by purchasing, renting, and developing properties with houses and hotels.</p>
                     <p><b>2. 🎲 Movement & Jail:</b> Tap the dice to roll. While in jail, you can pay L. 5,000, attempt to roll doubles, or use a Get Out of Jail Free card.</p>
                     <p><b>3. 🏚️ Mortgages & Bank:</b> Mortgage undeveloped sites for 50% value. Properties cannot be sold back to the bank. Sell buildings back to the Bank at 50% value evenly.</p>
-                    <p><b>4. 🤝 Player Trading:</b> Propose trades (sited properties, cash, jail cards) anytime between turns using the <b>SCAMBIA / TRADE</b> button. You cannot trade properties belonging to groups with buildings.</p>
+                    <p><b>4. 🤝 Player Trading:</b> Propose trades (sited properties, cash, jail cards) anytime between turns using the <b>SELL PROPERTY</b> button. You cannot trade properties belonging to groups with buildings.</p>
                     <p><b>5. 💵 Payments:</b> Tap your banknotes to move them to the payment tray and complete transactions.</p>
                 </div>`;
             }
@@ -948,7 +984,7 @@
                 document.getElementById('board-area').appendChild(tkn);
             });
             updateTokens(); updateDashboard(); document.getElementById('dice-area').classList.add('dice-ready');
-            document.getElementById('main-trade-btn').style.display = 'block';
+            document.getElementById('trade-btn-container').style.display = 'block';
         }
 
         function updateDashboard() {
