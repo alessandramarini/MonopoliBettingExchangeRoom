@@ -199,6 +199,10 @@
             background: linear-gradient(135deg, rgba(40,0,0,0.85), rgba(150,0,0,0.95)); border-color: #ed1b24;
             box-shadow: 0 0 25px rgba(237, 27, 36, 0.7), inset 0 0 15px rgba(0,0,0,0.8);
         }
+        .player-zone.bankrupt {
+            opacity: 0.3; filter: grayscale(100%); pointer-events: none;
+        }
+        
         .pz-bottom { bottom: 1vmin; left: 50%; transform: translateX(-50%); width: clamp(220px, 32vw, 420px); }
         .pz-left   { left: 1vmin; top: 50%; transform: translateY(-50%); width: clamp(160px, 15vw, 220px); }
         .pz-top    { top: 1vmin; left: 50%; transform: translateX(-50%); width: clamp(220px, 32vw, 420px); }
@@ -249,14 +253,16 @@
         .anim-jump { animation: jump 1.2s ease-out forwards; }
         @keyframes jump { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-15vmin) scale(1.3) rotateX(360deg) rotateZ(180deg); } 70% { transform: translateY(-3vmin) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
 
-        .token { position: absolute; z-index: 30; width: clamp(22px, 5vmin, 45px); height: clamp(22px, 5vmin, 45px); transition: all 0.4s linear; transform: translate(-50%, -50%); pointer-events: none; }
+        .token { position: absolute; z-index: 30; width: clamp(24px, 5.5vmin, 50px); height: clamp(24px, 5.5vmin, 50px); transition: all 0.4s linear; transform: translate(-50%, -50%); pointer-events: none; }
         .token-svg { width: 100%; height: 100%; filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.7)); }
         
-        .house { width: clamp(5px, 1.2vmin, 14px); height: clamp(5px, 1.2vmin, 14px); background-color: #00a650; margin: 1px; box-shadow: inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); border-radius:1px;}
-        .hotel { width: clamp(7px, 1.6vmin, 18px); height: clamp(7px, 1.6vmin, 18px); background-color: #ed1b24; margin: 1px; box-shadow: inset -3px -3px 0px rgba(0,0,0,0.3), inset 3px 3px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); border-radius:2px;}
-        .buildings-container { display: flex; flex-wrap: wrap; justify-content: center; position: absolute; bottom: 2%; width: 100%; z-index: 3;}
-        .has-color-bar .buildings-container { top: 2%; bottom: auto; }
-
+        /* CASETTE E ALBERGHI PERFETTAMENTE OTTIMIZZATI */
+        .buildings-container { display: flex; flex-wrap: wrap; justify-content: center; position: absolute; bottom: 2%; width: 100%; z-index: 3; gap: 2px;}
+        .has-color-bar .buildings-container { top: 1%; bottom: auto; height: 20%; align-items: flex-end; }
+        
+        .house { width: clamp(6px, 1.2vmin, 12px); height: clamp(6px, 1.2vmin, 12px); background-color: #00a650; box-shadow: inset -1px -1px 0px rgba(0,0,0,0.3), inset 1px 1px 0px rgba(255,255,255,0.4), 1px 1px 2px rgba(0,0,0,0.5); border-radius:1px;}
+        .hotel { width: clamp(8px, 1.6vmin, 16px); height: clamp(8px, 1.6vmin, 16px); background-color: #ed1b24; box-shadow: inset -1px -1px 0px rgba(0,0,0,0.3), inset 1px 1px 0px rgba(255,255,255,0.4), 1px 1px 2px rgba(0,0,0,0.5); border-radius:2px;}
+        
         /* --- MODALI OTTIMIZZATE (Zero Scroll Layout) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100dvw; height: 100dvh; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 200; }
         .modal-box-wrapper { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; width: 100%; display: flex; justify-content: center; }
@@ -480,7 +486,8 @@
                 <div class="text-left font-bold text-sm text-gray-500 mb-1" data-i18n="wallet"></div>
                 <div id="pay-wallet" class="payment-zone" style="background: rgba(0,166,80,0.05); border-color: #00a650;"></div>
                 <div class="flex gap-2 mt-2">
-                    <button class="btn" onclick="cancelPayment()" data-i18n="cancel"></button>
+                    <!-- Tasto Annulla Nascondibile tramite JS a seconda dell'obbligatorietà del pagamento -->
+                    <button id="btn-cancel-pay" class="btn" onclick="cancelPayment()" data-i18n="cancel"></button>
                     <button id="btn-confirm-pay" class="btn btn-buy" disabled onclick="confirmPayment()" data-i18n="confirm_pay"></button>
                 </div>
             </div>
@@ -488,7 +495,7 @@
     </div>
 
     <script>
-        // Funzione di Sicurezza XSS (Previene attacchi Hacker sui nomi)
+        // Sicurezza XSS (Sanitizzazione Input Utente)
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/[&<>'"]/g, 
@@ -502,14 +509,14 @@
             );
         }
 
-        // DIZIONARIO TRADUZIONI PULITO E DINAMICO
+        // DIZIONARIO TRADUZIONI (Bancarotta tolta dal tasto Cancel)
         const i18n = {
             'en': {
                 monopoly: "MONOPOLY", setup_desc: "Enter names and choose token", btn_add_player: "+ Player", btn_start: "START GAME", click_start: "CLICK TO START",
                 chance_title: "CHANCE", chest_title: "COMMUNITY CHEST", player: "Player",
                 prop_title: "Title Deed", rent_base: "Rent - Site only", with_house: "With", houses: "Houses", hotel: "HOTEL", mortgage: "Mortgage Value", house_cost: "House/Hotel Cost",
                 buy_btn: "BUY", pass_btn: "PASS", pay_btn: "PAY RENT", your_prop: "Your Property", build_btn: "BUILD", end_turn: "END TURN", ok_btn: "OK",
-                tray: "YOUR TRAY:", wallet: "YOUR WALLET:", confirm_pay: "CONFIRM", cancel: "CANCEL / BANKRUPT", pay_recv: "PAY & GET CHANGE", 
+                tray: "YOUR TRAY:", wallet: "YOUR WALLET:", confirm_pay: "CONFIRM", cancel: "CANCEL", pay_recv: "PAY & GET CHANGE", 
                 bankrupt_msg: "BANKRUPTCY FOR", val_msg: "Value", var_rent: "Rent varies based on ownership.", prop_of: "Property of", tap_notes: "Tap the notes", empty: "Empty", pay_req: "You must pay:",
                 buy_title: "Purchase", rent_title: "Rent", build_title: "Construction", tax_title: "Tax", go_msg: "Passed GO! Collected 20,000", go_jail_btn: "GO TO JAIL!", pay_tax: "PAY",
                 props: [
@@ -532,7 +539,7 @@
                 chance_title: "SUERTE", chest_title: "CAJA DE COMUNIDAD", player: "Jug.",
                 prop_title: "Título de Propiedad", rent_base: "Alquiler - Solo solar", with_house: "Con", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecario", house_cost: "Coste Casa/Hotel",
                 buy_btn: "COMPRAR", pass_btn: "PASAR", pay_btn: "PAGAR ALQUILER", your_prop: "Tu Propiedad", build_btn: "CONSTRUIR", end_turn: "FIN DE TURNO", ok_btn: "OK",
-                tray: "TU BANDEJA:", wallet: "TU CARTERA:", confirm_pay: "CONFIRMAR", cancel: "CANCELAR / BANCARROTA", pay_recv: "PAGAR Y CAMBIO", 
+                tray: "TU BANDEJA:", wallet: "TU CARTERA:", confirm_pay: "CONFIRMAR", cancel: "CANCELAR", pay_recv: "PAGAR Y CAMBIO", 
                 bankrupt_msg: "¡BANCARROTA PARA", val_msg: "Valor", var_rent: "El alquiler varía según propiedad.", prop_of: "Propiedad de", tap_notes: "Toca los billetes", empty: "Vacío", pay_req: "Debes pagar:",
                 buy_title: "Compra", rent_title: "Alquiler", build_title: "Construcción", tax_title: "Impuesto", go_msg: "¡Pasaste SALIDA! Cobras 20.000", go_jail_btn: "¡A LA CÁRCEL!", pay_tax: "PAGA",
                 props: [
@@ -555,7 +562,7 @@
                 chance_title: "PROBABILIDADE", chest_title: "IMPREVISTOS", player: "Jog.",
                 prop_title: "Título de Propriedade", rent_base: "Aluguel - Só terreno", with_house: "Com", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecário", house_cost: "Custo Casa/Hotel",
                 buy_btn: "COMPRAR", pass_btn: "PASSAR", pay_btn: "PAGAR ALUGUEL", your_prop: "Sua Propriedade", build_btn: "CONSTRUIR", end_turn: "FIM DE TURNO", ok_btn: "OK",
-                tray: "SUA BANDEJA:", wallet: "SUA CARTEIRA:", confirm_pay: "CONFIRMAR", cancel: "CANCELAR / FALÊNCIA", pay_recv: "PAGAR E RECEBER", 
+                tray: "SUA BANDEJA:", wallet: "SUA CARTEIRA:", confirm_pay: "CONFIRMAR", cancel: "CANCELAR", pay_recv: "PAGAR E RECEBER", 
                 bankrupt_msg: "FALÊNCIA PARA", val_msg: "Valor", var_rent: "O aluguel varia de acordo com a propriedade.", prop_of: "Propriedade de", tap_notes: "Toque nas notas", empty: "Vazio", pay_req: "Você deve pagar:",
                 buy_title: "Compra", rent_title: "Aluguel", build_title: "Construção", tax_title: "Imposto", go_msg: "Passou por PARTIDA! Receba 20.000", go_jail_btn: "VÁ PARA A PRISÃO!", pay_tax: "PAGUE",
                 props: [
@@ -578,8 +585,8 @@
                 chance_title: "PROBABILITÀ", chest_title: "IMPREVISTI", player: "Gioc.",
                 prop_title: "Titolo di Proprietà", rent_base: "Rendita - Solo terreno", with_house: "Con", houses: "Case", hotel: "ALBERGO", mortgage: "Valore ipotecario", house_cost: "Costo Casa/Alb.",
                 buy_btn: "COMPRA", pass_btn: "PASSA", pay_btn: "PAGA AFFITTO", your_prop: "Tua Proprietà", build_btn: "COSTRUISCI", end_turn: "FINE TURNO", ok_btn: "OK",
-                tray: "IL TUO VASSOIO:", wallet: "IL TUO PORTAFOGLIO:", confirm_pay: "CONFERMA", cancel: "ANNULLA / BANCAROTTA", pay_recv: "PAGA E RICEVI RESTO", 
-                bankrupt_msg: "BANCAROTTA PER", val_msg: "Valor", var_rent: "Rendita variabile in base ai possedimenti.", prop_of: "Proprietà di", tap_notes: "Tocca le banconote", empty: "Vuoto", pay_req: "Devi versare:",
+                tray: "IL TUO VASSOIO:", wallet: "IL TUO PORTAFOGLIO:", confirm_pay: "CONFERMA", cancel: "ANNULLA", pay_recv: "PAGA E RICEVI RESTO", 
+                bankrupt_msg: "BANCAROTTA PER", val_msg: "Valore", var_rent: "Rendita variabile in base ai possedimenti.", prop_of: "Proprietà di", tap_notes: "Tocca le banconote", empty: "Vuoto", pay_req: "Devi versare:",
                 buy_title: "Acquisto", rent_title: "Affitto", build_title: "Costruzione", tax_title: "Tassa", go_msg: "Passaggio dal VIA! Ritirate 20.000", go_jail_btn: "IN PRIGIONE!", pay_tax: "PAGARE",
                 props: [
                     "", "VICOLO<br>CORTO", "", "VICOLO<br>STRETTO", "TASSA<br>PATRIMONIALE", "STAZIONE SUD",
@@ -610,7 +617,7 @@
         const svgTap = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 20 40 L 40 40 L 40 60 L 60 60 L 60 30 L 20 30 Z" fill="#8ed6ef" stroke="#111" stroke-width="5"/><rect x="10" y="25" width="10" height="20" fill="#111"/><path d="M 55 60 C 55 80 65 90 60 90 C 55 90 65 80 65 60 Z" fill="#8ed6ef" stroke="#111" stroke-width="3"/></svg>`;
         const svgRing = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%; margin-top:10%;"><circle cx="50" cy="60" r="25" fill="none" stroke="#ffec19" stroke-width="12"/><circle cx="50" cy="60" r="25" fill="none" stroke="#111" stroke-width="2"/><polygon points="35,35 65,35 50,15" fill="#8ed6ef" stroke="#111" stroke-width="4"/><polygon points="35,35 65,35 50,45" fill="#fff" stroke="#111" stroke-width="4"/></svg>`;
         
-        // ANGOLI RIVISITATI SVG (RIPRODUZIONE MANIACALE DELLE PROPORZIONI, NO OVERFLOW)
+        // ANGOLI RIVISITATI SVG
         const svgGo = `<svg viewBox="0 0 100 100" style="width:100%; height:100%;">
             <path d="M 90 50 L 50 10 L 50 35 L 10 35 L 10 65 L 50 65 L 50 90 Z" fill="#e62c26" stroke="#111" stroke-width="3" transform="translate(-5, 5)"/>
             <text x="40" y="60" font-family="Montserrat, sans-serif" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" transform="rotate(-45 40 60)">VIA!</text>
@@ -621,18 +628,14 @@
         </svg>`;
         
         const svgJail = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
-            <!-- Cella Arancione in alto a destra -->
             <rect x="30" y="0" width="70" height="70" fill="#f5821c" stroke="#111" stroke-width="2"/>
-            <!-- Sbarre nere -->
             <rect x="44" y="0" width="4" height="70" fill="#111"/>
             <rect x="61" y="0" width="4" height="70" fill="#111"/>
             <rect x="78" y="0" width="4" height="70" fill="#111"/>
             
-            <!-- Scritte TRANSITO esterne, sicure e ben distanziate per massima leggibilità -->
             <text x="13" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle" transform="rotate(-90 13 50)">TRANSITO</text>
             <text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="9" fill="#111" text-anchor="middle">TRANSITO</text>
             
-            <!-- Scritte IN e PRIGIONE interne alla cella arancione -->
             <text x="21" y="35" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle" transform="rotate(-90 21 35)">IN</text>
             <text x="65" y="80" font-family="Montserrat, sans-serif" font-weight="900" font-size="8.5" fill="#111" text-anchor="middle">PRIGIONE</text>
         </svg>`;
@@ -640,7 +643,6 @@
         const svgParking = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
             <g transform="rotate(45 50 50)">
                 <text x="50" y="24" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle">PARCHEGGIO</text>
-                <!-- Macchinina rossa vettoriale ben distanziata dai margini -->
                 <g transform="translate(50, 48) scale(0.5)">
                     <path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#e62c26" stroke="#111" stroke-width="4"/>
                     <rect x="-35" y="10" width="70" height="20" fill="#e62c26" stroke="#111" stroke-width="4" rx="4"/>
@@ -654,7 +656,6 @@
         const svgPoliceman = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
             <g transform="rotate(135 50 50)">
                 <text x="50" y="22" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">IN</text>
-                <!-- Poliziotto ridimensionato per non toccare i margini -->
                 <g transform="translate(50, 50) scale(0.55)">
                     <path d="M -30 15 L -20 -10 L 20 -10 L 30 15 Z" fill="#111" stroke="#111" stroke-width="2"/>
                     <circle cx="0" cy="-25" r="18" fill="#f5821c" stroke="#111" stroke-width="3"/>
@@ -730,17 +731,16 @@
             return notes;
         }
 
-        // --- ORDINE ESATTO TABELLONE ITALIANO (CON SCRITTE NEI COMPARTI IMPREVISTI/PROBABILITÀ) ---
         function getBoardData() {
             return [
                 { id: 0, type: 'corner', name: tProp(0), svg: svgGo },
                 { id: 1, type: 'property', name: tProp(1), color: C.BROWN, price: 6000, rent: [200, 1000, 3000, 9000, 16000, 25000], houseCost: 5000 },
-                { id: 2, type: 'chance', name: t('chance_title'), svg: svgChest }, /* Probabilità = Scrigno */
+                { id: 2, type: 'chance', name: t('chance_title'), svg: svgChest },
                 { id: 3, type: 'property', name: tProp(3), color: C.BROWN, price: 6000, rent: [400, 2000, 6000, 18000, 32000, 45000], houseCost: 5000 },
                 { id: 4, type: 'tax', name: tProp(4), cost: 20000, icon: "" },
                 { id: 5, type: 'station', name: tProp(5), price: 20000, svg: svgTrain },
                 { id: 6, type: 'property', name: tProp(6), color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
-                { id: 7, type: 'chest', name: t('chest_title'), svg: svgProbRed }, /* Imprevisti = ? Rosso */
+                { id: 7, type: 'chest', name: t('chest_title'), svg: svgProbRed },
                 { id: 8, type: 'property', name: tProp(8), color: C.LIGHTBLUE, price: 10000, rent: [600, 3000, 9000, 27000, 40000, 55000], houseCost: 5000 },
                 { id: 9, type: 'property', name: tProp(9), color: C.LIGHTBLUE, price: 12000, rent: [800, 4000, 10000, 30000, 45000, 60000], houseCost: 5000 },
                 { id: 10, type: 'corner', name: tProp(10), svg: svgJail },
@@ -750,12 +750,12 @@
                 { id: 14, type: 'property', name: tProp(14), color: C.PINK, price: 16000, rent: [1200, 6000, 18000, 50000, 70000, 90000], houseCost: 10000 },
                 { id: 15, type: 'station', name: tProp(15), price: 20000, svg: svgTrain },
                 { id: 16, type: 'property', name: tProp(16), color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
-                { id: 17, type: 'chance', name: t('chance_title'), svg: svgChest }, /* Probabilità = Scrigno */
+                { id: 17, type: 'chance', name: t('chance_title'), svg: svgChest },
                 { id: 18, type: 'property', name: tProp(18), color: C.ORANGE, price: 18000, rent: [1400, 7000, 20000, 55000, 75000, 95000], houseCost: 10000 },
                 { id: 19, type: 'property', name: tProp(19), color: C.ORANGE, price: 20000, rent: [1600, 8000, 22000, 60000, 80000, 100000], houseCost: 10000 },
                 { id: 20, type: 'corner', name: tProp(20), svg: svgParking },
                 { id: 21, type: 'property', name: tProp(21), color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
-                { id: 22, type: 'chest', name: t('chest_title'), svg: svgProbBlue }, /* Imprevisti = ? Blu */
+                { id: 22, type: 'chest', name: t('chest_title'), svg: svgProbBlue },
                 { id: 23, type: 'property', name: tProp(23), color: C.RED, price: 22000, rent: [1800, 9000, 25000, 70000, 87500, 105000], houseCost: 15000 },
                 { id: 24, type: 'property', name: tProp(24), color: C.RED, price: 24000, rent: [2000, 10000, 30000, 75000, 92500, 110000], houseCost: 15000 },
                 { id: 25, type: 'station', name: tProp(25), price: 20000, svg: svgTrain },
@@ -766,10 +766,10 @@
                 { id: 30, type: 'corner', name: tProp(30), svg: svgPoliceman },
                 { id: 31, type: 'property', name: tProp(31), color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
                 { id: 32, type: 'property', name: tProp(32), color: C.GREEN, price: 30000, rent: [2600, 13000, 39000, 90000, 110000, 127500], houseCost: 20000 },
-                { id: 33, type: 'chance', name: t('chance_title'), svg: svgChest }, /* Probabilità = Scrigno */
+                { id: 33, type: 'chance', name: t('chance_title'), svg: svgChest },
                 { id: 34, type: 'property', name: tProp(34), color: C.GREEN, price: 32000, rent: [2800, 15000, 45000, 100000, 120000, 140000], houseCost: 20000 },
                 { id: 35, type: 'station', name: tProp(35), price: 20000, svg: svgTrain },
-                { id: 36, type: 'chest', name: t('chest_title'), svg: svgProbRed }, /* Imprevisti = ? Rosso */
+                { id: 36, type: 'chest', name: t('chest_title'), svg: svgProbRed },
                 { id: 37, type: 'property', name: tProp(37), color: C.DARKBLUE, price: 35000, rent: [3500, 17500, 50000, 110000, 130000, 150000], houseCost: 20000 },
                 { id: 38, type: 'tax', name: tProp(38), cost: 10000, svg: svgRing },
                 { id: 39, type: 'property', name: tProp(39), color: C.DARKBLUE, price: 40000, rent: [5000, 20000, 60000, 140000, 170000, 200000], houseCost: 20000 }
@@ -820,7 +820,7 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = msg;
             container.appendChild(toast);
-            setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
+            setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4000);
         }
 
         function initBoard() {
@@ -842,7 +842,6 @@
                     html += `<div class="property-name" style="padding-top:15%">${data.name}</div>${data.svg ? data.svg : ``}`;
                     if(data.cost) html += `<div class="property-price" style="font-size: clamp(3.5px, 0.75vmin, 9.5px);">${t('pay_tax')}<br>L. ${data.cost.toLocaleString('it-IT')}</div>`;
                 } else {
-                    // Integrazione perfetta di testo Tradotto + Icona sotto per Imprevisti/Probabilità
                     html += `<div class="property-name" style="padding-top:5%; height:30%; font-size: clamp(4px, 0.85vmin, 10px);">${data.name}</div>
                              <div class="icon-large" style="display:flex; align-items:center; justify-content:center; flex-grow:1; width:100%; height:55%;">${data.svg ? data.svg : `<div class="icon-large">${data.icon}</div>`}</div>`;
                     if(data.price) html += `<div class="property-price">L. ${data.price}</div>`;
@@ -929,6 +928,7 @@
             if (gameState.players.length === 0) return;
             const parentRect = document.getElementById('board-area').getBoundingClientRect();
             gameState.players.forEach(p => {
+                if(p.balance < 0) return; // Nascondi token se in bancarotta
                 const cell = document.getElementById(`cell-${p.pos}`); if(!cell) return;
                 const rect = cell.getBoundingClientRect();
                 const offsetX = (p.id % 2 === 0 ? -6 : 6); const offsetY = (p.id > 2 ? -6 : 6);
@@ -940,7 +940,6 @@
         window.addEventListener('resize', () => setTimeout(updateTokens, 100));
 
         function orientBoard() {
-            // Rotazione disabilitata: l'interfaccia resta stabile e leggibile su PC e Mobile
             document.querySelectorAll('.player-zone').forEach((z, i) => z.classList.toggle('active', i === gameState.currentPlayerIdx));
         }
 
@@ -953,7 +952,7 @@
             const p = gameState.players[gameState.currentPlayerIdx];
             if(p.inJail) {
                 p.jailTurns++;
-                if(p.jailTurns > 3) { p.inJail = false; p.jailTurns = 0; payBankActive(5000); return; } 
+                if(p.jailTurns > 3) { p.inJail = false; p.jailTurns = 0; openPayment(5000, t('go_jail_btn'), () => { p.balance -= 5000; updateDashboard(); endTurn(); }, true); return; } 
                 else { setTimeout(endTurn, 1000); return; }
             }
 
@@ -1062,20 +1061,20 @@
                 p.balance -= cell.price; gameState.properties[cellId].ownerId = p.id;
                 document.getElementById(`cell-${cellId}`).style.border = `2px solid ${['#ed1b24','#00a650','#0054a6','#f57c00'][p.id%4]}`;
                 updateDashboard(); endTurn();
-            });
+            }, false); // opzionale
         }
         function payRent(cellId, amount) {
             const p = gameState.players[gameState.currentPlayerIdx]; const ownerId = gameState.properties[cellId].ownerId;
             const cell = getBoardData().find(c => c.id === cellId);
             openPayment(amount, `${t('rent_title')} - ${cell.name.replace(/<br>/g, ' ')}`, () => {
                 p.balance -= amount; gameState.players.find(x => x.id === ownerId).balance += amount; updateDashboard(); endTurn();
-            });
+            }, true); // Obbligatorio
         }
         function buildHouse(cellId) {
             const p = gameState.players[gameState.currentPlayerIdx]; const cell = getBoardData().find(c => c.id === cellId);
             openPayment(cell.houseCost, `${t('build_title')} - ${cell.name.replace(/<br>/g, ' ')}`, () => {
                 p.balance -= cell.houseCost; gameState.properties[cellId].level++; renderBuildings(cellId); updateDashboard(); endTurn();
-            });
+            }, false); // opzionale
         }
         function renderBuildings(cellId) {
             const bld = document.getElementById(`bld-${cellId}`); if(!bld) return;
@@ -1092,22 +1091,36 @@
             else if(txt.includes('prigione') || txt.includes('jail') || txt.includes('cárcel') || txt.includes('prisão')) goToJail();
             else { p.pos = 0; updateTokens(); endTurn(); }
         }
-        function payBankActive(amount) { openPayment(amount, t('tax_title'), () => { gameState.players[gameState.currentPlayerIdx].balance -= amount; updateDashboard(); endTurn(); }); }
+        
+        function payBankActive(amount) { 
+            openPayment(amount, t('tax_title'), () => { 
+                gameState.players[gameState.currentPlayerIdx].balance -= amount; updateDashboard(); endTurn(); 
+            }, true); // Obbligatorio
+        }
+        
         function receiveMoney(player, amount) { player.balance += amount; updateDashboard(); }
         function goToJail() { closeModal(); const p = gameState.players[gameState.currentPlayerIdx]; p.pos = 10; p.inJail = true; updateTokens(); endTurn(); }
 
-        let currentPayment = { amount: 0, callback: null, traySum: 0, wallet: [], tray: [] };
+        let currentPayment = { amount: 0, callback: null, traySum: 0, wallet: [], tray: [], isMandatory: false };
 
-        function openPayment(amount, reason, callback) {
+        function openPayment(amount, reason, callback, isMandatory = false) {
             const p = gameState.players[gameState.currentPlayerIdx];
-            if (p.balance < amount) { showToast(`⚠️ ${t('bankrupt_msg')} ${p.name}!`); p.balance = -1; endTurn(); return; }
+            
+            // Logica Bancarotta
+            if (p.balance < amount) { 
+                showToast(`⚠️ ${t('bankrupt_msg')} ${p.name}!`); 
+                p.balance = -1; // Flag Bancarotta
+                endTurn(); 
+                return; 
+            }
 
             closeModal();
             const pw = document.getElementById('payment-wrapper');
             if(pw) pw.style.transform = `scale(1) rotate(0deg)`;
 
-            currentPayment = { amount: amount, callback: callback, traySum: 0, wallet: getNotesArray(p.balance), tray: [] };
-            document.getElementById('pay-title').innerText = reason; renderPaymentUI();
+            currentPayment = { amount: amount, callback: callback, traySum: 0, wallet: getNotesArray(p.balance), tray: [], isMandatory: isMandatory };
+            document.getElementById('pay-title').innerText = reason; 
+            renderPaymentUI();
             document.getElementById('modal-payment').style.display = 'flex';
         }
 
@@ -1127,6 +1140,7 @@
 
             const sumEl = document.getElementById('tray-sum'); sumEl.innerText = `L. ${currentPayment.traySum.toLocaleString('it-IT')}`;
             const btnConfirm = document.getElementById('btn-confirm-pay');
+            const btnCancel = document.getElementById('btn-cancel-pay');
             
             if (currentPayment.traySum >= currentPayment.amount) {
                 sumEl.className = "float-right text-green-600 font-bold text-lg"; btnConfirm.disabled = false;
@@ -1134,6 +1148,13 @@
                 btnConfirm.innerText = change > 0 ? `${t('pay_recv')} (L. ${change.toLocaleString()})` : t('confirm_pay');
             } else {
                 sumEl.className = "float-right text-red-600 font-bold text-lg"; btnConfirm.disabled = true; btnConfirm.innerText = t('confirm_pay');
+            }
+
+            // Nascondi "Annulla" se il pagamento è obbligatorio
+            if(currentPayment.isMandatory) {
+                btnCancel.style.display = 'none';
+            } else {
+                btnCancel.style.display = 'inline-flex';
             }
         }
 
@@ -1160,9 +1181,43 @@
 
         function endTurn() {
             closeModal(); gameState.isMoving = false;
-            if(gameState.players[gameState.currentPlayerIdx].balance < 0) showToast(`⚠️ ${t('bankrupt_msg')} ${gameState.players[gameState.currentPlayerIdx].name}!`);
-            gameState.currentPlayerIdx = (gameState.currentPlayerIdx + 1) % gameState.players.length;
-            orientBoard(); updateDashboard(); setTimeout(() => document.getElementById('dice-area').classList.add('dice-ready'), 500);
+            
+            // Gestione del fallimento (Rilascia Proprietà e Nasconde UI giocatore)
+            const currP = gameState.players[gameState.currentPlayerIdx];
+            if(currP.balance < 0) {
+                Object.keys(gameState.properties).forEach(k => {
+                    if(gameState.properties[k].ownerId === currP.id) {
+                        gameState.properties[k].ownerId = null;
+                        gameState.properties[k].level = 0;
+                        const cellEl = document.getElementById(`cell-${k}`);
+                        if(cellEl) cellEl.style.border = '';
+                        renderBuildings(k);
+                    }
+                });
+                const tokenEl = document.getElementById(`token-${currP.id}`);
+                if(tokenEl) tokenEl.style.display = 'none';
+                const pzEl = document.getElementById(`pz-${gameState.currentPlayerIdx}`);
+                if(pzEl) pzEl.classList.add('bankrupt');
+            }
+
+            // Passa al prossimo giocatore attivo
+            let nextIdx = (gameState.currentPlayerIdx + 1) % gameState.players.length;
+            let loops = 0;
+            while(gameState.players[nextIdx].balance < 0 && loops < gameState.players.length) {
+                nextIdx = (nextIdx + 1) % gameState.players.length;
+                loops++;
+            }
+            
+            // Se tutti gli altri sono in bancarotta, dichiara il vincitore e ferma i dadi
+            if (loops >= gameState.players.length - 1) {
+                showToast(`🏆 HA VINTO ${gameState.players[nextIdx].name.toUpperCase()}! 🏆`);
+                orientBoard(); updateDashboard();
+                return;
+            }
+
+            gameState.currentPlayerIdx = nextIdx;
+            orientBoard(); updateDashboard(); 
+            setTimeout(() => document.getElementById('dice-area').classList.add('dice-ready'), 500);
         }
 
         window.onload = () => { 
