@@ -82,9 +82,9 @@
 
         #app-container { display: flex; align-items: center; justify-content: center; width: 100dvw; height: 100dvh; position: relative; }
         #board-area {
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%);
             display: flex; align-items: center; justify-content: center;
-            width: min(74dvw, 74dvh); height: min(74dvw, 74dvh);
+            width: min(68dvw, 68dvh); height: min(68dvw, 68dvh);
             box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 0 clamp(4px, 1.2vmin, 10px) var(--border-color);
             background-color: var(--border-color); border-radius: 4px;
             z-index: 10; contain: layout style paint;
@@ -170,7 +170,7 @@
         #trade-btn-container {
             position: absolute;
             left: 50%;
-            bottom: 12vh;
+            bottom: clamp(75px, 15vh, 120px);
             transform: translateX(-50%);
             z-index: 60;
             display: none;
@@ -178,15 +178,18 @@
         }
 
         #main-trade-btn {
-            padding: 8px 18px;
+            padding: 8px 24px;
             font-size: clamp(10px, 1.5vw, 12px);
-            border-radius: 20px;
+            border-radius: 30px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
             border: 1px solid #005a2c;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            font-weight: 900;
             text-transform: uppercase;
             margin: 0;
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: linear-gradient(to bottom, #00c660, #00a650); 
+            color: white;
         }
         #main-trade-btn:hover {
             transform: translateY(-3px) scale(1.05);
@@ -288,7 +291,7 @@
             .box-red-stripe { position: relative; transform: none; top: 0; height: auto; padding: 12px 0; margin: 10px 0; }
             
             #trade-btn-container {
-                bottom: 22vh; /* Sollevato per non coprire i box giocatori da mobile */
+                bottom: calc(15vh + 70px);
             }
         }
         @media (max-height: 700px) {
@@ -349,7 +352,6 @@
     </div>
 
     <div id="toast-container"></div>
-    
     <div id="player-zones">
         <div id="pz-0" class="player-zone pz-bottom" style="display:none;" onclick="showPlayerProperties(0)"></div>
         <div id="pz-1" class="player-zone pz-left" style="display:none;" onclick="showPlayerProperties(1)"></div>
@@ -357,9 +359,8 @@
         <div id="pz-3" class="player-zone pz-right" style="display:none;" onclick="showPlayerProperties(3)"></div>
     </div>
 
-    <!-- Bottone Scambia / Vendi spostato fuori dal tabellone in centro -->
     <div id="trade-btn-container">
-        <button id="main-trade-btn" class="btn btn-buy" onclick="openTradingPanel()" data-i18n="trade_btn">VENDI PROPRIETÀ</button>
+        <button id="main-trade-btn" onclick="openTradingPanel()" data-i18n="trade_btn">SELL PROPERTY</button>
     </div>
 
     <div id="app-container">
@@ -539,11 +540,18 @@
                 trade_btn: "SELL PROPERTY", trade_title: "Trading Panel", trade_with: "Trade Partner:", give_cash: "You pay cash:", receive_cash: "You ask cash:", send_offer: "Send Proposal",
                 jail_card_label: "Get Out of Jail Card", accept: "Accept Offer", reject: "Reject", no_buildings_trade: "Cannot trade! First sell houses of this color back to Bank.",
                 not_enough_cash_trade: "Insufficient funds to complete deal!", trade_success: "Trade Completed successfully!", trade_propose_title: "Trade Proposal Offered!",
-                trade_received_from: "proposed a deal:", trade_asks: "He asks:", trade_gives: "He offers:", pay_jail: "Pay L. 5.000 to get out", use_jail_card: "Use Free Jail Card", or_label: "OR",
+                trade_received_from: "proposed a deal:", trade_asks: "He asks:", trade_gives: "He offers:", pay_jail: "Pay L. 5,000 to get out", use_jail_card: "Use Free Jail Card", or_label: "OR",
                 rules_goal: "🎯 Goal", rules_goal_desc: "Bankrupt opponents by buying and developing properties.",
                 rules_move: "🎲 Move & Jail", rules_move_desc: "Tap the dice in the center. To exit jail pay L. 5,000, roll doubles, or use a Get Out of Jail Card.",
                 rules_mortgage: "🏚️ Mortgages & Bank", rules_mortgage_desc: "Mortgage properties for 50% value. Properties cannot be sold back to the bank, only mortgaged or traded. Sell houses to the Bank at 50% price evenly.",
                 rules_trades: "🤝 Player Trading", rules_trades_desc: "Trade anytime between turns (properties, cash, jail cards). Properties must have no houses on their entire color set to be traded.",
+                need_2_players: "Add at least 2 players", jail_turn_msg: "Turn {0} of 3 in Jail for {1}. How to proceed?", roll_doubles: "Roll Doubles", 
+                msg_double_free: "🎲 DOUBLES! You are free!", msg_no_double: "❌ No doubles. You remain in jail!", msg_jail_must_pay: "⚠️ 3 turns passed! You must pay bail!", 
+                msg_paid_bail: "🔓 Bail paid. You are free!", msg_used_jail_card: "🎫 Used Get Out of Jail Card. You are free!", msg_mortgaged: "🏚️ {0} is MORTGAGED. Received L. {1}", 
+                msg_insufficient_unmortgage: "⚠️ Insufficient funds to unmortgage!", msg_unmortgaged: "🔓 {0} unmortgaged.", msg_sell_uniform: "⚠️ Sell buildings uniformly across the color group first!", 
+                msg_sold_house: "🏗️ Sold 1 building to the Bank for L. {0}", msg_build_uniform: "⚠️ Build uniformly! Add a house to other properties in this color group first.", 
+                msg_no_trade_partner: "⚠️ No active players to trade with!", msg_trade_empty: "⚠️ Trade proposal is empty!", msg_trade_rejected: "❌ Trade rejected.", 
+                msg_mortgage_transfer_tax: "ℹ️ Mortgage transferred to {0}: paid 10% tax L. {1}", msg_winner: "🏆 {0} HAS WON! 🏆", none_prop: "None", you_offer: "YOU OFFER", you_demand: "YOU DEMAND",
                 props: [
                     "", "MEDITERRANEAN<br>AVE.", "", "BALTIC<br>AVE.", "INCOME<br>TAX", "READING<br>RAILROAD",
                     "ORIENTAL<br>AVE.", "", "VERMONT<br>AVE.", "CONNECTICUT<br>AVE.", "",
@@ -582,6 +590,13 @@
                 rules_move: "🎲 Mover y Cárcel", rules_move_desc: "Toca los dados en el centro. Para salir puedes pagar L. 5.000, sacar dobles o usar la carta libre.",
                 rules_mortgage: "🏚️ Hipotecas y Banco", rules_mortgage_desc: "Puedes hipotecar terrenos por el 50% de su valor. Los terrenos no se venden al banco. Las casas se venden al banco a mitad de precio uniformemente.",
                 rules_trades: "🤝 Intercambios", rules_trades_desc: "Negocia entre turnos (propiedades, efectivo, cartas). El grupo de color debe estar libre de casas antes de intercambiar.",
+                need_2_players: "Añade al menos 2 jugadores", jail_turn_msg: "Turno {0} de 3 en la Cárcel para {1}. ¿Cómo proceder?", roll_doubles: "Intentar Dobles", 
+                msg_double_free: "🎲 ¡DOBLES! ¡Eres libre!", msg_no_double: "❌ No hay dobles. ¡Te quedas en la cárcel!", msg_jail_must_pay: "⚠️ ¡Han pasado 3 turnos! ¡Debes pagar la fianza!", 
+                msg_paid_bail: "🔓 Fianza pagada. ¡Eres libre!", msg_used_jail_card: "🎫 Carta Libre usada. ¡Eres libre!", msg_mortgaged: "🏚️ {0} HIPOTECADA. Recibes L. {1}", 
+                msg_insufficient_unmortgage: "⚠️ ¡Fondos insuficientes para redimir!", msg_unmortgaged: "🔓 {0} redimida.", msg_sell_uniform: "⚠️ ¡Vende edificios uniformemente en el grupo de color primero!", 
+                msg_sold_house: "🏗️ Vendido 1 edificio al Banco por L. {0}", msg_build_uniform: "⚠️ ¡Construye uniformemente! Añade a otras propiedades del color primero.", 
+                msg_no_trade_partner: "⚠️ ¡Ningún jugador activo para negociar!", msg_trade_empty: "⚠️ ¡La propuesta está vacía!", msg_trade_rejected: "❌ Intercambio rechazado.", 
+                msg_mortgage_transfer_tax: "ℹ️ Hipoteca transferida a {0}: impuesto del 10% L. {1}", msg_winner: "🏆 ¡{0} HA GANADO! 🏆", none_prop: "Ninguna", you_offer: "TÚ OFRECES", you_demand: "TÚ PIDES",
                 props: [
                     "", "RONDA DE<br>VALENCIA", "", "PLAZA<br>LAVAPIÉS", "IMPUESTO<br>RENTA", "ESTACIÓN<br>DE GOYA",
                     "GLORIETA<br>CUATRO CAMINOS", "", "AVENIDA<br>REINA VICTORIA", "CALLE<br>BRAVO MURILLO", "",
@@ -612,14 +627,21 @@
                 buy_title: "Compra", rent_title: "Aluguel", build_title: "Construção", tax_title: "Imposto", go_msg: "Passou por PARTIDA! Receba 20.000", go_jail_btn: "VÁ PARA A PRISÃO!", pay_tax: "PAGUE",
                 my_props: "Minhas Propriedades", build_not_allowed: "Você precisa do grupo de cores completo para construir.", how_to_play: "COMO JOGAR",
                 mortgage_btn: "Hipoteca", unmortgage_btn: "Resgatar Hipoteca", sell_building_btn: "Vender Edifício", mortgaged_label: "Hipotecado",
-                trade_btn: "VENDER PROPRIEDADE", trade_title: "Painel de Negociação", trade_with: "Negociar com:", give_cash: "Ofereces dinheiro:", receive_cash: "Pides dinheiro:", send_offer: "Enviar Proposta",
+                trade_btn: "VENDER PROPRIEDADE", trade_title: "Painel de Negociação", trade_with: "Negociar com:", give_cash: "Ofereces dinheiro:", receive_cash: "Pedes dinheiro:", send_offer: "Enviar Proposta",
                 jail_card_label: "Carta Livre da Prisão", accept: "Aceitar", reject: "Rejeitar", no_buildings_trade: "Não é possível negociar! Primeiro venda os edifícios ao banco.",
                 not_enough_cash_trade: "Fundos insuficientes para a troca!", trade_success: "Troca concluída com sucesso!", trade_propose_title: "Proposta de troca enviada!",
                 trade_received_from: "propôs uma troca:", trade_asks: "Pede:", trade_gives: "Oferece:", pay_jail: "Pagar L. 5.000 para sair", use_jail_card: "Usar Carta de Prisão", or_label: "OU",
                 rules_goal: "🎯 Objetivo", rules_goal_desc: "Leve os oponentes à falência comprando e urbanizando propriedades.",
                 rules_move: "🎲 Movimento e Prisão", rules_move_desc: "Toque nos dados no centro. Para sair da prisão pague L. 5.000, tire um duplo ou use uma carta livre.",
-                rules_mortgage: "🏚️ Hipotecas e Banco", rules_mortgage_desc: "Hipoteque propriedades por 50% do valor. Não é possível vender terrenos ao banco. As casas são vendidas ao banco por metade do preço de forma uniforme.",
+                rules_mortgage: "🏚️ Hipotecas e Banco", rules_mortgage_desc: "Hipoteque propriedades por 50% do valor. Não é possível vender terrenos ao banco. As casas devem ser vendidas ao banco por metade do preço de forma uniforme.",
                 rules_trades: "🤝 Negociações", rules_trades_desc: "Negocie a qualquer momento entre turnos (propriedades, dinheiro, cartas). O grupo de cores deve estar livre de casas antes de trocar.",
+                need_2_players: "Adicione pelo menos 2 jogadores", jail_turn_msg: "Turno {0} de 3 na Prisão para {1}. Como proceder?", roll_doubles: "Tentar Duplos", 
+                msg_double_free: "🎲 DUPLOS! Você está livre!", msg_no_double: "❌ Sem duplos. Você continua na prisão!", msg_jail_must_pay: "⚠️ 3 turnos passados! Você deve pagar a fiança!", 
+                msg_paid_bail: "🔓 Fiança paga. Você está livre!", msg_used_jail_card: "🎫 Carta Livre usada. Você está livre!", msg_mortgaged: "🏚️ {0} HIPOTECADA. Recebeu L. {1}", 
+                msg_insufficient_unmortgage: "⚠️ Fundos insuficientes para resgatar!", msg_unmortgaged: "🔓 {0} resgatada.", msg_sell_uniform: "⚠️ Venda edifícios uniformemente no grupo de cor primeiro!", 
+                msg_sold_house: "🏗️ 1 edifício vendido ao Banco por L. {0}", msg_build_uniform: "⚠️ Construa uniformemente! Adicione a outras propriedades da cor primeiro.", 
+                msg_no_trade_partner: "⚠️ Nenhum jogador ativo para negociar!", msg_trade_empty: "⚠️ A proposta está vazia!", msg_trade_rejected: "❌ Troca rejeitada.", 
+                msg_mortgage_transfer_tax: "ℹ️ Hipoteca transferida para {0}: imposto 10% L. {1}", msg_winner: "🏆 {0} VENCEU! 🏆", none_prop: "Nenhuma", you_offer: "TU OFERECES", you_demand: "TU PEDES",
                 props: [
                     "", "CAMPO<br>GRANDE", "", "RUA<br>MARIA PIA", "IMPOSTO<br>DE RENDA", "ESTAÇÃO<br>DO ROSSIO",
                     "PRAÇA<br>DA ALEGRIA", "", "RUA<br>JÚLIO DINIS", "RUA<br>AUGUSTA", "",
@@ -658,6 +680,13 @@
                 rules_move: "🎲 Movimento & Prigione", rules_move_desc: "Tira i dadi per muoverti. Se sei in prigione, puoi pagare L. 5.000 alla Banca, lanciare i dadi cercando un doppio, oppure usare la Carta Uscita Gratis.",
                 rules_mortgage: "🏚️ Ipoteca & Smantellamento", rules_mortgage_desc: "Puoi ipotecare i terreni liberi per ricevere subito il 50% del valore. I contratti non possono essere venduti alla Banca. Case/Alberghi vanno invece rivenduti alla Banca a metà del costo in modo uniforme.",
                 rules_trades: "🤝 Compravendita tra Giocatori", rules_trades_desc: "Puoi scambiare proprietà, denaro e carte prigione in qualsiasi momento tra i turni. Un colore non può essere scambiato se vi sono ancora case sopra.",
+                need_2_players: "Aggiungi almeno 2 giocatori", jail_turn_msg: "Turno {0} di 3 in Prigione per {1}. Come vuoi procedere?", roll_doubles: "Tenta il Doppio", 
+                msg_double_free: "🎲 DOPPIO! Sei libero!", msg_no_double: "❌ Nessun doppio. Resti in prigione!", msg_jail_must_pay: "⚠️ 3 turni passati! Devi pagare la cauzione!", 
+                msg_paid_bail: "🔓 Hai pagato la cauzione. Sei libero!", msg_used_jail_card: "🎫 Usata Carta Uscita Gratis. Sei libero!", msg_mortgaged: "🏚️ {0} è stata IPOTECATA. Ricevuti L. {1}", 
+                msg_insufficient_unmortgage: "⚠️ Fondi insufficienti per riscattare l'ipoteca!", msg_unmortgaged: "🔓 {0} riscattata dall'ipoteca.", msg_sell_uniform: "⚠️ Smantella in modo uniforme! Vendi prima dagli altri terreni del colore.", 
+                msg_sold_house: "🏗️ Venduta 1 casa/albergo alla Banca per L. {0}", msg_build_uniform: "⚠️ Costruisci in modo uniforme! Aggiungi prima sugli altri terreni del colore.", 
+                msg_no_trade_partner: "⚠️ Nessun altro giocatore attivo con cui negoziare!", msg_trade_empty: "⚠️ Lo scambio non contiene elementi!", msg_trade_rejected: "❌ Accordo rifiutato.", 
+                msg_mortgage_transfer_tax: "ℹ️ Ipoteca registrata su {0}: pagata tassa di L. {1}", msg_winner: "🏆 {0} HA VINTO! 🏆", none_prop: "Nessuna", you_offer: "TU OFFRI", you_demand: "TU RICHIEDI",
                 props: [
                     "", "VICOLO<br>CORTO", "", "VICOLO<br>STRETTO", "TASSA<br>PATRIMONIALE", "STAZIONE SUD",
                     "BASTIONI<br>GRAN SASSO", "", "VIALE<br>MONTEROSA", "VIALE<br>VESUVIO", "",
@@ -682,6 +711,7 @@
 
         let currentLang = 'en';
         const t = (key) => i18n[currentLang][key] || key;
+        const tf = (key, ...args) => { let str = t(key); args.forEach((a, i) => str = str.replace(`{${i}}`, a)); return str; };
         const tProp = (index) => i18n[currentLang].props[index];
 
         const C = { BROWN: '#8e5033', LIGHTBLUE: '#8ed6ef', PINK: '#db2b6c', ORANGE: '#f5821c', RED: '#e62c26', YELLOW: '#ffec19', GREEN: '#41ab5d', DARKBLUE: '#1b73b8' };
@@ -813,47 +843,20 @@
                 document.querySelectorAll('.cell').forEach(c => c.remove());
                 initBoard(); updateTokens();
             }
+            
+            const btn = document.getElementById('main-trade-btn');
+            if(btn) btn.innerText = t('trade_btn');
         }
 
         function showInstructions() {
-            let desc = "";
-            if (currentLang === 'it') {
-                desc = `
+            let desc = `
                 <div class="space-y-3">
-                    <p><b>1. 🎯 Scopo del Gioco:</b> Manda in bancarotta gli avversari acquistando terreni, stazioni e società, e sviluppandoli costruendo case e alberghi.</p>
-                    <p><b>2. 🎲 Movimento:</b> Tocca i dadi al centro per lanciarli. In prigione puoi pagare L. 5.000, cercare un doppio o usare una carta speciale.</p>
-                    <p><b>3. 🏚️ Ipoteca & Smantellamento:</b> Ipotechi terreni liberi al 50% del valore. I contratti non si vendono alla banca, ma puoi svincolarli (costo + 10%) o venderli ad altri. Case/Alberghi si vendono solo alla Banca a metà prezzo in modo uniforme.</p>
-                    <p><b>4. 🤝 Trattative tra Giocatori:</b> Puoi scambiare denaro, contratti e carte prigione in qualsiasi momento tra i turni (pulsante <b>VENDI PROPRIETÀ</b>). Non puoi scambiare colori che hanno ancora edifici sopra.</p>
-                    <p><b>5. 💵 Pagamenti:</b> Tocca le banconote nel tuo portafoglio per spostarle sul vassoio e confermare il versamento.</p>
+                    <p><b>1. ${t('rules_goal')}:</b> ${t('rules_goal_desc')}</p>
+                    <p><b>2. ${t('rules_move')}:</b> ${t('rules_move_desc')}</p>
+                    <p><b>3. ${t('rules_mortgage')}:</b> ${t('rules_mortgage_desc')}</p>
+                    <p><b>4. ${t('rules_trades')}:</b> ${t('rules_trades_desc')}</p>
+                    <p><b>5. 💵 Payments:</b> ${currentLang === 'it' ? 'Tocca le banconote nel tuo portafoglio per spostarle sul vassoio e confermare il versamento.' : currentLang === 'es' ? 'Toca tus billetes para moverlos a la bandeja de pago y confirmar la transacción.' : currentLang === 'pt' ? 'Toque nas notas para movê-las para a bandeja e confirmar o pagamento.' : 'Tap your banknotes to move them to the payment tray and complete transactions.'}</p>
                 </div>`;
-            } else if (currentLang === 'es') {
-                desc = `
-                <div class="space-y-3">
-                    <p><b>1. 🎯 Objetivo:</b> Lleva a la bancarrota a tus rivales comprando solares, estaciones y servicios públicos, y edificando casas y hoteles.</p>
-                    <p><b>2. 🎲 Movimiento:</b> Toca los dados para lanzar. En prisión, puedes pagar L. 5.000, sacar dobles o usar la carta libre.</p>
-                    <p><b>3. 🏚️ Hipotecas y Edificios:</b> Hipoteca solares libres por el 50% de su valor. Los solares no se devuelven al banco. Vende casas al banco a mitad de precio de forma uniforme antes de hipotecar.</p>
-                    <p><b>4. 🤝 Negociaciones:</b> Intercambia propiedades, efectivo y cartas libre de cárcel con tus rivales entre turnos (botón <b>VENDER PROPIEDAD</b>). Los grupos con casas no se pueden negociar.</p>
-                    <p><b>5. 💵 Pagos:</b> Toca tus billetes para moverlos a la bandeja de pago y confirmar la transacción.</p>
-                </div>`;
-            } else if (currentLang === 'pt') {
-                desc = `
-                <div class="space-y-3">
-                    <p><b>1. 🎯 Objetivo:</b> Leve os adversários à falência comprando propriedades, estações e serviços públicos, e construindo casas e hotéis.</p>
-                    <p><b>2. 🎲 Movimento:</b> Toque nos dados para rolar. Na prisão, pode pagar L. 5.000, tirar um duplo ou usar a carta livre.</p>
-                    <p><b>3. 🏚️ Hipotecas e Prédios:</b> Hipoteque terrenos por 50% do valor. Não é possível vender terrenos ao banco. As casas devem ser vendidas ao banco por metade do preço de forma uniforme.</p>
-                    <p><b>4. 🤝 Negociações:</b> Negocie propriedades, dinheiro e cartas livres entre turnos (botão <b>VENDER PROPRIEDADE</b>). Grupos com edifícios não podem ser negociados.</p>
-                    <p><b>5. 💵 Pagamentos:</b> Toque nas notas para movê-las para a bandeja e confirmar o pagamento.</p>
-                </div>`;
-            } else {
-                desc = `
-                <div class="space-y-3">
-                    <p><b>1. 🎯 Goal:</b> Bankrupt your opponents by purchasing, renting, and developing properties with houses and hotels.</p>
-                    <p><b>2. 🎲 Movement & Jail:</b> Tap the dice to roll. While in jail, you can pay L. 5,000, attempt to roll doubles, or use a Get Out of Jail Free card.</p>
-                    <p><b>3. 🏚️ Mortgages & Bank:</b> Mortgage undeveloped sites for 50% value. Properties cannot be sold back to the bank. Sell buildings back to the Bank at 50% value evenly.</p>
-                    <p><b>4. 🤝 Player Trading:</b> Propose trades (sited properties, cash, jail cards) anytime between turns using the <b>SELL PROPERTY</b> button. You cannot trade properties belonging to groups with buildings.</p>
-                    <p><b>5. 💵 Payments:</b> Tap your banknotes to move them to the payment tray and complete transactions.</p>
-                </div>`;
-            }
             document.getElementById('instructions-content').innerHTML = desc;
             document.getElementById('modal-instructions').style.display = 'flex';
         }
@@ -962,7 +965,7 @@
         }
 
         function startGame() {
-            if(setupPlayerCount < 2) return showToast("Aggiungi almeno 2 giocatori");
+            if(setupPlayerCount < 2) return showToast(t('need_2_players'));
             for(let i=1; i<=setupPlayerCount; i++) {
                 const rawName = document.getElementById(`pname-${i}`).value;
                 const safeName = escapeHTML(rawName) || `${t('player')} ${i}`;
@@ -1078,9 +1081,9 @@
 
         function handleJailTurn(p) {
             let html = `<h2 class="text-xl font-bold mb-4 font-['Montserrat'] uppercase text-red-600">${t('go_jail_btn')}</h2>
-                        <p class="mb-4 text-sm text-gray-700 font-medium">Turno ${p.jailTurns + 1} di 3 in Prigione per ${p.name}. Come vuoi procedere?</p>`;
+                        <p class="mb-4 text-sm text-gray-700 font-medium">${tf('jail_turn_msg', p.jailTurns + 1, p.name)}</p>`;
             
-            html += `<button class="btn btn-buy mb-2" onclick="attemptJailRoll()">${t('btn_start')} (Tenta il Doppio)</button>`;
+            html += `<button class="btn btn-buy mb-2" onclick="attemptJailRoll()">${t('roll_doubles')}</button>`;
             html += `<button class="btn btn-pay mb-2" onclick="payJailBail()">${t('pay_jail')}</button>`;
             
             if (p.jailCards > 0) {
@@ -1108,16 +1111,16 @@
                 gameState.isMoving = false;
                 const p = gameState.players[gameState.currentPlayerIdx];
                 if (val1 === val2) {
-                    showToast("🎲 DOPPIO! Sei libero!");
+                    showToast(t('msg_double_free'));
                     p.inJail = false;
                     p.jailTurns = 0;
                     gameState.lastRoll = val1 + val2;
                     stepMove(p, gameState.lastRoll);
                 } else {
                     p.jailTurns++;
-                    showToast("❌ Nessun doppio. Resti in prigione!");
+                    showToast(t('msg_no_double'));
                     if (p.jailTurns >= 3) {
-                        showToast("⚠️ 3 turni passati! Devi pagare la cauzione!");
+                        showToast(t('msg_jail_must_pay'));
                         p.inJail = false;
                         p.jailTurns = 0;
                         payBankActive(5000);
@@ -1136,7 +1139,7 @@
                 p.inJail = false;
                 p.jailTurns = 0;
                 updateDashboard();
-                showToast("🔓 Hai pagato la cauzione. Sei libero!");
+                showToast(t('msg_paid_bail'));
                 gameState.isMoving = false;
                 document.getElementById('dice-area').classList.add('dice-ready');
             }, true);
@@ -1149,7 +1152,7 @@
             p.inJail = false;
             p.jailTurns = 0;
             updateDashboard();
-            showToast("🎫 Usata Carta Uscita Gratis. Sei libero!");
+            showToast(t('msg_used_jail_card'));
             gameState.isMoving = false;
             document.getElementById('dice-area').classList.add('dice-ready');
         }
@@ -1261,7 +1264,7 @@
             p.balance += value;
             updateDashboard();
             refreshBoardVisuals();
-            showToast(`🏚️ ${cell.name.replace(/<br>/g, ' ')} è stata IPOTECATA. Ricevuti L. ${value.toLocaleString()}`);
+            showToast(tf('msg_mortgaged', cell.name.replace(/<br>/g, ' '), value.toLocaleString()));
         }
 
         function unmortgageProperty(id) {
@@ -1271,7 +1274,7 @@
             const cost = (cell.price / 2) * 1.1; 
             
             if (p.balance < cost) {
-                showToast("⚠️ Fondi insufficienti per riscattare l'ipoteca!");
+                showToast(t('msg_insufficient_unmortgage'));
                 return;
             }
 
@@ -1280,7 +1283,7 @@
                 gameState.properties[id].mortgaged = false;
                 updateDashboard();
                 refreshBoardVisuals();
-                showToast(`🔓 ${cell.name.replace(/<br>/g, ' ')} riscattata dall'ipoteca.`);
+                showToast(tf('msg_unmortgaged', cell.name.replace(/<br>/g, ' ')));
             }, false);
         }
 
@@ -1293,7 +1296,7 @@
             
             const maxLevelInGroup = Math.max(...colorGroup.map(c => gameState.properties[c.id].level));
             if (propState.level < maxLevelInGroup) {
-                showToast("⚠️ Devi smantellare gli edifici in modo uniforme! Vendi prima le case dagli altri terreni dello stesso colore.");
+                showToast(t('msg_sell_uniform'));
                 return;
             }
 
@@ -1302,7 +1305,7 @@
             propState.level--;
             updateDashboard();
             refreshBoardVisuals();
-            showToast(`🏗️ Venduta 1 casa/albergo alla Banca per L. ${value.toLocaleString()}`);
+            showToast(tf('msg_sold_house', value.toLocaleString()));
         }
 
         function handleLanded(player) {
@@ -1410,7 +1413,7 @@
 
             const minLevelInGroup = Math.min(...colorGroup.map(c => gameState.properties[c.id].level));
             if (currentLevel > minLevelInGroup) {
-                showToast("⚠️ Devi costruire in modo uniforme! Aggiungi una casa prima sugli altri terreni di questo colore.");
+                showToast(t('msg_build_uniform'));
                 return;
             }
 
@@ -1461,14 +1464,14 @@
             if (gameState.isMoving) return;
             
             const currentP = gameState.players[gameState.currentPlayerIdx];
-            document.getElementById('trade-self-name').innerText = `${currentP.name.toUpperCase()} (TU OFFRI)`;
+            document.getElementById('trade-self-name').innerText = `${currentP.name.toUpperCase()} (${t('you_offer')})`;
             
             const partnerSelect = document.getElementById('trade-partner-select');
             partnerSelect.innerHTML = '';
             
             const opponents = gameState.players.filter(p => p.id !== currentP.id && p.balance >= 0);
             if (opponents.length === 0) {
-                showToast("⚠️ Nessun altro giocatore attivo con cui negoziare!");
+                showToast(t('msg_no_trade_partner'));
                 return;
             }
 
@@ -1504,7 +1507,7 @@
             const partnerId = parseInt(select.value);
             const partnerP = gameState.players.find(p => p.id === partnerId);
             
-            document.getElementById('trade-partner-name').innerText = `${partnerP.name.toUpperCase()} (TU RICHIEDI)`;
+            document.getElementById('trade-partner-name').innerText = `${partnerP.name.toUpperCase()} (${t('you_demand')})`;
             document.getElementById('trade-partner-maxcash').innerText = partnerP.balance.toLocaleString('it-IT');
             document.getElementById('trade-partner-cash').max = partnerP.balance;
             document.getElementById('trade-partner-cash').value = 0;
@@ -1527,7 +1530,7 @@
 
             const pProps = Object.keys(gameState.properties).filter(id => gameState.properties[id].ownerId === playerId);
             if (pProps.length === 0) {
-                container.innerHTML = `<span class="text-xs text-gray-400 italic">Nessuna proprietà</span>`;
+                container.innerHTML = `<span class="text-xs text-gray-400 italic">${t('none_prop')}</span>`;
                 return;
             }
 
@@ -1597,7 +1600,7 @@
             const partnerJailCard = document.getElementById('trade-partner-jailcard')?.checked || false;
 
             if (selfPropsChecked.length === 0 && partnerPropsChecked.length === 0 && selfCash === 0 && partnerCash === 0 && !selfJailCard && !partnerJailCard) {
-                showToast("⚠️ Lo scambio non contiene elementi!");
+                showToast(t('msg_trade_empty'));
                 return;
             }
 
@@ -1689,7 +1692,7 @@
 
         function rejectTradeOffer() {
             closeModal();
-            showToast("❌ Accordo rifiutato.");
+            showToast(t('msg_trade_rejected'));
             currentTradeProposal = null;
         }
 
@@ -1728,7 +1731,7 @@
                     const cell = getBoardData().find(c => c.id === id);
                     const taxCost = Math.round((cell.price / 2) * 0.1);
                     receiver.balance -= taxCost;
-                    showToast(`ℹ️ Ipoteca registrata su ${receiver.name}: pagata tassa di trasferimento L. ${taxCost.toLocaleString()}`);
+                    showToast(tf('msg_mortgage_transfer_tax', receiver.name, taxCost.toLocaleString()));
                 }
             });
 
@@ -1739,7 +1742,7 @@
                     const cell = getBoardData().find(c => c.id === id);
                     const taxCost = Math.round((cell.price / 2) * 0.1);
                     sender.balance -= taxCost;
-                    showToast(`ℹ️ Ipoteca registrata su ${sender.name}: pagata tassa di trasferimento L. ${taxCost.toLocaleString()}`);
+                    showToast(tf('msg_mortgage_transfer_tax', sender.name, taxCost.toLocaleString()));
                 }
             });
 
@@ -1822,7 +1825,7 @@
             while(gameState.players[nextIdx].balance < 0 && loops < gameState.players.length) { nextIdx = (nextIdx + 1) % gameState.players.length; loops++; }
             
             if (loops >= gameState.players.length - 1) {
-                showToast(`🏆 HA VINTO ${gameState.players[nextIdx].name.toUpperCase()}! 🏆`);
+                showToast(tf('msg_winner', gameState.players[nextIdx].name.toUpperCase()));
                 updateDashboard(); return;
             }
             gameState.currentPlayerIdx = nextIdx; updateDashboard(); 
