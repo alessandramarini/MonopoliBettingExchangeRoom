@@ -71,7 +71,6 @@
 
         .box-green-sq { width: 28%; max-width: 180px; aspect-ratio: 1; background-color: #4da85d; box-shadow: 3px 3px 15px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; border-radius: 4px; }
         
-        /* Mini-tabellone carino sulla scatola */
         .mini-board-mockup { width: 85%; height: 85%; border: 2px solid #111; background: var(--bg-board); display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 1px; padding: 1px;}
         .mini-board-mockup div { background: var(--cell-bg); border: 1px solid #111; box-sizing: border-box; }
         .mb-top { border-bottom: 3px solid var(--red) !important; }
@@ -135,7 +134,6 @@
         .left-col .cell-content { transform: translate(-50%, -50%) rotate(90deg); }
         .right-col .cell-content { transform: translate(-50%, -50%) rotate(-90deg); }
         
-        /* Gli angoli non vengono ruotati globalmente, gestiscono la rotazione internamente tramite HTML/SVG */
         #cell-0 .cell-content, #cell-10 .cell-content, #cell-20 .cell-content, #cell-30 .cell-content { 
             transform: translate(-50%, -50%) rotate(0deg); 
         }
@@ -167,7 +165,6 @@
         }
 
         .center-text-group { text-align: center; z-index: 5; margin-top: 2vmin; }
-        /* Titolo Centrale Sottile ed Elegante */
         .center-title { font-family: 'Montserrat', sans-serif; font-size: clamp(24px, 8vmin, 100px); font-weight: 300; letter-spacing: 0.15em; color: #1a1a1a; }
 
         .deck-slot {
@@ -230,7 +227,6 @@
         @keyframes dice-pulse { 0% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); } 100% { transform: scale(1.1) translateY(-1vmin); filter: drop-shadow(0 1vmin 3vmin rgba(255,215,0,0.9)); } }
         .dice-ready { animation: dice-pulse 1s infinite alternate ease-in-out; cursor: pointer; }
         
-        /* Dimensioni dadi regolate (più piccole rispetto a prima) */
         .die-3d { width: clamp(20px, 5vmin, 45px); height: clamp(20px, 5vmin, 45px); position: relative; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .die-face { 
             position: absolute; width: 100%; height: 100%; 
@@ -468,7 +464,21 @@
     </div>
 
     <script>
-        // DIZIONARIO TRADUZIONI PULITO (Senza HTML Extra)
+        // Funzione di Sicurezza XSS (Previene attacchi Hacker sui nomi)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        // DIZIONARIO TRADUZIONI PULITO E DINAMICO
         const i18n = {
             'en': {
                 monopoly: "MONOPOLY", setup_desc: "Enter names and choose token", btn_add_player: "+ Player", btn_start: "START GAME", click_start: "CLICK TO START",
@@ -570,40 +580,54 @@
 
         const C = { BROWN: '#8e5033', LIGHTBLUE: '#8ed6ef', PINK: '#db2b6c', ORANGE: '#f5821c', RED: '#e62c26', YELLOW: '#ffec19', GREEN: '#41ab5d', DARKBLUE: '#1b73b8' };
 
-        // ICONE SVG FEDELI
+        // ICONE SVG FEDELI AL TABELLONE ITALIANO ORIGINALE
         const svgTrain = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 80%; height: 80%; margin-top:5%;"><path d="M 25 75 L 85 75 L 85 45 L 65 45 L 65 25 L 45 25 L 45 45 L 25 45 L 25 20 L 15 20 L 15 75 Z" fill="#111" stroke="#111" stroke-width="2"/><circle cx="35" cy="75" r="10" fill="#111"/><circle cx="55" cy="75" r="10" fill="#111"/><circle cx="75" cy="75" r="10" fill="#111"/></svg>`;
         const svgBulb = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 50 15 C 25 15 25 50 40 65 L 40 80 L 60 80 L 60 65 C 75 50 75 15 50 15 Z" fill="#ffec19" stroke="#111" stroke-width="4"/><path d="M 45 35 L 55 35 M 40 50 L 60 50" stroke="#111" stroke-width="3"/><rect x="42" y="80" width="16" height="15" fill="#111" rx="2"/></svg>`;
         const svgTap = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 20 40 L 40 40 L 40 60 L 60 60 L 60 30 L 20 30 Z" fill="#8ed6ef" stroke="#111" stroke-width="5"/><rect x="10" y="25" width="10" height="20" fill="#111"/><path d="M 55 60 C 55 80 65 90 60 90 C 55 90 65 80 65 60 Z" fill="#8ed6ef" stroke="#111" stroke-width="3"/></svg>`;
         const svgRing = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%; margin-top:10%;"><circle cx="50" cy="60" r="25" fill="none" stroke="#ffec19" stroke-width="12"/><circle cx="50" cy="60" r="25" fill="none" stroke="#111" stroke-width="2"/><polygon points="35,35 65,35 50,15" fill="#8ed6ef" stroke="#111" stroke-width="4"/><polygon points="35,35 65,35 50,45" fill="#fff" stroke="#111" stroke-width="4"/></svg>`;
         
-        // ANGOLI RIVISITATI HTML/SVG PER EFFETTO REALE
-        const svgGo = `<svg viewBox="0 0 100 100" style="width:100%; height:100%;"><path d="M 90 50 L 50 10 L 50 35 L 10 35 L 10 65 L 50 65 L 50 90 Z" fill="#e62c26" stroke="#111" stroke-width="3" transform="translate(-5, 5)"/><text x="40" y="60" font-family="Montserrat" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" transform="rotate(-45 40 60)">VIA!</text><text x="45" y="25" font-family="Helvetica Neue" font-weight="bold" font-size="6" fill="#111" transform="rotate(-45 45 25)"><tspan x="45" dy="0">RITIRATE L. 20.000</tspan><tspan x="45" dy="8">AL PASSAGGIO</tspan></text></svg>`;
+        // ANGOLI RIVISITATI SVG (RIPRODUZIONE MANIACALE DELLE PROPORZIONI)
+        const svgGo = `<svg viewBox="0 0 100 100" style="width:100%; height:100%;">
+            <path d="M 90 50 L 50 10 L 50 35 L 10 35 L 10 65 L 50 65 L 50 90 Z" fill="#e62c26" stroke="#111" stroke-width="3" transform="translate(-5, 5)"/>
+            <text x="40" y="60" font-family="Montserrat, sans-serif" font-weight="900" font-size="28" fill="#fff" text-anchor="middle" transform="rotate(-45 40 60)">VIA!</text>
+            <text x="45" y="25" font-family="'Helvetica Neue', sans-serif" font-weight="bold" font-size="6" fill="#111" transform="rotate(-45 45 25)">
+                <tspan x="45" dy="0">RITIRATE L. 20.000</tspan>
+                <tspan x="45" dy="8">AL PASSAGGIO</tspan>
+            </text>
+        </svg>`;
         
-        const svgJail = `<div style="position:relative; width:100%; height:100%; background-color: var(--cell-bg);">
-                            <div style="position:absolute; top:0; right:0; width:70%; height:70%; background-color:#f5821c; border-bottom: 2px solid #111; border-left: 2px solid #111; box-sizing:border-box;">
-                                <div style="width:100%; height:100%; display:flex; justify-content:space-evenly; align-items:center; padding:15%; box-sizing:border-box;">
-                                    <div style="width:15%; height:100%; background:#111; border-radius:1px;"></div>
-                                    <div style="width:15%; height:100%; background:#111; border-radius:1px;"></div>
-                                    <div style="width:15%; height:100%; background:#111; border-radius:1px;"></div>
-                                </div>
-                            </div>
-                            <div style="position:absolute; top: 35%; left: 5%; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(6px, 1.8vmin, 16px); color: #111; transform: rotate(90deg);">IN</div>
-                            <div style="position:absolute; bottom: 5%; right: 35%; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(6px, 1.8vmin, 16px); color: #111;">PRIGIONE</div>
-                            <div style="position:absolute; top: 15%; left: 10%; transform: rotate(45deg); font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(4.5px, 1.2vmin, 12px); color: #111;">TRANSITO</div>
-                         </div>`;
+        const svgJail = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
+            <!-- Cella Arancione in alto a destra -->
+            <rect x="38" y="0" width="62" height="62" fill="#f5821c" stroke="#111" stroke-width="2"/>
+            <!-- Sbarre nere -->
+            <rect x="48" y="0" width="5" height="62" fill="#111"/>
+            <rect x="65" y="0" width="5" height="62" fill="#111"/>
+            <rect x="82" y="0" width="5" height="62" fill="#111"/>
+            
+            <text x="22" y="32" font-family="Montserrat, sans-serif" font-weight="900" font-size="18" fill="#111" text-anchor="middle" transform="rotate(-90 22 32)">IN</text>
+            <text x="69" y="85" font-family="Montserrat, sans-serif" font-weight="900" font-size="16" fill="#111" text-anchor="middle">PRIGIONE</text>
+            <text x="35" y="65" font-family="Montserrat, sans-serif" font-weight="800" font-size="12" fill="#111" text-anchor="middle" transform="rotate(45 35 65)">TRANSITO</text>
+        </svg>`;
         
-        const svgParking = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; transform: rotate(45deg); font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(6px, 1.5vmin, 16px); text-align:center; color:#111; line-height: 1.2;"><span style="display:block;">PARCHEGGIO<br><br>GRATUITO</span></div>`;
+        const svgParking = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
+            <text x="50" y="30" font-family="Montserrat, sans-serif" font-weight="900" font-size="15" fill="#111" text-anchor="middle">PARCHEGGIO</text>
+            <!-- Macchinina stilizzata -->
+            <path d="M 30 70 L 40 45 L 60 45 L 70 35 L 85 35 L 90 45 L 90 70 Z" fill="#e62c26" stroke="#111" stroke-width="2" transform="translate(-15, 0)"/>
+            <circle cx="35" cy="70" r="8" fill="#111"/>
+            <circle cx="65" cy="70" r="8" fill="#111"/>
+            <text x="50" y="90" font-family="Montserrat, sans-serif" font-weight="900" font-size="15" fill="#111" text-anchor="middle">GRATUITO</text>
+        </svg>`;
         
-        const svgPoliceman = `<div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                                <div style="transform: rotate(135deg); width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                                    <svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 55%; height: 55%;">
-                                        <path d="M 40 40 Q 50 10 60 40 L 80 40 L 80 50 L 60 50 L 60 90 L 40 90 L 40 50 L 20 50 L 20 40 Z" fill="#111"/>
-                                        <circle cx="50" cy="30" r="15" fill="#f5821c"/>
-                                        <path d="M 45 40 L 55 40 M 45 50 L 55 50" stroke="#fff" stroke-width="2"/>
-                                    </svg>
-                                    <div style="font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(5px, 1.4vmin, 14px); text-align:center; color:#111; margin-top:5%;">IN PRIGIONE!</div>
-                                </div>
-                              </div>`;
+        const svgPoliceman = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
+            <text x="50" y="22" font-family="Montserrat, sans-serif" font-weight="900" font-size="18" fill="#111" text-anchor="middle">IN</text>
+            <!-- Poliziotto ridimensionato e centrato -->
+            <g transform="translate(50, 50) scale(0.6)">
+                <path d="M -30 -10 Q 0 -50 30 -10 L 50 -10 L 50 0 L 20 0 L 20 40 L -20 40 L -20 0 L -50 0 L -50 -10 Z" fill="#111"/>
+                <circle cx="0" cy="-25" r="18" fill="#f5821c"/>
+                <path d="M -10 -20 L -25 -15" stroke="#111" stroke-width="3"/>
+            </g>
+            <text x="50" y="90" font-family="Montserrat, sans-serif" font-weight="900" font-size="15" fill="#111" text-anchor="middle">PRIGIONE!</text>
+        </svg>`;
         
         const svgProbBlue = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 50%; height: 50%;"><text x="50" y="80" font-size="90" font-family="'Times New Roman', serif" font-weight="bold" fill="#1b73b8" filter="drop-shadow(2px 2px 0px rgba(0,0,0,0.5))" text-anchor="middle">?</text></svg>`;
         const svgProbRed = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 50%; height: 50%;"><text x="50" y="80" font-size="90" font-family="'Times New Roman', serif" font-weight="bold" fill="#e62c26" filter="drop-shadow(2px 2px 0px rgba(0,0,0,0.5))" text-anchor="middle">?</text></svg>`;
@@ -819,7 +843,17 @@
         function startGame() {
             if(setupPlayerCount < 2) return showToast("Aggiungi almeno 2 giocatori");
             for(let i=1; i<=setupPlayerCount; i++) {
-                gameState.players.push({ id: i, name: document.getElementById(`pname-${i}`).value, emoji: document.getElementById(`ptoken-${i}`).value, balance: 150000, pos: 0, inJail: false, jailTurns: 0 });
+                const rawName = document.getElementById(`pname-${i}`).value;
+                const safeName = escapeHTML(rawName) || `${t('player')} ${i}`;
+                gameState.players.push({ 
+                    id: i, 
+                    name: safeName, 
+                    emoji: document.getElementById(`ptoken-${i}`).value, 
+                    balance: 150000, 
+                    pos: 0, 
+                    inJail: false, 
+                    jailTurns: 0 
+                });
             }
             document.getElementById('modal-setup').style.display = 'none';
             gameState.players.forEach(p => {
