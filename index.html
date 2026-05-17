@@ -144,16 +144,28 @@
         .color-bar { position: absolute; top: 0; left: 0; right: 0; height: 22%; border-bottom: clamp(1px, 0.25vmin, 2px) solid var(--border-color); z-index: 2; }
         .has-color-bar { padding-top: 24%; }
 
+        /* UNIFORM TYPOGRAPHY & PERFECT FIT */
         .property-name {
-            font-weight: 700; font-size: min(15cqw, 14px); line-height: 1.1;
-            text-transform: uppercase; margin: auto 0; font-family: 'Montserrat', sans-serif; letter-spacing: -0.02em;
+            font-weight: 700; 
+            font-size: clamp(5px, 10cqmin, 11px); /* cqmin garantisce identica proporzione, ridotto a 10 per non toccare i bordi */
+            line-height: 1.1;
+            text-transform: uppercase; 
+            margin: auto 0; 
+            font-family: 'Montserrat', sans-serif; 
+            letter-spacing: -0.01em;
             display: flex; align-items: center; justify-content: center; flex-grow: 1;
-            padding: 0 4%; z-index: 1; color: #111; text-wrap: balance; word-wrap: break-word; text-align: center; width: 100%;
+            padding: 0 6%; z-index: 1; color: #111; 
+            text-wrap: balance; word-wrap: break-word; text-align: center; 
+            width: 100%; box-sizing: border-box; overflow: hidden;
         }
 
-        .property-price { font-size: min(11cqw, 11px); font-weight: 700; margin-bottom: 3%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; }
+        .property-price { 
+            font-size: clamp(4px, 9cqmin, 10px); font-weight: 700; margin-bottom: 4%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; 
+        }
+        
+        .tax .property-name { padding-top: 10%; font-size: clamp(5px, 10cqmin, 11px); }
         .icon-large { margin: auto; display: flex; align-items: center; justify-content: center; flex-grow: 1; width: 100%; }
-        .svg-board-icon { width: 100%; height: auto; max-width: 60cqw; max-height: 55cqh; margin: auto; }
+        .svg-board-icon { width: 100%; height: auto; max-width: 55cqmin; max-height: 50cqmin; margin: auto; }
         
         #center-board {
             grid-column: 2 / span 9; grid-row: 2 / span 9;
@@ -254,7 +266,7 @@
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 99999; }
         .modal-box-wrapper { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; width: 100%; display: flex; justify-content: center; }
-        .modal-box { background: #fdfbf7; background-image: var(--paper-tex); border-radius: 12px; width: 95vw; max-width: 480px; max-height: 90dvh; padding: clamp(14px, 3vw, 24px); box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.5) inset; color: #111; position: relative; text-align: center; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; display: flex; flex-direction: column; }
+        .modal-box { background: #fdfbf7; background-image: var(--paper-tex); border-radius: 12px; width: 95vw; max-width: 550px; max-height: 90dvh; padding: clamp(14px, 3vw, 24px); box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.5) inset; color: #111; position: relative; text-align: center; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; display: flex; flex-direction: column; }
         .modal-box.solid-card { border-radius: 8px; border: 1px solid rgba(0,0,0,0.2); padding: 0; width: 85vw; max-width: 350px; }
 
         .btn { padding: clamp(8px, 1.5vw, 12px) clamp(10px, 2vw, 15px); border: none; border-radius: 8px; font-weight: 800; cursor: pointer; transition: all 0.15s; background: linear-gradient(to bottom, #f0f0f0, #e0e0e0); color: #222; text-transform: uppercase; width: 100%; margin-top: 5px; font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 0 #bbb, 0 8px 15px rgba(0,0,0,0.1); box-sizing: border-box; display: inline-flex; justify-content: center; align-items: center; text-align: center; line-height: 1.2; font-size: clamp(10px, 2vw, 13px); }
@@ -424,9 +436,9 @@
 
     <!-- Modale Istruzioni -->
     <div id="modal-instructions" class="modal-overlay">
-        <div class="modal-box" style="max-width: 500px; text-align: left;">
+        <div class="modal-box" style="max-width: 600px; text-align: left;">
             <h2 class="text-2xl font-bold mb-4 text-red-600 font-['Montserrat'] uppercase" data-i18n="how_to_play">HOW TO PLAY</h2>
-            <div class="text-sm text-gray-800 leading-relaxed space-y-3 font-['Helvetica_Neue']" id="instructions-content"></div>
+            <div class="text-sm text-gray-800 leading-relaxed space-y-3 font-['Helvetica_Neue'] overflow-y-auto pr-2" id="instructions-content" style="max-height: 60vh;"></div>
             <button class="btn btn-buy mt-6" onclick="hideInstructions()" data-i18n="close">CLOSE</button>
         </div>
     </div>
@@ -557,22 +569,22 @@
                 jail_card_label: "Get Out of Jail Card", accept: "Accept Offer", reject: "Reject", no_buildings_trade: "Cannot trade! First sell houses of this color back to Bank.",
                 not_enough_cash_trade: "Insufficient funds to complete deal!", trade_success: "Trade Completed successfully!", trade_propose_title: "Trade Proposal Offered!",
                 trade_received_from: "proposed a deal:", trade_asks: "He asks:", trade_gives: "He offers:", pay_jail: "Pay L. 5,000 to get out", use_jail_card: "Use Free Jail Card", or_label: "OR",
-                rules_goal: "🎯 Goal", rules_goal_desc: "Bankrupt opponents by purchasing, renting, and developing properties.",
-                rules_move: "🎲 Move & Jail", rules_move_desc: "Tap the dice to roll. In jail, pay L. 5,000, roll doubles, or use a Get Out of Jail card.",
-                rules_mortgage: "🏚️ Mortgages & Bank", rules_mortgage_desc: "Mortgage properties for 50% value. Properties cannot be sold back to the bank. Sell houses to the Bank evenly at 50% value.",
-                rules_trades: "🤝 Player Trading", rules_trades_desc: "Trade anytime between turns using the SELL PROPERTY button. Color sets must have no buildings before trading.",
-                need_2_players: "Add at least 2 players", jail_turn_msg: "Turn {0} of 3 in Jail for {1}. How to proceed?", roll_doubles: "Roll Doubles", 
-                msg_double_free: "🎲 DOUBLES! You are free!", msg_no_double: "❌ No doubles. You remain in jail!", msg_jail_must_pay: "⚠️ 3 turns passed! You must pay bail!", 
-                msg_paid_bail: "🔓 Bail paid. You are free!", msg_used_jail_card: "🎫 Used Get Out of Jail Card. You are free!", msg_mortgaged: "🏚️ {0} is MORTGAGED. Received L. {1}", 
-                msg_insufficient_unmortgage: "⚠️ Insufficient funds to unmortgage!", msg_unmortgaged: "🔓 {0} unmortgaged.", msg_sell_uniform: "⚠️ Sell buildings uniformly across the color group first!", 
-                msg_sold_house: "🏗️ Sold 1 building to the Bank for L. {0}", msg_build_uniform: "⚠️ Build uniformly! Add a house to other properties in this color group first.", 
-                msg_no_trade_partner: "⚠️ No active players to trade with!", msg_trade_empty: "⚠️ Trade proposal is empty!", msg_trade_rejected: "❌ Trade rejected.", 
-                msg_mortgage_transfer_tax: "ℹ️ Mortgage transferred to {0}: paid 10% tax L. {1}", msg_winner: "🏆 {0} HAS WON! 🏆", none_prop: "None", you_offer: "YOU OFFER", you_demand: "YOU DEMAND",
                 rent_1_station: "Rent - 1 Station", rent_2_station: "Rent - 2 Stations", rent_3_station: "Rent - 3 Stations", rent_4_station: "Rent - 4 Stations",
                 rent_1_utility: "If 1 Utility is owned, rent is 400x amount shown on dice.", rent_2_utility: "If 2 Utilities are owned, rent is 1000x amount shown on dice.", utility_title: "Utility", station_title: "Station",
                 card_cost: "TITLE DEED VALUE L. {0}", rent_double_rule: "If a player owns ALL the Lots of any Color-Group, the rent is Doubled on Unimproved Lots in that group.",
                 house_cost_each: "Houses cost", hotel_cost_plus: "Hotels, L. {0} plus 4 houses",
                 go_text: "GO", parking_1: "FREE", parking_2: "PARKING", jail_in: "IN", jail_jail: "JAIL", jail_transit_1: "JUST", jail_transit_2: "VISITING", goto_1: "GO TO", goto_2: "JAIL",
+                rules_toc: ["1. Goal", "2. The Play", "3. Buying Properties", "4. Paying Rent", "5. Houses & Hotels", "6. Jail", "7. Trading", "8. Mortgages & Bankruptcy"],
+                rules_sections: [
+                    { title: "1. Goal", content: "The object of the game is to become the wealthiest player through buying, renting and selling property." },
+                    { title: "2. The Play", content: "Tap the dice to roll. Players move their token around the board. If you pass 'GO', you collect L. 20,000." },
+                    { title: "3. Buying Properties", content: "When you land on an unowned property, you can buy it from the Bank at its printed price. If you do not wish to buy it, you can pass." },
+                    { title: "4. Paying Rent", content: "If you land on a property owned by another player, you must pay them rent. Tap your banknotes from 'Your Wallet' to 'Your Tray' to make the payment. Rent is doubled if the owner holds the complete color set and the property is unimproved." },
+                    { title: "5. Houses & Hotels", content: "Once a player owns all properties of a color group, they can build houses. Building must be uniform (you cannot build a second house on one property until all properties in the group have one house). 4 houses can be upgraded to a hotel." },
+                    { title: "6. Jail", content: "You go to Jail if you land on 'Go To Jail', or draw a 'Go to Jail' card. To get out, you must either: (1) use a Get Out of Jail Free card, (2) pay a fine of L. 5,000, or (3) roll doubles within 3 turns." },
+                    { title: "7. Trading", content: "You can trade properties and cash with other players anytime between turns using the 'SELL PROPERTY' button. Properties cannot be traded if there are buildings on ANY property in that color group." },
+                    { title: "8. Mortgages & Bankruptcy", content: "Unimproved properties can be mortgaged through the Bank at any time for half their value. If you owe more money than you can pay, you are Bankrupt and out of the game." }
+                ],
                 props: [
                     "", "MEDITERRANEAN<br>AVE.", "", "BALTIC<br>AVE.", "INCOME<br>TAX", "READING<br>RAILROAD",
                     "ORIENTAL<br>AVE.", "", "VERMONT<br>AVE.", "CONNECTICUT<br>AVE.", "",
@@ -601,22 +613,22 @@
                 jail_card_label: "Carta Libre de Cárcel", accept: "Aceptar", reject: "Rechazar", no_buildings_trade: "¡Vende los edificios al banco primero!",
                 not_enough_cash_trade: "¡Fondos insuficientes para el intercambio!", trade_success: "¡Intercambio completado con éxito!", trade_propose_title: "¡Propuesta de intercambio enviada!",
                 trade_received_from: "propuso un trato:", trade_asks: "Pide:", trade_gives: "Ofrece:", pay_jail: "Pagar L. 5.000 para salir", use_jail_card: "Usar Carta de Cárcel", or_label: "O",
-                rules_goal: "🎯 Objetivo", rules_goal_desc: "Arruina a tus rivales comprando y urbanizando solares.",
-                rules_move: "🎲 Mover y Cárcel", rules_move_desc: "Toca los dados. En prisión, puedes pagar L. 5.000, sacar dobles o usar carta libre.",
-                rules_mortgage: "🏚️ Hipotecas y Banco", rules_mortgage_desc: "Hipoteca solares por 50% de valor. Vende casas al banco a mitad de precio de forma uniforme.",
-                rules_trades: "🤝 Intercambios", rules_trades_desc: "Negocia entre turnos con el botón VENDER PROPIEDAD. Los grupos con casas no se pueden negociar.",
-                need_2_players: "Añade al menos 2 jugadores", jail_turn_msg: "Turno {0} de 3 en Cárcel para {1}. ¿Cómo proceder?", roll_doubles: "Intentar Dobles", 
-                msg_double_free: "🎲 ¡DOBLES! ¡Eres libre!", msg_no_double: "❌ No hay dobles. ¡Te quedas en la cárcel!", msg_jail_must_pay: "⚠️ ¡Han pasado 3 turnos! ¡Debes pagar fianza!", 
-                msg_paid_bail: "🔓 Fianza pagada. ¡Eres libre!", msg_used_jail_card: "🎫 Carta Libre usada. ¡Eres libre!", msg_mortgaged: "🏚️ {0} HIPOTECADA. Recibes L. {1}", 
-                msg_insufficient_unmortgage: "⚠️ ¡Fondos insuficientes!", msg_unmortgaged: "🔓 {0} redimida.", msg_sell_uniform: "⚠️ ¡Vende edificios uniformemente primero!", 
-                msg_sold_house: "🏗️ Edificio vendido por L. {0}", msg_build_uniform: "⚠️ ¡Construye uniformemente!", 
-                msg_no_trade_partner: "⚠️ ¡Ningún jugador para negociar!", msg_trade_empty: "⚠️ ¡Propuesta vacía!", msg_trade_rejected: "❌ Intercambio rechazado.", 
-                msg_mortgage_transfer_tax: "ℹ️ Hipoteca transferida a {0}: impuesto 10% L. {1}", msg_winner: "🏆 ¡{0} HA GANADO! 🏆", none_prop: "Ninguna", you_offer: "TÚ OFRECES", you_demand: "TÚ PIDES",
                 rent_1_station: "Alquiler - 1 Estación", rent_2_station: "Alquiler - 2 Estaciones", rent_3_station: "Alquiler - 3 Estaciones", rent_4_station: "Alquiler - 4 Estaciones",
                 rent_1_utility: "Si posee 1 servicio, alquiler es 400x los dados.", rent_2_utility: "Si posee ambos, alquiler es 1000x los dados.", utility_title: "Servicio Público", station_title: "Estación",
                 card_cost: "VALOR DEL TÍTULO L. {0}", rent_double_rule: "Si un jugador posee todos los solares de un Grupo de Color, el alquiler de los solares sin edificar se duplica.",
                 house_cost_each: "Coste de cada Casa", hotel_cost_plus: "Coste de un Hotel L. {0} más 4 casas",
                 go_text: "SALIDA", parking_1: "PARKING", parking_2: "GRATUITO", jail_in: "EN LA", jail_jail: "CÁRCEL", jail_transit_1: "SÓLO", jail_transit_2: "VISITAS", goto_1: "VE A LA", goto_2: "CÁRCEL",
+                rules_toc: ["1. Objetivo", "2. El Juego", "3. Comprar Propiedades", "4. Pagar Alquiler", "5. Casas y Hoteles", "6. Cárcel", "7. Intercambios", "8. Hipotecas y Bancarrota"],
+                rules_sections: [
+                    { title: "1. Objetivo", content: "El objetivo del juego es convertirse en el jugador más rico comprando, alquilando y vendiendo propiedades." },
+                    { title: "2. El Juego", content: "Toca los dados para lanzarlos. Si pasas por la casilla de 'SALIDA', cobras L. 20.000." },
+                    { title: "3. Comprar Propiedades", content: "Cuando caes en una propiedad libre, puedes comprarla al Banco por su precio impreso." },
+                    { title: "4. Pagar Alquiler", content: "Si caes en una propiedad ajena, debes pagar alquiler. Toca tus billetes para moverlos de la Cartera a la Bandeja de pago. El alquiler se duplica si el propietario tiene el grupo de color completo (sin construir)." },
+                    { title: "5. Casas y Hoteles", content: "Al poseer todas las propiedades de un color, puedes construir casas. La construcción debe ser uniforme en todo el grupo." },
+                    { title: "6. Cárcel", content: "Vas a la cárcel si caes en 'Ve a la Cárcel' o sacas la carta correspondiente. Para salir: usa una carta especial, paga L. 5.000, o saca dobles en 3 turnos." },
+                    { title: "7. Intercambios", content: "Usa el botón 'VENDER PROPIEDAD' para negociar en cualquier momento. No puedes negociar propiedades de un color que contenga edificios." },
+                    { title: "8. Hipotecas y Bancarrota", content: "Puedes hipotecar propiedades sin edificios por la mitad de su valor. Si debes más de lo que tienes, quedas en Bancarrota y pierdes." }
+                ],
                 props: [
                     "", "RONDA DE<br>VALENCIA", "", "PLAZA<br>LAVAPIÉS", "IMPUESTO<br>RENTA", "ESTACIÓN<br>DE GOYA",
                     "GLORIETA<br>CUATRO CAMINOS", "", "AVENIDA<br>REINA VICTORIA", "CALLE<br>BRAVO MURILLO", "",
@@ -645,22 +657,22 @@
                 jail_card_label: "Carta Livre da Prisão", accept: "Aceitar", reject: "Rejeitar", no_buildings_trade: "Primeiro venda os edifícios ao banco.",
                 not_enough_cash_trade: "Fundos insuficientes para a troca!", trade_success: "Troca concluída com sucesso!", trade_propose_title: "Proposta de troca enviada!",
                 trade_received_from: "propôs uma troca:", trade_asks: "Pede:", trade_gives: "Oferece:", pay_jail: "Pagar L. 5.000 para sair", use_jail_card: "Usar Carta de Prisão", or_label: "OU",
-                rules_goal: "🎯 Objetivo", rules_goal_desc: "Leve os oponentes à falência comprando e urbanizando propriedades.",
-                rules_move: "🎲 Movimento", rules_move_desc: "Toque nos dados. Na prisão pague L. 5.000, tire duplo ou use carta livre.",
-                rules_mortgage: "🏚️ Hipotecas e Banco", rules_mortgage_desc: "Hipoteque por 50%. As casas devem ser vendidas ao banco por metade de forma uniforme.",
-                rules_trades: "🤝 Negociações", rules_trades_desc: "Negocie com VENDER PROPRIEDADE. Grupos com edifícios não podem ser negociados.",
-                need_2_players: "Adicione pelo menos 2 jogadores", jail_turn_msg: "Turno {0} de 3 na Prisão para {1}. Como proceder?", roll_doubles: "Tentar Duplos", 
-                msg_double_free: "🎲 DUPLOS! Você está livre!", msg_no_double: "❌ Sem duplos. Continua na prisão!", msg_jail_must_pay: "⚠️ 3 turnos passados! Pague a fiança!", 
-                msg_paid_bail: "🔓 Fiança paga. Livre!", msg_used_jail_card: "🎫 Carta Livre usada. Livre!", msg_mortgaged: "🏚️ {0} HIPOTECADA. L. {1}", 
-                msg_insufficient_unmortgage: "⚠️ Fundos insuficientes!", msg_unmortgaged: "🔓 {0} resgatada.", msg_sell_uniform: "⚠️ Venda edifícios uniformemente primeiro!", 
-                msg_sold_house: "🏗️ Edifício vendido por L. {0}", msg_build_uniform: "⚠️ Construa uniformemente!", 
-                msg_no_trade_partner: "⚠️ Nenhum jogador para negociar!", msg_trade_empty: "⚠️ Proposta vazia!", msg_trade_rejected: "❌ Troca rejeitada.", 
-                msg_mortgage_transfer_tax: "ℹ️ Hipoteca transferida a {0}: 10% L. {1}", msg_winner: "🏆 {0} VENCEU! 🏆", none_prop: "Nenhuma", you_offer: "TU OFERECES", you_demand: "TU PEDES",
                 rent_1_station: "Aluguel - 1 Estação", rent_2_station: "Aluguel - 2 Estações", rent_3_station: "Aluguel - 3 Estações", rent_4_station: "Aluguel - 4 Estações",
                 rent_1_utility: "Com 1 serviço, aluguel é 400x os dados.", rent_2_utility: "Com ambos, aluguel é 1000x os dados.", utility_title: "Serviço", station_title: "Estação",
                 card_cost: "VALOR DO TÍTULO L. {0}", rent_double_rule: "Se um jogador possui todos os terrenos de um Grupo de Cor, o aluguel dos terrenos sem edifícios é duplicado.",
                 house_cost_each: "Custo de cada Casa", hotel_cost_plus: "Custo de um Hotel L. {0} mais 4 casas",
                 go_text: "PARTIDA", parking_1: "ESTACIONAMENTO", parking_2: "LIVRE", jail_in: "NA", jail_jail: "PRISÃO", jail_transit_1: "SÓ", jail_transit_2: "VISITAS", goto_1: "VÁ PARA A", goto_2: "PRISÃO",
+                rules_toc: ["1. Objetivo", "2. O Jogo", "3. Comprar Propriedades", "4. Pagar Aluguel", "5. Casas e Hotéis", "6. Prisão", "7. Negociações", "8. Hipotecas e Falência"],
+                rules_sections: [
+                    { title: "1. Objetivo", content: "O objetivo é ser o jogador mais rico, comprando e vendendo propriedades." },
+                    { title: "2. O Jogo", content: "Toque nos dados para jogar. Se passar pela casa 'PARTIDA', recebe L. 20.000." },
+                    { title: "3. Comprar Propriedades", content: "Ao cair num terreno livre, pode comprá-lo pelo preço impresso." },
+                    { title: "4. Pagar Aluguel", content: "Se cair na propriedade de outro jogador, deve pagar aluguel. Toque nas notas para mover o dinheiro. O valor dobra se o dono tiver a cor completa sem casas." },
+                    { title: "5. Casas e Hotéis", content: "Ao possuir todos os terrenos de uma cor, pode construir casas de forma uniforme." },
+                    { title: "6. Prisão", content: "Vai para a prisão ao tirar a carta ou cair na casa correspondente. Pague L. 5.000, tire duplos ou use a carta especial para sair." },
+                    { title: "7. Negociações", content: "Troque propriedades com o botão 'VENDER PROPRIEDADE'. Não pode trocar terrenos de uma cor que tenha edifícios." },
+                    { title: "8. Hipotecas e Falência", content: "Pode hipotecar terrenos livres por metade do valor. Se dever mais do que pode pagar, declara falência e é eliminado." }
+                ],
                 props: [
                     "", "CAMPO<br>GRANDE", "", "RUA<br>MARIA PIA", "IMPOSTO<br>DE RENDA", "ESTAÇÃO<br>DO ROSSIO",
                     "PRAÇA<br>DA ALEGRIA", "", "RUA<br>JÚLIO DINIS", "RUA<br>AUGUSTA", "",
@@ -689,22 +701,22 @@
                 jail_card_label: "Carta Uscita Gratis", accept: "Accetta Accordo", reject: "Rifiuta", no_buildings_trade: "Devi prima smantellare le case di questo colore.",
                 not_enough_cash_trade: "Fondi insufficienti per l'accordo!", trade_success: "Scambio concluso con successo!", trade_propose_title: "Proposta di scambio inviata!",
                 trade_received_from: "ti offre un accordo:", trade_asks: "Richiede da te:", trade_gives: "Ti offre in cambio:", pay_jail: "Paga L. 5.000", use_jail_card: "Usa Carta Uscita Gratis", or_label: "OPPURE",
-                rules_goal: "🎯 Scopo del gioco", rules_goal_desc: "Manda in bancarotta gli avversari acquistando terreni e sviluppandoli.",
-                rules_move: "🎲 Movimento", rules_move_desc: "Tocca i dadi per lanciare. In prigione paghi L. 5.000, cerchi un doppio o usi carta speciale.",
-                rules_mortgage: "🏚️ Ipoteca & Smantellamento", rules_mortgage_desc: "Ipotechi liberi al 50%. Case/Alberghi si vendono solo alla Banca a metà prezzo in modo uniforme.",
-                rules_trades: "🤝 Trattative", rules_trades_desc: "Puoi scambiare denaro e contratti con VENDI PROPRIETÀ. Non puoi scambiare colori con edifici.",
-                need_2_players: "Aggiungi almeno 2 giocatori", jail_turn_msg: "Turno {0} di 3 in Prigione per {1}. Come procedere?", roll_doubles: "Tenta il Doppio", 
-                msg_double_free: "🎲 DOPPIO! Sei libero!", msg_no_double: "❌ Nessun doppio. Resti in prigione!", msg_jail_must_pay: "⚠️ 3 turni passati! Paga cauzione!", 
-                msg_paid_bail: "🔓 Cauzione pagata. Libero!", msg_used_jail_card: "🎫 Carta Uscita Gratis usata. Libero!", msg_mortgaged: "🏚️ {0} IPOTECATA. L. {1}", 
-                msg_insufficient_unmortgage: "⚠️ Fondi insufficienti per riscattare!", msg_unmortgaged: "🔓 {0} riscattata.", msg_sell_uniform: "⚠️ Smantella prima dagli altri terreni del colore!", 
-                msg_sold_house: "🏗️ Edificio venduto per L. {0}", msg_build_uniform: "⚠️ Costruisci in modo uniforme!", 
-                msg_no_trade_partner: "⚠️ Nessun altro giocatore attivo!", msg_trade_empty: "⚠️ Lo scambio non contiene elementi!", msg_trade_rejected: "❌ Accordo rifiutato.", 
-                msg_mortgage_transfer_tax: "ℹ️ Ipoteca registrata su {0}: tassa L. {1}", msg_winner: "🏆 {0} HA VINTO! 🏆", none_prop: "Nessuna", you_offer: "TU OFFRI", you_demand: "TU RICHIEDI",
                 rent_1_station: "Rendita - 1 Stazione", rent_2_station: "Rendita - 2 Stazioni", rent_3_station: "Rendita - 3 Stazioni", rent_4_station: "Rendita - 4 Stazioni",
                 rent_1_utility: "Se si possiede 1 società, la rendita è 400x il lancio dei dadi.", rent_2_utility: "Se si possiedono entrambe, la rendita è 1000x il dadi.", utility_title: "Società", station_title: "Stazione",
                 card_cost: "Questo contratto vale L. {0}", rent_double_rule: "Se un giocatore possiede tutti i terreni dello stesso Gruppo di colore, la rendita del solo terreno viene raddoppiata.",
                 house_cost_each: "Costo di ogni Casa", hotel_cost_plus: "Costo di un Albergo L. {0} più 4 Case",
                 go_text: "VIA!", parking_1: "POSTEGGIO", parking_2: "GRATUITO", jail_in: "IN", jail_jail: "PRIGIONE", jail_transit_1: "TRANSITO", jail_transit_2: "TRANSITO", goto_1: "IN", goto_2: "PRIGIONE",
+                rules_toc: ["1. Scopo del gioco", "2. Svolgimento del Turno", "3. Acquisti", "4. Pagamento Affitto", "5. Case e Alberghi", "6. La Prigione", "7. Trattative (Scambi)", "8. Ipoteche e Bancarotta"],
+                rules_sections: [
+                    { title: "1. Scopo del gioco", content: "L'obiettivo del gioco è diventare il giocatore più ricco, mandando in bancarotta gli avversari attraverso l'acquisto, l'affitto e la vendita di proprietà." },
+                    { title: "2. Svolgimento del Turno", content: "Tocca i dadi centrali per lanciare. La tua pedina si muoverà in automatico. Se passando completi un giro e attraversi il VIA!, incassi L. 20.000." },
+                    { title: "3. Acquisti", content: "Quando atterri su una proprietà senza padrone, puoi acquistarla dalla Banca al valore stampato. Se decidi di non comprarla, passa semplicemente il turno." },
+                    { title: "4. Pagamento Affitto", content: "Se atterri sulla proprietà di un altro giocatore, devi pagargli l'affitto. <b>Tocca le tue banconote nel portafoglio</b> per spostarle nel vassoio di pagamento e premi Conferma. L'affitto base raddoppia se il proprietario possiede tutti i terreni di quel colore (senza costruzioni)." },
+                    { title: "5. Case e Alberghi", content: "Quando possiedi tutti i contratti di un gruppo di colore, puoi iniziare a costruire case. La costruzione deve essere uniforme (non puoi mettere 2 case su un terreno se gli altri dello stesso colore ne hanno solo 1). Quattro case possono essere trasformate in un Albergo." },
+                    { title: "6. La Prigione", content: "Finisci in Prigione se atterri su 'In Prigione' o se peschi l'apposita carta. Per uscire puoi: usare la carta speciale 'Uscita Gratis', pagare una cauzione di L. 5.000, oppure tentare di lanciare un punteggio doppio (hai 3 tentativi)." },
+                    { title: "7. Trattative (Scambi)", content: "Puoi fare scambi con gli altri giocatori in qualsiasi momento usando il tasto 'VENDI PROPRIETÀ'. Attenzione: non puoi inserire in una trattativa terreni di un colore se su quel gruppo di colore è stato costruito almeno un edificio (dovrai prima smantellarli rivendendoli alla Banca a metà prezzo)." },
+                    { title: "8. Ipoteche e Bancarotta", content: "Le proprietà senza edifici possono essere ipotecate in qualsiasi momento ricavando la metà del valore d'acquisto. Se devi pagare una cifra superiore a tutto il patrimonio (soldi + ipoteche) sei in Bancarotta e vieni eliminato dalla partita." }
+                ],
                 props: [
                     "", "VICOLO<br>CORTO", "", "VICOLO<br>STRETTO", "TASSA<br>PATRIMONIALE", "STAZIONE SUD",
                     "BASTIONI<br>GRAN SASSO", "", "VIALE<br>MONTEROSA", "VIALE<br>VESUVIO", "",
@@ -741,9 +753,9 @@
             const txt = t('go_text');
             return `<svg viewBox="0 0 100 100" style="width:100%; height:100%;">
                 <g transform="rotate(-45 50 50)">
-                    <text x="50" y="55" font-family="Montserrat, sans-serif" font-weight="900" font-size="34" fill="#e21a22" text-anchor="middle" letter-spacing="2">${txt}</text>
-                    <path d="M 85 70 L 25 70 L 25 65 L 10 75 L 25 85 L 25 80 L 85 80 Z" fill="#e21a22"/>
+                    <text x="50" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="34" fill="#e21a22" text-anchor="middle" letter-spacing="2">${txt}</text>
                 </g>
+                <path d="M 85 75 L 35 75 L 35 70 L 15 80 L 35 90 L 35 85 L 85 85 Z" fill="#e21a22" stroke="#111" stroke-width="1.5"/>
             </svg>`;
         };
 
@@ -757,10 +769,10 @@
                 <rect x="44" y="0" width="4" height="70" fill="#111"/>
                 <rect x="61" y="0" width="4" height="70" fill="#111"/>
                 <rect x="78" y="0" width="4" height="70" fill="#111"/>
-                <text x="65" y="25" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#111" text-anchor="middle">${txtIn}</text>
-                <text x="65" y="45" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#111" text-anchor="middle">${txtJail}</text>
-                <text x="15" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle" transform="rotate(-90 15 50)">${txtTransit1}</text>
-                <text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle">${txtTransit2}</text>
+                <text x="65" y="25" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">${txtIn}</text>
+                <text x="65" y="45" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">${txtJail}</text>
+                <text x="15" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle" transform="rotate(-90 15 50)">${txtTransit1}</text>
+                <text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle">${txtTransit2}</text>
             </svg>`;
         };
 
@@ -769,10 +781,10 @@
             const txt2 = t('parking_2');
             return `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
                 <g transform="rotate(45 50 50)">
-                    <text x="50" y="22" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle">${txt1}</text>
+                    <text x="50" y="22" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle">${txt1}</text>
                     <circle cx="50" cy="50" r="20" fill="#1b73b8" stroke="#111" stroke-width="2"/>
-                    <text x="50" y="62" font-family="Montserrat, sans-serif" font-weight="900" font-size="32" fill="#fff" text-anchor="middle">P</text>
-                    <text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="12" fill="#111" text-anchor="middle">${txt2}</text>
+                    <text x="50" y="60" font-family="Montserrat, sans-serif" font-weight="900" font-size="28" fill="#fff" text-anchor="middle">P</text>
+                    <text x="50" y="88" font-family="Montserrat, sans-serif" font-weight="900" font-size="10" fill="#111" text-anchor="middle">${txt2}</text>
                 </g>
             </svg>`;
         };
@@ -782,12 +794,11 @@
             const txt2 = t('goto_2');
             return `<svg viewBox="0 0 100 100" style="width:100%; height:100%; background-color: var(--cell-bg);">
                 <g transform="rotate(135 50 50)">
-                    <text x="50" y="25" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#111" text-anchor="middle">${txt1}</text>
-                    <!-- Cappello da Poliziotto stilizzato -->
+                    <text x="50" y="25" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">${txt1}</text>
                     <path d="M 25 60 Q 50 30 75 60 L 85 65 L 15 65 Z" fill="#1b73b8" stroke="#111" stroke-width="2"/>
                     <rect x="30" y="50" width="40" height="10" fill="#111"/>
                     <circle cx="50" cy="45" r="5" fill="#ffec19"/>
-                    <text x="50" y="85" font-family="Montserrat, sans-serif" font-weight="900" font-size="14" fill="#111" text-anchor="middle">${txt2}</text>
+                    <text x="50" y="85" font-family="Montserrat, sans-serif" font-weight="900" font-size="11" fill="#111" text-anchor="middle">${txt2}</text>
                 </g>
             </svg>`;
         };
@@ -911,15 +922,28 @@
         }
 
         function showInstructions() {
-            let desc = `
-                <div class="space-y-3">
-                    <p><b>1. ${t('rules_goal')}</b> ${t('rules_goal_desc')}</p>
-                    <p><b>2. ${t('rules_move')}</b> ${t('rules_move_desc')}</p>
-                    <p><b>3. ${t('rules_mortgage')}</b> ${t('rules_mortgage_desc')}</p>
-                    <p><b>4. ${t('rules_trades')}</b> ${t('rules_trades_desc')}</p>
-                    <p><b>5. 💵 Payments:</b> ${currentLang === 'it' ? 'Tocca le banconote per versare o ricevere il resto.' : currentLang === 'es' ? 'Toca tus billetes para pagar.' : currentLang === 'pt' ? 'Toque nas notas para pagar.' : 'Tap your banknotes to complete transactions.'}</p>
-                </div>`;
-            document.getElementById('instructions-content').innerHTML = desc;
+            const tocArr = i18n[currentLang].rules_toc;
+            const sectionsArr = i18n[currentLang].rules_sections;
+            
+            let html = `<div class="mb-4 pb-3 border-b border-gray-300">
+                <p class="font-bold mb-2">Sommario:</p>
+                <ul class="text-[11px] md:text-xs text-blue-600 space-y-1 list-decimal list-inside pl-2">`;
+                
+            tocArr.forEach((item, idx) => {
+                html += `<li><a href="javascript:void(0)" onclick="document.getElementById('rule-${idx}').scrollIntoView({behavior:'smooth'})" class="hover:underline">${item}</a></li>`;
+            });
+            html += `</ul></div><div class="space-y-4 pb-4">`;
+            
+            sectionsArr.forEach((sec, idx) => {
+                html += `
+                    <div id="rule-${idx}" class="pt-2">
+                        <h3 class="font-bold text-red-600 mb-1 border-b border-red-100 pb-1">${sec.title}</h3>
+                        <p class="text-xs leading-relaxed text-gray-700">${sec.content}</p>
+                    </div>`;
+            });
+            
+            html += `</div>`;
+            document.getElementById('instructions-content').innerHTML = html;
             document.getElementById('modal-instructions').style.display = 'flex';
         }
         
