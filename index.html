@@ -1498,6 +1498,8 @@
             const propState = gameState.properties[id];
             
             const maxLevelInGroup = Math.max(...colorGroup.map(c => gameState.properties[c.id].level));
+            
+            // Regola Uniformità in vendita
             if (propState.level < maxLevelInGroup) {
                 showToast("Devi vendere le case in modo uniforme su tutto il gruppo di colore!");
                 return;
@@ -1508,7 +1510,12 @@
             propState.level--;
             updateDashboard();
             refreshBoardVisuals();
-            showToast(`Edificio venduto per L. ${value.toLocaleString('it-IT')}`);
+            
+            if (propState.level === 4) {
+                showToast(`Albergo smantellato (tornato a 4 case). Incassati L. ${value.toLocaleString('it-IT')}`);
+            } else {
+                showToast(`Edificio venduto per L. ${value.toLocaleString('it-IT')}`);
+            }
         }
 
         function buildMultipleHouses(cellId) {
@@ -1959,17 +1966,16 @@
         }
 
         let currentPayment = { amount: 0, callback: null, traySum: 0, wallet: [], tray: [], isMandatory: false };
+        let returningToPayment = false;
 
         function openPayment(amount, reason, callback, isMandatory = false) {
-            const p = gameState.players[gameState.currentPlayerIdx];
-            if (p.balance < amount) { 
-                showToast(`⚠️ ${t('bankrupt_msg')} ${p.name}!`); 
-                p.balance = -1; 
-                endTurn(); 
-                return; 
-            }
             closeModal();
-            currentPayment = { amount: amount, callback: callback, traySum: 0, wallet: getNotesArray(p.balance), tray: [], isMandatory: isMandatory };
+            const p = gameState.players[gameState.currentPlayerIdx];
+            
+            // Invece di mandare in bancarotta automatica, diamo al giocatore 
+            // la chance di vendere case o ipotecare aprendo il modale
+            
+            currentPayment = { amount: amount, callback: callback, traySum: 0, wallet: getNotesArray(p.balance), tray: [], isMandatory: isMandatory, reason: reason };
             document.getElementById('pay-title').innerText = reason; 
             renderPaymentUI();
             document.getElementById('modal-payment').style.display = 'flex';
@@ -1994,7 +2000,32 @@
             } else {
                 sumEl.className = "float-right text-red-600 font-bold text-lg"; btnConfirm.disabled = true; btnConfirm.innerText = t('confirm_pay');
             }
-            btnCancel.style.display = currentPayment.isMandatory ? 'none' : 'inline-flex';
+            
+            if (currentPayment.isMandatory) {
+                btnCancel.style.display = 'inline-flex';
+                btnCancel.className = 'btn bg-black text-white';
+                btnCancel.innerText = t('declare_bankruptcy');
+                btnCancel.onclick = declareBankruptcy;
+            } else {
+                btnCancel.style.display = 'inline-flex';
+                btnCancel.className = 'btn';
+                btnCancel.innerText = t('cancel');
+                btnCancel.onclick = cancelPayment;
+            }
+        }
+
+        function openManagerFromPayment() {
+            document.getElementById('modal-payment').style.display = 'none';
+            returningToPayment = true;
+            showPlayerProperties(gameState.currentPlayerIdx);
+        }
+
+        function declareBankruptcy() {
+            document.getElementById('modal-payment').style.display = 'none';
+            const currP = gameState.players[gameState.currentPlayerIdx];
+            showToast(`⚠️ ${t('bankrupt_msg')} ${currP.name}!`); 
+            currP.balance = -1; // Forza Bancarotta in endTurn
+            endTurn();
         }
 
         function moveNoteToTray(index) { const val = currentPayment.wallet.splice(index, 1)[0]; currentPayment.tray.push(val); currentPayment.traySum += val; renderPaymentUI(); }
@@ -2008,7 +2039,20 @@
             else { content.className = 'modal-box'; content.style.backgroundColor = '#fdfbf7'; }
             document.getElementById('modal-action').style.display = 'flex'; 
         }
-        function closeModal() { document.getElementById('modal-action').style.display = 'none'; }
+        
+        function closeModal() { 
+            document.getElementById('modal-action').style.display = 'none'; 
+            if (returningToPayment) {
+                returningToPayment = false;
+                const p = gameState.players[gameState.currentPlayerIdx];
+                // Ricalcola il portafoglio dopo eventuali vendite (restituiamo il vassoio)
+                currentPayment.wallet = getNotesArray(p.balance); 
+                currentPayment.tray = [];
+                currentPayment.traySum = 0;
+                renderPaymentUI();
+                document.getElementById('modal-payment').style.display = 'flex';
+            }
+        }
 
         function endTurn() {
             closeModal(); gameState.isMoving = false;
