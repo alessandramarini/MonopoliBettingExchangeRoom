@@ -91,11 +91,15 @@
         .box-mr-mono { font-size: clamp(28px, 5.5vw, 55px); filter: drop-shadow(2px 2px 0 rgba(255,255,255,0.8)); }
         .box-dollar { color: #4da85d; font-size: clamp(35px, 7vw, 70px); font-weight: 900; font-family: 'Montserrat', sans-serif; line-height: 0.8; text-shadow: 1px 1px 0 #fff;}
 
-        .click-to-start { position: absolute; bottom: 4vh; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #111; font-size: clamp(14px, 4vw, 20px); letter-spacing: 2px; animation: pulse 1.5s infinite; background: rgba(255,255,255,0.7); padding: 10px 20px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .intro-actions { position: absolute; bottom: 4vh; display: flex; flex-direction: column; align-items: center; gap: 1.5vh; z-index: 10000; }
+        .click-to-start { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #111; font-size: clamp(14px, 4vw, 20px); letter-spacing: 2px; animation: pulse 1.5s infinite; background: rgba(255,255,255,0.9); padding: 10px 25px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         @keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
+        
+        .rules-btn { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #fff; background: #e62c26; padding: 10px 24px; font-size: clamp(12px, 3vw, 15px); border-radius: 30px; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.4); cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        .rules-btn:hover { transform: scale(1.05); background: #c21920; }
 
-        /* --- STREAMING_CHUNK:Styling the Game Board Layout --- */
-        #app-container { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative; }
+        /* Contenitore Principale Gioco */
+        #app-container { display: flex; align-items: center; justify-content: center; width: 100dvw; height: 100dvh; position: relative; }
 
         #board-area {
             position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
@@ -342,9 +346,10 @@
             .box-blue-sq { width: 60%; padding: 15px 0; border-radius: 4px; }
             .box-icon-group { flex-direction: row; gap: 30px; }
             .box-red-stripe { position: relative; transform: none; top: 0; height: auto; padding: 15px 0; margin: 15px 0; }
-            .click-to-start { bottom: 2vh; }
+            .intro-actions { bottom: 2vh; }
         }
 
+        /* Gestione Schermi Bassi Orizzontali */
         @media (max-height: 700px) {
             .modal-box { padding: 12px; max-height: 96dvh; }
             .flip-container { max-width: 260px; }
@@ -381,17 +386,22 @@
             </div>
             <div class="box-red-stripe"><span class="box-title" data-i18n="monopoly">MONOPOLY</span></div>
             <div class="box-bottom-row">
-                <div class="box-blue-sq"><span class="box-logo-text">Editrice Giochi<br><span style="font-size: 0.5em; font-family: sans-serif; font-style: normal; letter-spacing: 2px;">MILANO</span></span></div>
+                <div class="box-blue-sq">
+                    <span class="box-logo-text">Editrice Giochi<br><span style="font-size: 0.5em; font-family: sans-serif; font-style: normal; letter-spacing: 2px;">MILANO</span></span>
+                </div>
                 <div class="box-icon-group">
                     <div class="box-trains">🚂 <span class="box-mr-mono">🎩</span> 🚂</div>
                     <div class="box-dollar">$</div>
                 </div>
             </div>
         </div>
-        <div class="click-to-start" id="intro-click-text">CLICK TO START</div>
+        
+        <div class="intro-actions">
+            <button class="rules-btn" onclick="showInstructions(event)" data-i18n="btn_rules"></button>
+            <div class="click-to-start" id="intro-click-text">CLICK TO START</div>
+        </div>
     </div>
 
-    <!-- UI Elements -->
     <div id="toast-container"></div>
     <div id="player-zones">
         <div id="pz-0" class="player-zone pz-bottom" style="display:none;"></div>
@@ -442,6 +452,17 @@
     </div>
 
     <!-- Modals -->
+    <div id="modal-rules" class="modal-overlay" style="z-index: 10001;">
+        <div class="modal-box-wrapper" style="transform: scale(1) rotate(0deg)">
+            <div class="modal-box" style="max-width: 600px; max-height: 85vh; text-align: left; padding: 20px;">
+                <h2 class="text-xl md:text-2xl font-black mb-3 font-['Montserrat'] text-red-600 border-b-2 border-gray-200 pb-2 uppercase" data-i18n="rules_title"></h2>
+                <div class="overflow-y-auto pr-2 text-xs md:text-sm leading-relaxed text-gray-800 flex flex-col gap-3 font-medium" id="rules-content" data-i18n="rules_text">
+                </div>
+                <button class="btn mt-4 w-full text-sm py-3" onclick="hideInstructions(event)" data-i18n="ok_btn"></button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-setup" class="modal-overlay">
         <div class="modal-box-wrapper" style="transform: scale(1) rotate(0deg)">
             <div class="modal-box" style="max-width: 480px;">
@@ -491,12 +512,24 @@
     <script>
         function escapeHTML(str) {
             if (!str) return '';
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
         }
+
+        // MOTORE DI GESTIONE EVENTI (CARTE) CON ID STRUTTURATI E LOGICA CORRETTA
+        // Ogni lingua ha il suo array di stringhe, che mappa perfettamente sulle stesse logiche fisse.
         
         const i18n = {
             'en': {
                 monopoly: "MONOPOLY", setup_desc: "Enter names and choose token", btn_add_player: "+ Player", btn_start: "START GAME", click_start: "CLICK TO START",
+                btn_rules: "HOW TO PLAY", rules_title: "Game Rules", rules_text: "<b>OBJECTIVE:</b> Become the wealthiest player by forcing opponents into bankruptcy.<br><br><b>YOUR TURN:</b> Roll the dice and move. You can buy properties, pay rent, draw cards, or go to Jail.<br><br><b>PROPERTIES:</b> If unowned, buy it. If owned, pay rent automatically.<br><br><b>BUILDING:</b> Own <b>all colors of a set</b> (Monopoly), click your name below, open your properties, <b>tap the card to flip it</b>, and click BUILD.<br><br><b>BANKRUPTCY:</b> If you owe more than you have, you're out!",
                 chance_title: "CHANCE", chest_title: "COMMUNITY CHEST", player: "Player",
                 prop_title: "Title Deed", rent_base: "Rent - Site only", with_house: "With", houses: "Houses", hotel: "HOTEL", mortgage: "Mortgage Value", house_cost: "House/Hotel Cost",
                 buy_btn: "BUY", pass_btn: "PASS", pay_btn: "PAY RENT", your_prop: "Your Property", build_btn: "BUILD", end_turn: "END TURN", ok_btn: "OK",
@@ -524,10 +557,18 @@
                     "PACIFIC<br>AVE.", "NORTH CAROLINA<br>AVE.", "", "PENNSYLVANIA<br>AVE.", "SHORT LINE<br>RAILROAD",
                     "", "PARK<br>PLACE", "LUXURY<br>TAX", "BOARDWALK"
                 ],
-                events: ["Go directly to jail, do not pass GO", "Advance to Boardwalk", "Advance to Mediterranean Ave.", "You inherit 10,000", "Income from shares, collect 15,000", "Speeding fine: pay 1,500"]
+                events: [
+                    "Go directly to jail, do not pass GO", 
+                    "Advance to Boardwalk", 
+                    "Advance to Mediterranean Ave.", 
+                    "You inherit 10,000", 
+                    "Income from shares, collect 15,000", 
+                    "Speeding fine: pay 1,500"
+                ]
             },
             'es': {
                 monopoly: "MONOPOLY", setup_desc: "Ingresa nombres y ficha", btn_add_player: "+ Jugador", btn_start: "EMPEZAR", click_start: "CLIC PARA EMPEZAR",
+                btn_rules: "CÓMO JUGAR", rules_title: "Reglas del Juego", rules_text: "<b>OBJETIVO:</b> Ser el más rico llevando a tus oponentes a la bancarrota.<br><br><b>TU TURNO:</b> Tira los dados y mueve. Puedes comprar propiedades, pagar alquiler, robar cartas o ir a la Cárcel.<br><br><b>PROPIEDADES:</b> Si está libre, cómprala. Si tiene dueño, paga alquiler automáticamente.<br><br><b>CONSTRUIR:</b> Ten <b>todos los colores de un grupo</b> (Monopolio), haz clic en tu nombre abajo, abre tus propiedades, <b>toca la carta para girarla</b> y haz clic en CONSTRUIR.<br><br><b>BANCARROTA:</b> Si debes más de lo que tienes, ¡quedas eliminado!",
                 chance_title: "SUERTE", chest_title: "CAJA DE COMUNIDAD", player: "Jug.",
                 prop_title: "Título de Propiedad", rent_base: "Alquiler - Solo solar", with_house: "Con", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecario", house_cost: "Coste Casa/Hotel",
                 buy_btn: "COMPRAR", pass_btn: "PASAR", pay_btn: "PAGAR ALQUILER", your_prop: "Tu Propiedad", build_btn: "CONSTRUIR", end_turn: "FIN DE TURNO", ok_btn: "OK",
@@ -555,10 +596,18 @@
                     "PUERTA<br>DEL SOL", "CALLE<br>ALCALÁ", "", "GRAN<br>VÍA", "ESTACIÓN<br>NORTE",
                     "", "PASEO DE LA<br>CASTELLANA", "IMPUESTO<br>DE LUJO", "PASEO<br>DEL PRADO"
                 ],
-                events: ["Ve directamente a la cárcel sin pasar por SALIDA", "Avanza al Paseo del Prado", "Avanza a Ronda de Valencia", "Heredas 10.000", "Ingresos por acciones, cobra 15.000", "Multa velocidad: paga 1.500"]
+                events: [
+                    "Ve directamente a la cárcel sin pasar por SALIDA", 
+                    "Avanza al Paseo del Prado", 
+                    "Avanza a Ronda de Valencia", 
+                    "Heredas 10.000", 
+                    "Ingresos por acciones, cobra 15.000", 
+                    "Multa velocidad: paga 1.500"
+                ]
             },
             'pt': {
                 monopoly: "MONOPÓLIO", setup_desc: "Insira os nomes e escolha o peão", btn_add_player: "+ Jogador", btn_start: "INICIAR JOGO", click_start: "CLIQUE PARA INICIAR",
+                btn_rules: "COMO JOGAR", rules_title: "Regras do Jogo", rules_text: "<b>OBJETIVO:</b> Ser o mais rico levando seus oponentes à falência.<br><br><b>SEU TURNO:</b> Jogue os dados e mova. Você pode comprar propriedades, pagar aluguel, tirar cartas ou ir para a Prisão.<br><br><b>PROPRIEDADES:</b> Se livre, compre. Se tiver dono, pague aluguel automaticamente.<br><br><b>CONSTRUIR:</b> Tenha <b>todas as cores de um grupo</b> (Monopólio), clique no seu nome abaixo, abra suas propriedades, <b>toque na carta para virá-la</b> e clique em CONSTRUIR.<br><br><b>FALÊNCIA:</b> Se dever mais do que tem, você está fora!",
                 chance_title: "PROBABILIDADE", chest_title: "IMPREVISTOS", player: "Jog.",
                 prop_title: "Título de Propriedade", rent_base: "Aluguel - Só terreno", with_house: "Com", houses: "Casas", hotel: "HOTEL", mortgage: "Valor Hipotecário", house_cost: "Custo Casa/Hotel",
                 buy_btn: "COMPRAR", pass_btn: "PASSAR", pay_btn: "PAGAR ALUGUEL", your_prop: "Sua Propriedade", build_btn: "CONSTRUIR", end_turn: "FIM DE TURNO", ok_btn: "OK",
@@ -568,7 +617,7 @@
                 go_msg: "Passou por PARTIDA! Receba 20.000", go_jail_btn: "VÁ PARA A PRISÃO!", winner: "VENCEU O JOGO!", insuff_funds: "Fundos insuficientes!",
                 
                 props_of: "Propriedades de", no_props: "Nenhuma propriedade.", flip_hint: "👆 Toque na carta para virar", click_card_hint: "Clique numa carta para ver os detalhes, virar e construir.",
-                monopoly_req: "Reglas Originais: Você deve possuir todas as cores do grupo para construir.", curr_level: "Nível atual", 
+                monopoly_req: "Regras Originais: Você deve possuir todas as cores do grupo para construir.", curr_level: "Nível atual", 
                 back_btn: "VOLTAR", build_btn_card: "CONSTRUIR", cannot_build: "NÃO PODE", max_level: "NÍVEL MÁX", monopoly_yes: "SIM", monopoly_no: "NÃO",
                 
                 go_main: "PARTIDA", go_sub1: "RECEBA 20.000", go_sub2: "AO PASSAR",
@@ -586,10 +635,18 @@
                     "RUA<br>DAS FLORES", "AV. FONTES<br>PEREIRA DE MELO", "", "ROTUNDA<br>DA BOAVISTA", "ESTAÇÃO<br>DO ORIENTE",
                     "", "AVENIDA<br>CLÉRIGOS", "IMPOSTO<br>DE LUXO", "ROSSIO"
                 ],
-                events: ["Vá diretamente para a prisão, sem passar pela PARTIDA", "Avance até ao Rossio", "Avance até ao Campo Grande", "Você herda 10.000", "Rendimentos de ações, receba 15.000", "Multa de velocidade: pague 1.500"]
+                events: [
+                    "Vá diretamente para a prisão, sem passar pela PARTIDA", 
+                    "Avance até ao Rossio", 
+                    "Avance até ao Campo Grande", 
+                    "Você herda 10.000", 
+                    "Rendimentos de ações, receba 15.000", 
+                    "Multa de velocidade: pague 1.500"
+                ]
             },
             'it': {
                 monopoly: "MONÒPOLI", setup_desc: "Inserisci i nomi e scegli la pedina", btn_add_player: "+ Giocatore", btn_start: "INIZIA PARTITA", click_start: "CLICCA PER INIZIARE",
+                btn_rules: "COME GIOCARE", rules_title: "Regole del Gioco", rules_text: "<b>OBIETTIVO:</b> Diventare il più ricco portando gli avversari alla bancarotta.<br><br><b>IL TUO TURNO:</b> Lancia i dadi e muoviti. Puoi comprare proprietà, pagare l'affitto, pescare carte o andare in Prigione.<br><br><b>PROPRIETÀ:</b> Se libera, comprala. Se di altri, paga l'affitto automaticamente.<br><br><b>COSTRUIRE:</b> Quando possiedi <b>tutti i terreni di uno stesso colore</b> (Monopolio), clicca sul tuo nome in basso, apri le tue proprietà, <b>tocca la carta per girarla</b> e clicca su COSTRUISCI.<br><br><b>BANCAROTTA:</b> Se non puoi pagare i tuoi debiti, sei eliminato!",
                 chance_title: "PROBABILITÀ", chest_title: "IMPREVISTI", player: "Gioc.",
                 prop_title: "Titolo di Proprietà", rent_base: "Rendita - Solo terreno", with_house: "Con", houses: "Case", hotel: "ALBERGO", mortgage: "Valore ipotecario", house_cost: "Costo Casa/Alb.",
                 buy_btn: "COMPRA", pass_btn: "PASSA", pay_btn: "PAGA AFFITTO", your_prop: "Tua Proprietà", build_btn: "COSTRUISCI", end_turn: "FINE TURNO", ok_btn: "OK",
@@ -765,7 +822,20 @@
         function hideIntro() {
             const intro = document.getElementById('intro-screen');
             intro.style.opacity = '0';
-            setTimeout(() => { intro.style.visibility = 'hidden'; document.getElementById('modal-setup').style.display = 'flex'; }, 400);
+            setTimeout(() => {
+                intro.style.display = 'none';
+                document.getElementById('modal-setup').style.display = 'flex';
+            }, 500);
+        }
+
+        function showInstructions(e) {
+            if(e) e.stopPropagation();
+            document.getElementById('modal-rules').style.display = 'flex';
+        }
+        
+        function hideInstructions(e) {
+            if(e) e.stopPropagation();
+            document.getElementById('modal-rules').style.display = 'none';
         }
 
         function showToast(msg) {
