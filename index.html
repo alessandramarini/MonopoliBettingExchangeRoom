@@ -9,205 +9,186 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* Colori Tabellone Classico Editrice Giochi (campionati fedelmente) */
-            --bg-board: #acc4b1; /* Verde salvia centrale esatto */
+            /* Colori Tabellone Classico Editrice Giochi */
+            --bg-board: #acc4b1;
             --border-color: #1a1a1a;
-            --cell-bg: #e8ecd3; /* Fondo caselle */
+            --cell-bg: #e8ecd3;
             
-            /* Colori Proprietà Originali */
+            /* Colori Proprietà */
             --brown: #8e5033; --lightblue: #8ed6ef; --pink: #db2b6c;
             --orange: #f5821c; --red: #e62c26; --yellow: #ffec19;
             --green: #41ab5d; --darkblue: #1b73b8;
             
-            /* Colori Carte Fedeli (senza bianco) */
-            --prob-color: #d1dac5; /* Verde-giallino chiaro */
-            --impr-color: #f79854; /* Arancione pastello */
+            /* Colori Carte */
+            --prob-color: #d1dac5;
+            --impr-color: #f79854;
             
-            /* Colori Banconote */
+            /* Banconote */
             --c100: #65a5d1; --c1000: #7aba83; --c10000: #d8c4a9; --c50000: #e4808a;
 
-            --paper-tex: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-            --table-tex: radial-gradient(circle at center, #2a3b2e 0%, #0a120c 100%);
+            /* Texture realistiche */
+            --paper-tex: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            --table-bg: radial-gradient(circle at center, #2e4133 0%, #111a14 100%);
         }
 
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background: var(--table-tex); color: #111; margin: 0; padding: 0;
+            background: var(--table-bg); color: #111; margin: 0; padding: 0;
             overflow: hidden; touch-action: none; user-select: none;
             -webkit-user-select: none; -webkit-font-smoothing: antialiased;
         }
 
-        /* --- SCHERMATA INTRODUTTIVA (SCATOLA) --- */
+        /* --- SCHERMATA INTRODUTTIVA (SCATOLA) RIVOLUZIONATA E FLUIDA --- */
         #intro-screen {
             position: fixed; inset: 0; z-index: 9999;
-            background-color: #eee5d3; background-image: var(--paper-tex);
+            background-color: #f4ede1; background-image: var(--paper-tex);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; transition: opacity 0.5s ease;
+            cursor: pointer; transition: opacity 0.5s ease; padding: 5vw;
         }
+        
         .box-replica {
-            position: relative; width: 90vw; max-width: 800px; aspect-ratio: 2 / 1;
-            background-color: #eee5d3; box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.05);
-            border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; justify-content: center;
+            position: relative; width: 100%; max-width: 850px; aspect-ratio: 2 / 1;
+            background-color: #f4ede1; box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.05);
+            border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
+            background-image: var(--paper-tex); transition: transform 0.3s ease;
         }
+        .box-replica:hover { transform: scale(1.02) translateY(-5px); }
+
+        .box-top-row { display: flex; align-items: center; justify-content: space-between; padding: 4% 8%; flex: 1; z-index: 2;}
+        .box-bottom-row { display: flex; align-items: flex-end; justify-content: space-between; padding: 4% 8%; flex: 1; z-index: 2;}
+
         .box-red-stripe {
-            position: absolute; top: 45%; left: 0; width: 100%; height: 16%;
-            background-color: #d12027; display: flex; align-items: center; justify-content: center;
-            border-top: 2px solid #b01a20; border-bottom: 2px solid #b01a20; z-index: 10;
+            position: absolute; top: 50%; left: 0; width: 100%; transform: translateY(-50%); height: 18%;
+            background: linear-gradient(to bottom, #e0252b, #c21920); display: flex; align-items: center; justify-content: center;
+            border-top: 3px solid #9e141a; border-bottom: 3px solid #9e141a; z-index: 10;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .box-title { font-family: 'Montserrat', sans-serif; font-size: clamp(30px, 8vw, 80px); font-weight: 900; color: #fff; letter-spacing: 0.05em; text-shadow: 2px 2px 0px #111; }
-        .box-green-sq { position: absolute; top: 10%; left: 5%; width: 35%; aspect-ratio: 1; background-color: #4da85d; z-index: 5; box-shadow: 2px 2px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;}
-        .box-blue-sq { position: absolute; bottom: 10%; left: 10%; width: 32%; height: 45%; background-color: #3b9bc2; z-index: 4; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2%;}
-        .box-logo-text { font-family: 'Playfair Display', serif; font-style: italic; color: #fff; font-size: clamp(14px, 3vw, 28px); font-weight: bold;}
-        .box-text-top { position: absolute; top: 15%; right: 10%; text-align: left; color: #111; font-family: 'Playfair Display', serif;}
-        .box-text-top h2 { font-size: clamp(16px, 3.5vw, 32px); font-weight: 900; margin: 0; line-height: 1.2;}
-        .box-text-top p { font-size: clamp(12px, 2.5vw, 24px); color: #2e7ca8; font-weight: bold; margin: 0; line-height: 1.2;}
-        .box-icon-group { position: absolute; bottom: 10%; right: 10%; display: flex; flex-direction: column; align-items: center;}
-        .box-trains { display: flex; align-items: center; gap: 10px; color: #3b9bc2; font-size: clamp(24px, 5vw, 50px); }
-        .box-mr-mono { font-size: clamp(30px, 6vw, 60px); filter: drop-shadow(1px 1px 0 #fff); }
-        .box-dollar { color: #4da85d; font-size: clamp(40px, 8vw, 80px); font-weight: 900; font-family: 'Montserrat', sans-serif; line-height: 0.8;}
+        .box-title { font-family: 'Montserrat', sans-serif; font-size: clamp(28px, 7vw, 75px); font-weight: 900; color: #fff; letter-spacing: 0.08em; text-shadow: 3px 3px 0px rgba(0,0,0,0.8); }
+
+        .box-green-sq { width: 28%; max-width: 180px; aspect-ratio: 1; background-color: #4da85d; box-shadow: 3px 3px 15px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; border-radius: 4px; }
         .mini-board-mockup { width: 85%; height: 85%; border: 2px solid #111; background: var(--bg-board); display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 1px; padding: 1px;}
         .mini-board-mockup div { background: var(--cell-bg); border: 1px solid #111; }
-        .click-to-start { position: absolute; bottom: 5vh; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #fff; font-size: 20px; animation: pulse 1.5s infinite; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1.05); } }
 
+        .box-text-top { text-align: right; color: #111; font-family: 'Playfair Display', serif;}
+        .box-text-top h2 { font-size: clamp(14px, 3.5vw, 30px); font-weight: 900; margin: 0; line-height: 1.1;}
+        .box-text-top p { font-size: clamp(12px, 2.5vw, 22px); color: #2e7ca8; font-weight: bold; margin: 0; line-height: 1.1;}
+
+        .box-blue-sq { width: 28%; max-width: 180px; height: 80%; background-color: #3b9bc2; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2%; box-shadow: 3px 3px 15px rgba(0,0,0,0.15); border-radius: 4px 4px 0 0;}
+        .box-logo-text { font-family: 'Playfair Display', serif; font-style: italic; color: #fff; font-size: clamp(12px, 2.8vw, 24px); font-weight: bold; text-align: center; line-height: 1;}
+        
+        .box-icon-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .box-trains { display: flex; align-items: center; gap: 12px; color: #3b9bc2; font-size: clamp(20px, 4.5vw, 45px); }
+        .box-mr-mono { font-size: clamp(28px, 5.5vw, 55px); filter: drop-shadow(2px 2px 0 rgba(255,255,255,0.8)); }
+        .box-dollar { color: #4da85d; font-size: clamp(35px, 7vw, 70px); font-weight: 900; font-family: 'Montserrat', sans-serif; line-height: 0.8; text-shadow: 1px 1px 0 #fff;}
+
+        .click-to-start { position: absolute; bottom: 4vh; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #111; font-size: clamp(14px, 4vw, 20px); letter-spacing: 2px; animation: pulse 1.5s infinite; background: rgba(255,255,255,0.7); padding: 10px 20px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
+
+        /* Contenitore Principale Gioco */
         #app-container { display: flex; align-items: center; justify-content: center; width: 100dvw; height: 100dvh; position: relative; }
 
-        /* --- TABELLONE DI GIOCO FEDELE AL MILLIMETRO --- */
+        /* --- TABELLONE DI GIOCO --- */
         #board-area {
             position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
             display: flex; align-items: center; justify-content: center;
             width: min(88dvw, 88dvh); height: min(88dvw, 88dvh);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.9), 0 0 0 clamp(4px, 1.2vmin, 10px) var(--border-color); /* Bordo nero esterno netto */
-            background-color: var(--border-color); border-radius: 2px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 0 clamp(4px, 1.2vmin, 10px) var(--border-color);
+            background-color: var(--border-color); border-radius: 4px;
             z-index: 10; contain: layout style paint;
         }
 
         #board {
             width: 100%; height: 100%; display: grid;
-            /* Proporzioni reali: angoli più ampi (circa 15.5%), 9 celle centrali */
             grid-template-columns: 15.5% repeat(9, 1fr) 15.5%;
             grid-template-rows: 15.5% repeat(9, 1fr) 15.5%;
-            gap: clamp(1px, 0.25vmin, 3px); /* La griglia nera tra le celle */
+            gap: clamp(1px, 0.25vmin, 3px);
             background-color: var(--border-color); 
         }
 
         .cell {
-            background-color: var(--cell-bg);
-            background-image: var(--paper-tex);
-            position: relative; overflow: hidden; box-sizing: border-box;
-            container-type: size;
+            background-color: var(--cell-bg); background-image: var(--paper-tex);
+            position: relative; overflow: hidden; box-sizing: border-box; container-type: size;
         }
 
         .cell-content {
-            position: absolute; top: 50%; left: 50%;
-            display: flex; flex-direction: column;
+            position: absolute; top: 50%; left: 50%; display: flex; flex-direction: column;
             align-items: center; justify-content: flex-start; text-align: center;
             box-sizing: border-box; padding: 2% 0;
         }
 
-        /* Orientamenti e Dimensioni relative al container per una rotazione perfetta */
         .bottom-row .cell-content, .top-row .cell-content { width: 100cqw; height: 100cqh; }
         .left-col .cell-content, .right-col .cell-content { width: 100cqh; height: 100cqw; }
         .corner .cell-content { width: 100cqw; height: 100cqh; justify-content: center; padding: 0;}
 
-        /* Il Top punta SEMPRE al centro */
         .bottom-row .cell-content { transform: translate(-50%, -50%) rotate(0deg); }
         .top-row .cell-content { transform: translate(-50%, -50%) rotate(180deg); }
         .left-col .cell-content { transform: translate(-50%, -50%) rotate(90deg); }
         .right-col .cell-content { transform: translate(-50%, -50%) rotate(-90deg); }
-        
         #cell-0 .cell-content { transform: translate(-50%, -50%) rotate(-45deg); }
         #cell-10 .cell-content { transform: translate(-50%, -50%) rotate(45deg); }
         #cell-20 .cell-content { transform: translate(-50%, -50%) rotate(135deg); }
         #cell-30 .cell-content { transform: translate(-50%, -50%) rotate(-135deg); }
 
-        /* Striscia Colore a FILO con il bordo interno */
         .color-bar {
             position: absolute; top: 0; left: 0; right: 0; height: 22%;
-            border-bottom: clamp(1px, 0.25vmin, 2px) solid var(--border-color); 
-            z-index: 2;
+            border-bottom: clamp(1px, 0.25vmin, 2px) solid var(--border-color); z-index: 2;
         }
         .has-color-bar { padding-top: 24%; }
 
-        /* Tipografia rigorosa come foto (Sottile, condensata) */
         .property-name {
             font-weight: 700; font-size: clamp(4px, 1vmin, 12px); line-height: 1.1;
             text-transform: uppercase; margin: auto 0;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: 0.02em;
             display: flex; align-items: center; justify-content: center; flex-grow: 1;
-            padding: 0 4%; z-index: 1; color: #111;
+            padding: 0 4%; z-index: 1; color: #111; text-wrap: balance; word-wrap: break-word;
         }
 
-        .property-price { 
-            font-size: clamp(3.5px, 0.8vmin, 10px); font-weight: 700; 
-            margin-bottom: 2%; flex-shrink: 0; color: #111; letter-spacing: 0.05em;
-        }
-        
+        .property-price { font-size: clamp(3.5px, 0.8vmin, 10px); font-weight: 700; margin-bottom: 2%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; }
         .icon-large { margin: auto; display: flex; align-items: center; justify-content: center; flex-grow: 1; }
         .svg-board-icon { width: clamp(18px, 4.5vmin, 55px); height: auto; max-height: clamp(18px, 4.5vmin, 55px); margin: auto; }
         
-        /* Area Centrale Verde Salvia */
         #center-board {
             grid-column: 2 / span 9; grid-row: 2 / span 9;
             background-color: var(--bg-board); background-image: var(--paper-tex);
             position: relative; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform-origin: center center; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            overflow: hidden; will-change: transform; box-shadow: inset 0 0 5vmin rgba(0,0,0,0.1);
+            overflow: hidden; will-change: transform; box-shadow: inset 0 0 8vmin rgba(0,0,0,0.15);
         }
 
-        /* Testo Centrale Sottile ed Esatto */
         .center-text-group { text-align: center; z-index: 5; margin-top: 2vmin; }
-        .center-title { 
-            font-family: 'Montserrat', sans-serif; 
-            font-size: clamp(30px, 10vmin, 120px); 
-            font-weight: 300; /* Sottile come da foto */
-            letter-spacing: 0.12em; color: #111; 
-        }
-        .center-copyright {
-            font-size: clamp(3px, 0.8vmin, 10px); font-family: 'Helvetica Neue', sans-serif; 
-            font-weight: 700; color: #222; margin-top: 0.5vmin; line-height: 1.4; text-transform: uppercase;
-        }
+        .center-title { font-family: 'Montserrat', sans-serif; font-size: clamp(30px, 10vmin, 120px); font-weight: 300; letter-spacing: 0.12em; color: #1a1a1a; }
+        .center-copyright { font-size: clamp(3px, 0.8vmin, 10px); font-family: 'Helvetica Neue', sans-serif; font-weight: 700; color: #222; margin-top: 0.5vmin; line-height: 1.4; text-transform: uppercase; }
 
-        /* --- MAZZI DI CARTE 3D NEL TABELLONE --- */
         .deck-slot {
             position: absolute; width: 20vmin; height: 13vmin;
             border: clamp(1px, 0.2vmin, 2px) dashed rgba(0,0,0,0.4);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            perspective: 500px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; perspective: 500px;
         }
         .deck-slot.probabilita { top: 14%; left: 14%; transform: rotate(-45deg); }
         .deck-slot.imprevisti { bottom: 14%; right: 14%; transform: rotate(-45deg); }
         
         .deck-stack {
-            position: absolute; width: 95%; height: 90%;
-            background-color: #fff; border-radius: 2px;
-            box-shadow: 
-                -1px 1px 0 #ddd, -2px 2px 0 #bbb, -3px 3px 0 #ddd, -4px 4px 0 #bbb,
-                -5px 5px 15px rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(0,0,0,0.1);
+            position: absolute; width: 95%; height: 90%; background-color: #fff; border-radius: 2px;
+            box-shadow: -1px 1px 0 #ddd, -2px 2px 0 #bbb, -3px 3px 0 #ddd, -4px 4px 0 #bbb, -5px 5px 15px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0,0,0,0.1);
             transform: translateZ(10px); background-image: var(--paper-tex);
         }
         .deck-stack.bg-prob { background-color: var(--prob-color); }
         .deck-stack.bg-impr { background-color: var(--impr-color); }
-        .deck-stack span { 
-            font-size: clamp(6px, 1.8vmin, 16px); font-weight: 800; font-family: 'Montserrat', sans-serif; 
-            color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 0.1em;
-            transform: rotate(180deg); /* Scritta rivolta verso l'esterno */
-        }
+        .deck-stack span { font-size: clamp(6px, 1.8vmin, 16px); font-weight: 800; font-family: 'Montserrat', sans-serif; color: rgba(0,0,0,0.7); text-transform: uppercase; letter-spacing: 0.1em; transform: rotate(180deg); }
 
         /* ZONE GIOCATORI */
         .player-zone {
             position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.4); padding: 1vmin; border-radius: 12px;
-            border: 2px solid transparent; transition: all 0.3s ease; backdrop-filter: blur(5px);
+            background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.8)); padding: 1vmin; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease; backdrop-filter: blur(8px);
         }
         .player-zone.active {
-            background: rgba(0,0,0,0.8); border-color: #ed1b24;
+            background: linear-gradient(135deg, rgba(40,0,0,0.8), rgba(150,0,0,0.9)); border-color: #ed1b24;
             box-shadow: 0 0 25px rgba(237, 27, 36, 0.6), inset 0 0 15px rgba(0,0,0,0.8);
         }
         .pz-bottom { bottom: 1vmin; left: 50%; transform: translateX(-50%); width: 60vw; }
@@ -220,7 +201,6 @@
         .pz-token { width: clamp(20px, 3.5vmin, 35px); height: clamp(20px, 3.5vmin, 35px); filter: drop-shadow(1px 2px 2px #000); }
         .pz-balance { font-family: 'Oswald', sans-serif; font-size: clamp(14px, 2.2vmin, 24px); color: #00e676; text-shadow: 1px 1px 2px #000; }
 
-        /* BANCONOTE OTTIMIZZATE (SVG) */
         .note-wrapper {
             width: clamp(70px, 14vmin, 140px); aspect-ratio: 1.85 / 1;
             position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
@@ -231,110 +211,136 @@
         .note-stack .note-wrapper { position: absolute; }
 
         .payment-zone {
-            background: rgba(0,0,0,0.03); border: 2px dashed #ccc; border-radius: 8px;
+            background: rgba(0,0,0,0.04); border: 2px dashed #aaa; border-radius: 8px;
             min-height: 80px; display: flex; flex-wrap: wrap; gap: -20px; padding: 15px;
             justify-content: center; align-items: center; margin-bottom: 15px; width: 100%;
         }
         .payment-zone .note-wrapper { position: relative; transition: margin 0.2s, transform 0.2s; }
         .payment-zone .note-wrapper:hover { margin-right: 25px; transform: translateY(-10px) scale(1.15) !important; z-index: 50; }
 
-        /* --- DADI PIÙ GRANDI, NERI E ORO & PEDINE --- */
-        .dice-area { position: absolute; display: flex; gap: clamp(15px, 3.5vmin, 45px); z-index: 25; perspective: 1000px; }
+        /* --- DADI PROPORZIONATI E REALISTICI --- */
+        .dice-area { position: absolute; display: flex; gap: clamp(10px, 2.5vmin, 30px); z-index: 25; perspective: 1000px; }
         @keyframes dice-pulse { 0% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); } 100% { transform: scale(1.1) translateY(-1vmin); filter: drop-shadow(0 1vmin 3vmin rgba(255,215,0,0.9)); } }
         .dice-ready { animation: dice-pulse 1s infinite alternate ease-in-out; cursor: pointer; }
-        .die-3d { width: clamp(35px, 9vmin, 80px); height: clamp(35px, 9vmin, 80px); position: relative; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        /* Dimensioni dadi regolate */
+        .die-3d { width: clamp(26px, 6vmin, 55px); height: clamp(26px, 6vmin, 55px); position: relative; transform-style: preserve-3d; transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .die-face { 
             position: absolute; width: 100%; height: 100%; 
-            background: #111; border: clamp(1px, 0.3vmin, 3px) solid #222; border-radius: 18%; 
+            background: #111; border: clamp(1px, 0.3vmin, 2px) solid #333; border-radius: 18%; 
             display: grid; padding: 12%; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); 
-            box-shadow: inset 0 0 1.5vmin rgba(255,255,255,0.2), inset 0 0 5px #000; 
+            box-shadow: inset 0 0 1vmin rgba(255,255,255,0.15), inset 0 0 5px #000; 
         }
         .die-dot { 
             background: radial-gradient(circle at 30% 30%, #fff7b0 0%, #ffd700 40%, #b8860b 100%); 
-            border-radius: 50%; width: 100%; height: 100%; box-shadow: inset 0.1vmin 0.1vmin 0.4vmin rgba(0,0,0,0.9), 0 0.1vmin 0.2vmin rgba(255,255,255,0.4); 
+            border-radius: 50%; width: 100%; height: 100%; box-shadow: inset 0.1vmin 0.1vmin 0.4vmin rgba(0,0,0,0.9), 0 0.1vmin 0.2vmin rgba(255,255,255,0.3); 
         }
         .dot-1 { grid-area: 1 / 1; } .dot-3 { grid-area: 1 / 3; } .dot-4 { grid-area: 2 / 1; } .dot-5 { grid-area: 2 / 2; } .dot-6 { grid-area: 2 / 3; } .dot-7 { grid-area: 3 / 1; } .dot-9 { grid-area: 3 / 3; }
         
-        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); } .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); }
-        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); } .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); }
-        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); } .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(35px, 9vmin, 80px) / 2)); }
+        /* Traslazione facce basata sulla dimensione del dado per mantenere il cubo perfetto */
+        .face-1 { transform: rotateY(0deg) translateZ(calc(clamp(26px, 6vmin, 55px) / 2)); } .face-2 { transform: rotateY(-90deg) translateZ(calc(clamp(26px, 6vmin, 55px) / 2)); }
+        .face-3 { transform: rotateX(90deg) translateZ(calc(clamp(26px, 6vmin, 55px) / 2)); } .face-4 { transform: rotateX(-90deg) translateZ(calc(clamp(26px, 6vmin, 55px) / 2)); }
+        .face-5 { transform: rotateY(90deg) translateZ(calc(clamp(26px, 6vmin, 55px) / 2)); } .face-6 { transform: rotateY(180deg) translateZ(calc(clamp(26px, 6vmin, 55px) / 2)); }
+        
         .anim-jump { animation: jump 1.2s ease-out forwards; }
         @keyframes jump { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-15vmin) scale(1.3) rotateX(360deg) rotateZ(180deg); } 70% { transform: translateY(-3vmin) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
 
-        .token { position: absolute; z-index: 30; width: clamp(26px, 6vmin, 55px); height: clamp(26px, 6vmin, 55px); transition: all 0.4s linear; transform: translate(-50%, -50%); pointer-events: none; }
+        .token { position: absolute; z-index: 30; width: clamp(24px, 5.5vmin, 50px); height: clamp(24px, 5.5vmin, 50px); transition: all 0.4s linear; transform: translate(-50%, -50%); pointer-events: none; }
         .token-svg { width: 100%; height: 100%; filter: drop-shadow(2px 5px 3px rgba(0,0,0,0.7)); }
         
-        .house { width: clamp(6px, 1.5vmin, 16px); height: clamp(6px, 1.5vmin, 16px); background-color: #00a650; margin: 1px; box-shadow: inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); }
-        .hotel { width: clamp(8px, 2vmin, 22px); height: clamp(8px, 2vmin, 22px); background-color: #ed1b24; margin: 1px; box-shadow: inset -3px -3px 0px rgba(0,0,0,0.3), inset 3px 3px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); }
+        .house { width: clamp(5px, 1.2vmin, 14px); height: clamp(5px, 1.2vmin, 14px); background-color: #00a650; margin: 1px; box-shadow: inset -2px -2px 0px rgba(0,0,0,0.3), inset 2px 2px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); border-radius:1px;}
+        .hotel { width: clamp(7px, 1.6vmin, 18px); height: clamp(7px, 1.6vmin, 18px); background-color: #ed1b24; margin: 1px; box-shadow: inset -3px -3px 0px rgba(0,0,0,0.3), inset 3px 3px 0px rgba(255,255,255,0.4), 2px 2px 3px rgba(0,0,0,0.6); border-radius:2px;}
         .buildings-container { display: flex; flex-wrap: wrap; justify-content: center; position: absolute; bottom: 2%; width: 100%; z-index: 3;}
         .has-color-bar .buildings-container { top: 2%; bottom: auto; }
 
-        /* --- MODALI E UI --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100dvw; height: 100dvh; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 200; }
+        /* --- MODALI MIGLIORATE --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100dvw; height: 100dvh; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 200; }
         .modal-box-wrapper { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; width: 100%; display: flex; justify-content: center; }
         
-        .modal-box { background: #fdfbf7; background-image: var(--paper-tex); border: clamp(2px, 0.4vmin, 6px) solid #333; border-radius: 8px; width: 95vw; max-width: 480px; max-height: 95dvh; padding: clamp(15px, 4vw, 25px); box-shadow: 0 10px 30px rgba(0,0,0,0.9); color: #111; position: relative; text-align: center; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; }
+        .modal-box { 
+            background: #fdfbf7; background-image: var(--paper-tex); 
+            border-radius: 12px; width: 92vw; max-width: 480px; max-height: 95dvh; 
+            padding: clamp(20px, 5vw, 30px); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.5) inset; 
+            color: #111; position: relative; text-align: center; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; 
+        }
         
-        /* Carte 3D Sfondo Pieno Esatto (Senza bordo bianco) */
-        .modal-box.solid-card { border-radius: 4px; border: 1px solid rgba(0,0,0,0.2); box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 60px rgba(0,0,0,0.05); padding: 0; display: flex; flex-direction: column; overflow: hidden; background-image: var(--paper-tex); }
+        .modal-box.solid-card { border-radius: 8px; border: 1px solid rgba(0,0,0,0.2); padding: 0; display: flex; flex-direction: column; }
 
-        .lang-selector { display: flex; gap: 5px; z-index: 10; margin-bottom: 15px; justify-content: center; }
-        .lang-btn { background: #111; color: #fff; border: 1px solid #555; padding: 5px 10px; font-size: 12px; cursor: pointer; border-radius: 4px; font-weight: bold;}
-        .lang-btn:hover, .lang-btn.active { background: #ed1b24; border-color: #fff; }
+        .lang-selector { display: flex; gap: 8px; z-index: 10; margin-bottom: 20px; justify-content: center; }
+        .lang-btn { background: #333; color: #fff; border: none; padding: 6px 14px; font-size: 13px; cursor: pointer; border-radius: 20px; font-weight: bold; transition: all 0.2s;}
+        .lang-btn:hover { background: #555; transform: scale(1.05);}
+        .lang-btn.active { background: #ed1b24; box-shadow: 0 3px 10px rgba(237,27,36,0.4); }
 
-        .btn { padding: clamp(10px, 2vw, 12px) clamp(12px, 3vw, 18px); border: 2px solid #111; border-radius: 6px; font-weight: 800; cursor: pointer; transition: all 0.1s; background: #eee; text-transform: uppercase; width: 100%; margin-top: 5px; font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 0 #111; box-sizing: border-box; display: inline-flex; justify-content: center; align-items: center; text-align: center; line-height: 1.2; font-size: clamp(11px, 2.5vw, 14px); }
-        .btn:active { transform: translateY(4px); box-shadow: 0 0 0 #111; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: 0 4px 0 #111; }
-        .btn-buy { background: #00a650; color: white; border-color: #007336; box-shadow: 0 4px 0 #007336; }
-        .btn-pay { background: #ed1b24; color: white; border-color: #b00f17; box-shadow: 0 4px 0 #b00f17; }
+        .btn { 
+            padding: clamp(12px, 2.5vw, 15px) clamp(15px, 3.5vw, 20px); 
+            border: none; border-radius: 8px; font-weight: 800; cursor: pointer; transition: all 0.15s; 
+            background: linear-gradient(to bottom, #f0f0f0, #e0e0e0); color: #222;
+            text-transform: uppercase; width: 100%; margin-top: 10px; font-family: 'Montserrat', sans-serif; 
+            box-shadow: 0 4px 0 #bbb, 0 8px 15px rgba(0,0,0,0.1); box-sizing: border-box; 
+            display: inline-flex; justify-content: center; align-items: center; text-align: center; line-height: 1.2; font-size: clamp(12px, 2.5vw, 15px); 
+        }
+        .btn:active { transform: translateY(4px); box-shadow: 0 0 0 #bbb, 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-buy { background: linear-gradient(to bottom, #00c660, #00a650); color: white; box-shadow: 0 4px 0 #007336, 0 8px 15px rgba(0,166,80,0.3); }
+        .btn-buy:active { box-shadow: 0 0 0 #007336; }
+        .btn-pay { background: linear-gradient(to bottom, #ff3b44, #ed1b24); color: white; box-shadow: 0 4px 0 #b00f17, 0 8px 15px rgba(237,27,36,0.3); }
+        .btn-pay:active { box-shadow: 0 0 0 #b00f17; }
         .btn-inline { width: auto; flex: 1 1 auto; min-width: 120px; }
 
-        .card-property-original { background: #fff; background-image: var(--paper-tex); border: 1px solid #999; box-shadow: 0 4px 10px rgba(0,0,0,0.2); padding: clamp(5px, 2vw, 10px); margin-bottom: 15px; box-sizing: border-box; width: 100%; }
-        .cpo-header { border: 2px solid #111; padding: 10px 5px; margin-bottom: 10px; word-wrap: break-word;}
-        .cpo-subtitle { font-size: clamp(8px, 2vw, 0.6rem); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .cpo-title { font-size: clamp(16px, 4vw, 1.4rem); font-family: 'Montserrat', sans-serif; font-weight: 800; text-transform: uppercase; line-height:1.1;}
-        .cpo-body { font-size: clamp(11px, 3vw, 0.85rem); font-family: sans-serif; line-height: 1.5; padding: 0 5px; text-align: left; }
-        .cpo-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+        .card-property-original { background: #fff; background-image: var(--paper-tex); border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); padding: clamp(10px, 3vw, 15px); margin-bottom: 20px; box-sizing: border-box; width: 100%; }
+        .cpo-header { border: 2px solid #111; padding: 10px 5px; margin-bottom: 15px; border-radius: 4px; }
+        .cpo-subtitle { font-size: clamp(9px, 2vw, 0.7rem); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .cpo-title { font-size: clamp(18px, 4.5vw, 1.6rem); font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; line-height:1.1;}
+        .cpo-body { font-size: clamp(12px, 3vw, 0.95rem); font-family: 'Helvetica Neue', sans-serif; line-height: 1.6; padding: 0 5px; text-align: left; }
+        .cpo-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
         .cpo-row span:last-child { font-weight: bold; }
-        .cpo-divider { border-top: 1px solid #ccc; margin: 8px 0; }
+        .cpo-divider { border-top: 1px solid #ddd; margin: 10px 0; }
         
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { background: #111; color: #fff; padding: 12px 24px; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: bold; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-left: 4px solid #ed1b24; animation: slideDown 0.3s ease-out forwards, fadeOut 0.5s ease-in 2.5s forwards; }
-        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .toast { background: rgba(0,0,0,0.9); color: #fff; padding: 15px 25px; border-radius: 30px; font-family: 'Montserrat', sans-serif; font-weight: bold; font-size: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border-left: 4px solid #ed1b24; animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, fadeOut 0.5s ease-in 2.5s forwards; }
+        @keyframes slideDown { from { transform: translateY(-30px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
+        /* Media Queries ottimizzate per evitare sovrapposizioni su Mobile */
         @media (max-width: 768px) {
-            #board-area { width: 98vw; height: 98vw; top: 40%; }
-            .player-zone { transform: none !important; position: static !important; width: auto; max-width: 48%; padding: 4px; border-radius: 6px; }
-            #player-zones { position: absolute; bottom: 0; left: 0; width: 100%; display: flex; flex-wrap: wrap; justify-content: space-around; align-items: flex-end; padding: 5px; box-sizing: border-box; z-index: 20; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+            #board-area { width: 98vw; height: 98vw; top: 38%; }
+            .player-zone { transform: none !important; position: static !important; width: auto; max-width: 48%; padding: 6px; border-radius: 8px; }
+            #player-zones { position: absolute; bottom: 0; left: 0; width: 100%; display: flex; flex-wrap: wrap; justify-content: space-around; align-items: flex-end; gap: 5px; padding: 10px; box-sizing: border-box; z-index: 20; background: linear-gradient(to top, rgba(0,0,0,0.9) 20%, transparent); }
             .note-stack { display: none; }
             .payment-zone { gap: -10px; }
             .payment-zone .note-wrapper { width: 60px; }
-            .box-replica { aspect-ratio: auto; height: 80vh; justify-content: space-around; }
-            .box-green-sq { width: 50%; position: relative; margin: 0 auto; left: 0; top: 0; }
-            .box-blue-sq { width: 50%; height: 20%; position: relative; margin: 0 auto; left: 0; bottom: 0; }
-            .box-red-stripe { position: relative; top: 0; height: 15%; margin: 20px 0;}
-            .box-text-top { position: relative; right: 0; top: 0; text-align: center; margin-bottom: 10px;}
-            .box-icon-group { position: relative; right: 0; bottom: 0; flex-direction: row; justify-content: center; gap: 20px;}
+            
+            /* Box Intro Mobile Fix */
+            #intro-screen { padding: 5vw; }
+            .box-replica { aspect-ratio: auto; min-height: 70vh; padding: 20px 0; justify-content: space-evenly; }
+            .box-top-row { flex-direction: column; gap: 20px; }
+            .box-green-sq { width: 60%; }
+            .box-text-top { text-align: center; }
+            .box-bottom-row { flex-direction: column-reverse; gap: 20px; align-items: center; }
+            .box-blue-sq { width: 60%; padding: 15px 0; border-radius: 4px; }
+            .box-icon-group { flex-direction: row; gap: 30px; }
+            .box-red-stripe { position: relative; transform: none; top: 0; height: auto; padding: 15px 0; margin: 15px 0; }
+            .click-to-start { bottom: 2vh; }
         }
     </style>
 </head>
 <body>
 
-    <!-- SCHERMATA INTRODUTTIVA (SCATOLA) -->
+    <!-- SCHERMATA INTRODUTTIVA (SCATOLA) RIVISTA A LAYOUT FLUIDO -->
     <div id="intro-screen" onclick="hideIntro()">
         <div class="box-replica">
-            <div class="box-text-top">
-                <h2>Nuova Confezione</h2>
-                <p>del gioco<br>Parker Brothers</p>
-            </div>
-            
-            <div class="box-green-sq">
-                <div class="mini-board-mockup">
-                    <div></div><div></div><div></div><div></div>
-                    <div></div><div style="grid-column: span 2; grid-row: span 2; background: var(--bg-board); border: none;"></div><div></div>
-                    <div></div><div></div>
-                    <div></div><div></div><div></div><div></div>
+            <div class="box-top-row">
+                <div class="box-green-sq">
+                    <div class="mini-board-mockup">
+                        <div></div><div></div><div></div><div></div>
+                        <div></div><div style="grid-column: span 2; grid-row: span 2; background: var(--bg-board); border: none;"></div><div></div>
+                        <div></div><div></div>
+                        <div></div><div></div><div></div><div></div>
+                    </div>
+                </div>
+                <div class="box-text-top">
+                    <h2>Nuova Confezione</h2>
+                    <p>del gioco<br>Parker Brothers</p>
                 </div>
             </div>
 
@@ -342,15 +348,14 @@
                 <span class="box-title">MONÒPOLI</span>
             </div>
 
-            <div class="box-blue-sq">
-                <span class="box-logo-text">Editrice Giochi<br><span style="font-size: 0.5em; font-family: sans-serif; font-style: normal; letter-spacing: 2px;">MILANO</span></span>
-            </div>
-
-            <div class="box-icon-group">
-                <div class="box-trains">
-                    🚂 <span class="box-mr-mono">🎩</span> 🚂
+            <div class="box-bottom-row">
+                <div class="box-blue-sq">
+                    <span class="box-logo-text">Editrice Giochi<br><span style="font-size: 0.5em; font-family: sans-serif; font-style: normal; letter-spacing: 2px;">MILANO</span></span>
                 </div>
-                <div class="box-dollar">$</div>
+                <div class="box-icon-group">
+                    <div class="box-trains">🚂 <span class="box-mr-mono">🎩</span> 🚂</div>
+                    <div class="box-dollar">$</div>
+                </div>
             </div>
         </div>
         <div class="click-to-start" id="intro-click-text">CLICK TO START</div>
@@ -428,7 +433,7 @@
                 <h1 class="text-4xl font-bold mt-2 mb-2 text-red-600 font-['Montserrat']" data-i18n="monopoly"></h1>
                 <p class="mb-6 text-sm text-gray-600" data-i18n="setup_desc"></p>
                 <div id="setup-players" class="flex flex-col gap-4 mb-6"></div>
-                <div class="flex gap-2">
+                <div class="flex gap-3">
                     <button class="btn btn-inline" onclick="addSetupPlayer()" id="btn-add-p" data-i18n="btn_add_player"></button>
                     <button class="btn btn-buy btn-inline" onclick="startGame()" data-i18n="btn_start"></button>
                 </div>
@@ -444,21 +449,23 @@
 
     <div id="modal-payment" class="modal-overlay">
         <div class="modal-box-wrapper" id="payment-wrapper">
-            <div class="modal-box" style="max-width: 500px;">
+            <div class="modal-box" style="max-width: 520px;">
                 <h2 id="pay-title" class="text-2xl font-bold mb-2 font-['Montserrat'] uppercase text-red-600"></h2>
                 <p id="pay-desc" class="mb-4 text-gray-700"></p>
-                <div class="text-left font-bold text-sm text-gray-500 mb-1"><span data-i18n="tray"></span> <span id="tray-sum" class="float-right text-red-600">0</span></div>
+                <div class="text-left font-bold text-sm text-gray-500 mb-2"><span data-i18n="tray"></span> <span id="tray-sum" class="float-right text-red-600">0</span></div>
                 <div id="pay-tray" class="payment-zone"></div>
-                <div class="text-left font-bold text-sm text-gray-500 mb-1" data-i18n="wallet"></div>
+                <div class="text-left font-bold text-sm text-gray-500 mb-2" data-i18n="wallet"></div>
                 <div id="pay-wallet" class="payment-zone" style="background: rgba(0,166,80,0.05); border-color: #00a650;"></div>
-                <button id="btn-confirm-pay" class="btn btn-buy" disabled onclick="confirmPayment()" data-i18n="confirm_pay"></button>
-                <button class="btn mt-2" onclick="cancelPayment()" data-i18n="cancel"></button>
+                <div class="flex gap-3 mt-4">
+                    <button class="btn" onclick="cancelPayment()" data-i18n="cancel"></button>
+                    <button id="btn-confirm-pay" class="btn btn-buy" disabled onclick="confirmPayment()" data-i18n="confirm_pay"></button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // DIZIONARIO TRADUZIONI CON BREAKS ORIGINALI
+        // DIZIONARIO TRADUZIONI COMPLETO E DINAMICO
         const i18n = {
             'en': {
                 monopoly: "MONOPOLY", setup_desc: "Enter names and choose token", btn_add_player: "+ Player", btn_start: "START GAME", click_start: "CLICK TO START",
@@ -560,7 +567,7 @@
 
         const C = { BROWN: '#8e5033', LIGHTBLUE: '#8ed6ef', PINK: '#db2b6c', ORANGE: '#f5821c', RED: '#e62c26', YELLOW: '#ffec19', GREEN: '#41ab5d', DARKBLUE: '#1b73b8' };
 
-        // ICONE SVG RIDISEGNATE FEDELI
+        // ICONE SVG FEDELI
         const svgTrain = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 80%; height: 80%; margin-top:5%;"><path d="M 25 75 L 85 75 L 85 45 L 65 45 L 65 25 L 45 25 L 45 45 L 25 45 L 25 20 L 15 20 L 15 75 Z" fill="#111" stroke="#111" stroke-width="2"/><circle cx="35" cy="75" r="10" fill="#111"/><circle cx="55" cy="75" r="10" fill="#111"/><circle cx="75" cy="75" r="10" fill="#111"/></svg>`;
         const svgBulb = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 50 15 C 25 15 25 50 40 65 L 40 80 L 60 80 L 60 65 C 75 50 75 15 50 15 Z" fill="#ffec19" stroke="#111" stroke-width="4"/><path d="M 45 35 L 55 35 M 40 50 L 60 50" stroke="#111" stroke-width="3"/><rect x="42" y="80" width="16" height="15" fill="#111" rx="2"/></svg>`;
         const svgTap = `<svg viewBox="0 0 100 100" class="svg-board-icon" style="width: 60%; height: 60%;"><path d="M 20 40 L 40 40 L 40 60 L 60 60 L 60 30 L 20 30 Z" fill="#8ed6ef" stroke="#111" stroke-width="5"/><rect x="10" y="25" width="10" height="20" fill="#111"/><path d="M 55 60 C 55 80 65 90 60 90 C 55 90 65 80 65 60 Z" fill="#8ed6ef" stroke="#111" stroke-width="3"/></svg>`;
@@ -789,6 +796,8 @@
                     </select>
                 </div>`;
             document.getElementById('setup-players').appendChild(div);
+            // Forza aggiornamento testo (in caso di lingua già cambiata)
+            document.getElementById(`pname-${setupPlayerCount}`).value = `${t('player')} ${setupPlayerCount}`;
         }
 
         function startGame() {
