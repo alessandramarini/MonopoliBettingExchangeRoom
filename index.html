@@ -147,25 +147,25 @@
         /* UNIFORM TYPOGRAPHY & PERFECT FIT */
         .property-name {
             font-weight: 800; 
-            font-size: clamp(5px, 8cqmin, 11px); /* Dimensioni identiche indipendentemente dall'orientamento e ben distanziate */
+            font-size: clamp(4px, 6cqmin, 10px); /* Ridotto ulteriormente per non toccare mai i bordi */
             line-height: 1.1;
             text-transform: uppercase; 
             margin: auto 0; 
             font-family: 'Montserrat', sans-serif; 
             letter-spacing: -0.01em;
             display: flex; align-items: center; justify-content: center; flex-grow: 1;
-            padding: 2% 8%; /* Padding laterale ampio per NON toccare MAI i bordi */
+            padding: 2% 10%; /* Padding laterale aumentato ulteriormente al 10% */
             z-index: 1; color: #111; 
             text-wrap: balance; word-wrap: break-word; text-align: center; 
             width: 100%; box-sizing: border-box; overflow: hidden;
         }
 
         .property-price { 
-            font-size: clamp(4px, 7.5cqmin, 9px); 
+            font-size: clamp(4px, 5.5cqmin, 8.5px); 
             font-weight: 700; margin-bottom: 5%; flex-shrink: 0; color: #111; letter-spacing: 0.05em; font-family: 'Montserrat', sans-serif; 
         }
         
-        .tax .property-name { padding-top: 15%; font-size: clamp(5px, 8cqmin, 11px); }
+        .tax .property-name { padding-top: 15%; font-size: clamp(4px, 6cqmin, 10px); }
         .icon-large { margin: auto; display: flex; align-items: center; justify-content: center; flex-grow: 1; width: 100%; }
         .svg-board-icon { width: 100%; height: auto; max-width: 55cqmin; max-height: 50cqmin; margin: auto; }
         
@@ -668,7 +668,7 @@
                 rules_sections: [
                     { title: "1. Objetivo", content: "O objetivo é ser o jogador mais rico, comprando e vendendo propriedades." },
                     { title: "2. O Jogo", content: "Toque nos dados para jogar. Se passar pela casa 'PARTIDA', recebe L. 20.000." },
-                    { title: "3. Comprar Propriedades", content: "Ao cair num terreno livre, pode comprá-lo pelo preço impresso." },
+                    { title: "3. Comprar Propriedades", content: "Ao cair num terreno livre, pode comprá-lo pelo preço impreso." },
                     { title: "4. Pagar Aluguel", content: "Se cair na propriedade de outro jogador, deve pagar aluguel. Toque nas notas para mover o dinheiro. O valor dobra se o dono tiver a cor completa sem casas." },
                     { title: "5. Casas e Hotéis", content: "Ao possuir todos os terrenos de uma cor, pode construir casas de forma uniforme." },
                     { title: "6. Prisão", content: "Vai para a prisão ao tirar a carta ou cair na casa correspondente. Pague L. 5.000, tire duplos ou use a carta especial para sair." },
@@ -755,7 +755,7 @@
             const txt = t('go_text');
             return `<svg viewBox="0 0 100 100" style="width:100%; height:100%;">
                 <g transform="rotate(-45 50 50)">
-                    <text x="50" y="50" font-family="Montserrat, sans-serif" font-weight="900" font-size="34" fill="#e21a22" text-anchor="middle" letter-spacing="2">${txt}</text>
+                    <text x="50" y="46" font-family="Montserrat, sans-serif" font-weight="900" font-size="18" fill="#e21a22" text-anchor="middle" letter-spacing="1">${txt}</text>
                 </g>
                 <path d="M 85 75 L 35 75 L 35 70 L 15 80 L 35 90 L 35 85 L 85 85 Z" fill="#e21a22" stroke="#111" stroke-width="1.5"/>
             </svg>`;
@@ -929,7 +929,7 @@
             
             let html = `<div class="mb-4 pb-3 border-b border-gray-300">
                 <p class="font-bold mb-2">Sommario:</p>
-                <ul class="text-[11px] md:text-xs text-blue-600 space-y-1 list-decimal list-inside pl-2">`;
+                <ul class="text-[11px] md:text-xs text-blue-600 space-y-1 list-none pl-2">`;
                 
             tocArr.forEach((item, idx) => {
                 html += `<li><a href="javascript:void(0)" onclick="document.getElementById('rule-${idx}').scrollIntoView({behavior:'smooth'})" class="hover:underline">${item}</a></li>`;
